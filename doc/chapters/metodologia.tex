@@ -1,0 +1,97 @@
+%--------------------------------------------------
+A partir de los antecedentes descritos, y considerando las limitaciones metodológicas identificadas en la
+literatura, el presente proyecto incorpora un conjunto de orientaciones metodológicas preliminares que
+fundamentan la elección de los modelos a emplear y la forma en que se evaluará su desempeño.
+
+En este sentido, la metodología se estructura en función de los objetivos específicos del proyecto y se desarrolla mediante un conjunto de actividades organizadas de forma secuencial, desde la identificación de fuentes de información hasta el diseño, evaluación y análisis de los modelos de Estimación para Áreas Pequeñas (SAE) con componentes espaciales.
+
+El diseño metodológico se estructura como una secuencia secuencial de preparación, evaluación y modelación estadística orientada a estimar el Índice de Pobreza Multidimensional (IPM) 2024 en escalas territoriales desagregadas mediante técnicas de estimación para áreas pequeñas (SAE). El flujo operativo comprende la depuración y armonización de fuentes, el diagnóstico de completitud, la construcción de bloques analíticos de covariables, la validación por especificaciones competitivas y el ajuste del modelo de áreas de Fay-Herriot. El proceso culmina con una evaluación crítica de la capacidad predictiva sintética a nivel municipal.
+
+\subsection{Limpieza, filtrado y reglas explícitas}
+La fase inicial consistió en la depuración y alineación geométrica de dos insumos complementarios: la estimación directa del IPM 2024 departamental con sus respectivas varianzas de muestreo, y la matriz de covariables auxiliares de cobertura municipal. En ambas fuentes se auditó la arquitectura de los archivos, la tipología de las variables y la integridad de los códigos divisionales del territorio.
+
+La base departamental consolida los 33 dominios institucionales (32 departamentos y Bogotá D.C.). Al contener registros exclusivos del IPM 2024 para el subdominio geográfico «Total», el archivo prescindió de filtros temporales o geográficos adicionales y asumió la función de vector observado para la calibración del modelo. Por su parte, la matriz municipal abarca 1.122 observaciones, cuyas variables de identificación político-administrativa se estandarizaron bajo la codificación oficial del DANE (\texttt{\detokenize{cod_depto}}), (\texttt{\detokenize{cod_mpio}}), (\texttt{depto}), (\texttt{mpio}). Dentro de esta matriz se homogeneizó la nomenclatura del bloque de infraestructura (\texttt{\detokenize{Cobertura_acueducto}}), (\texttt{\detokenize{Cobertura_alcantarillado}}), (\texttt{\detokenize{Cobertura_aseo}}) y (\texttt{\detokenize{Cobertura_energia_rural}}) para corregir discrepancias de formato y asegurar la consistencia del procesamiento en bloque.
+
+Como regla explícita de integración, el enlace de las bases se ejecutó estrictamente mediante el código numérico departamental (\texttt{\detokenize{cod_depto}}). Se descartó el uso de cadenas de texto debido a heterogeneidades de escritura en dominios como Valle del Cauca o el Archipiélago de San Andrés, Providencia y Santa Catalina, garantizando así un acoplamiento exacto y sin pérdida de registros. 
+
+En el bloque sectorial de salud, la variable de aseguramiento se sometió a un truncamiento superior para neutralizar las inconsistencias derivadas de coberturas nominales superiores al 100\%. Asimismo, se introdujo la tasa de mortalidad infantil junto a su transformación logarítmica, calculada mediante $\log(1 + \text{mortalidad\_infantil})$, con el fin de corregir la asimetría distributiva de la variable y capturar de forma más robusta la vulnerabilidad sanitaria del dominio.
+
+\subsection{Identificación de datos faltantes}
+Sincronizadas las fuentes, se evaluó la completitud de la matriz municipal y de la estructura agregada departamental. A nivel municipal, el diagnóstico buscó vacíos de información en las dimensiones de servicios públicos e infraestructura. Tras consolidar los indicadores municipales a la escala de calibración, la base analítica integrada presentó una cobertura exhaustiva en casi la totalidad de sus celdas. 
+
+La única excepción fue (\texttt{cobertura\_aseo}), que registró un único dato faltante entre los 33 dominios. Al tratarse de una omisión aislada y dado que el atributo no demostró un rol crítico en las ecuaciones finales, se prescindió de algoritmos de imputación artificial. La estrategia optó por restringir los modelos definitivos —tanto el principal como el de sensibilidad— a covariables con soporte empírico pleno.
+
+\subsection{Ventanas temporales y estrategia de validación}
+El horizonte analítico del estudio se restringe de forma estricta al año 2024. Tanto el vector de respuesta (IPM directo departamental) como los bloques de información auxiliar coinciden en este periodo de referencia, asegurando que los coeficientes estimados describan vínculos contemporáneos del fenómeno.
+
+A diferencia de los esquemas convencionales de aprendizaje supervisado, el modelado SAE no recurre a una partición de la muestra en conjuntos de entrenamiento y prueba. Esta decisión responde a la naturaleza del problema: el objetivo no radica en optimizar la predicción general fuera de muestra sobre un volumen masivo de observaciones independientes, sino en estabilizar y calibrar los parámetros de un modelo de áreas a partir de un número limitado de dominios observados para, posteriormente, extrapolar dicha relación a la escala municipal. 
+
+Por lo tanto, el protocolo de validación se desplaza hacia el análisis de sensibilidad y la confrontación de especificaciones competitivas. El diseño evalúa un modelo principal y uno de sensibilidad; ambos integran tres covariables y difieren únicamente en la representación de la salud, alternando entre la escala natural de la mortalidad infantil y su aproximación logarítmica.
+
+\subsection{Construcción de variables predictoras}
+La matriz de predictores auxiliares se estructuró en tres dimensiones: salud, educación e infraestructura básica. Los criterios de inclusión exigieron cobertura territorial exhaustiva, sincronía con el año de referencia y pertinencia conceptual respecto a las privaciones constitutivas de la pobreza multidimensional.
+
+\begin{itemize}
+    \item \textbf{Salud}: Consolida el porcentaje de afiliados al régimen subsidiado (\texttt{pct\_subsidiado\_2024}), el porcentaje en el régimen contributivo (\texttt{pct\_cont\_2024}), el aseguramiento con truncamiento superior (\texttt{aseguramiento\_capado\_2024}), la razón subsidiado/contributivo (\texttt{ratio\_subs\_cont\_2024}), el logaritmo de la afiliación total (\texttt{log\_total\_afiliados\_2024}), la tasa de mortalidad infantil (\texttt{mortalidad\_infantil}) y su variante logarítmica (\texttt{log\_mortalidad\_infantil}). Estos indicadores operan como aproximaciones del acceso al sistema de protección y del rezago sanitario estructural.
+
+    
+    \item \textbf{Educación}: Incluye la tasa de matriculación en el rango de 5 a 16 años, la cobertura neta total, la cobertura neta en educación media, y las tasas de deserción, repitencia y reprobación. El bloque describe las trayectorias de permanencia y éxito escolar, ligadas directamente a las dimensiones de capital humano del índice.
+    
+    \item \textbf{Infraestructura básica}: Incorpora las coberturas individuales de acueducto, alcantarillado y aseo, junto con el indicador sintético (\texttt{infraestructura\-\_basica}) (definido como el promedio simple de las tres coberturas previas). Se aisló la cobertura de energía rural como predictor independiente para evaluar su comportamiento específico como vector de vulnerabilidad rural.
+\end{itemize}
+
+Estas variables se calcularon originalmente en la escala municipal. Para compatibilizarlas con el nivel de agregación de la encuesta, se sintetizaron a escala departamental mediante promedios aritméticos simples. La matriz auxiliar resultante cuenta con 33 observaciones y 21 columnas, incorporando el volumen de municipios por departamento como un descriptor del tamaño del dominio.
+
+\subsection{Construcción de la variable respuesta}
+El vector de respuesta corresponde al IPM directo departamental extraído de la Encuesta Nacional de Calidad de Vida (ECV) 2024. Este dato representa la «verdad parcial» del proceso, al constituir el nivel geográfico con estimaciones empíricas observables y errores de muestreo medibles. 
+
+Cada estimación se emparejó con su varianza de muestreo (\texttt{vardir}), deducida del cuadrado del error estándar del dominio. En la arquitectura de Fay-Herriot, este parámetro es indispensable para balancear el nivel de confianza entre la estimación directa de la encuesta y la predicción basada en variables auxiliares. Aunque el fin último es inferir el IPM municipal, la calibración se ejecuta necesariamente en la escala departamental debido a la disponibilidad de estas varianzas de diseño; así, el nivel departamental actúa como espacio de entrenamiento lineal y el municipal como escala de proyección sintética.
+
+\subsection{Análisis exploratorio}
+Integrada la base analítica departamental, se evaluó la estructura de asociación bivariada entre el IPM directo y las covariables. Las correlaciones preliminares ratificaron el poder explicativo de la repitencia escolar y la relevancia de los bloques de infraestructura y salud en el comportamiento del indicador.
+
+Antes del ajuste formal del modelo SAE, se estimaron ecuaciones lineales por mínimos ordinarios para evaluar combinaciones de variables. La selección de los predictores finales no dependió exclusivamente del valor p individual; se primó la coherencia de los signos teóricos, la estabilidad de los vectores de coeficientes, la parsimonia de la ecuación y el sustento conceptual de los atributos. 
+
+La inclusión de la mortalidad infantil incrementó sustancialmente la capacidad explicativa general. El modelo que asocia las variables \texttt{repitencia}, \texttt{infraestructura\_basica} y \texttt{mortalidad\_infantil} registró un $R^2$ ajustado de 0,7537, con valores de $\text{AIC} = 227,64$ y $\text{BIC} = 235,13$, superando las alternativas basadas en la formalidad laboral (\texttt{pct\_cont\_2024}) y los modelos restrictivos de dos covariables. La alternativa con \texttt{log\_mortalidad\_infantil} mostró un ajuste aceptable ($R^2$ ajustado = 0,7106), aunque inferior a la tasa en escala original. Ensayos con la variable \texttt{pct\_cont\_2024} arrojaron coeficientes con el signo esperado, pero sin significancia estadística ni mejoras en los criterios de información, motivando su exclusión.
+
+\subsection{Preprocesamiento específico para la modelación}
+Con base en el comportamiento empírico del análisis exploratorio, se aislaron dos matrices específicas para el ajuste del modelo SAE. La primera, estructurada para la especificación principal, acopla los vectores (\texttt{ipm\_directo}), (\texttt{vardir}), (\texttt{repitencia}), (\texttt{infraestructura\_basica}) y (\texttt{mortalidad\_infantil}), junto con las llaves territoriales. La segunda matriz, destinada al análisis de sensibilidad, replica esta estructura pero sustituye la mortalidad infantil por su transformación logarítmica. En ambas bases se constató la ausencia de celdas vacías para las 33 unidades departamentales, garantizando matrices de entrada alineadas y libres de distorsiones de escala o cobertura.
+
+\subsection{Especificación del modelo SAE}
+La estimación de los parámetros se realizó mediante un modelo de áreas de Fay-Herriot, empleando el método de máxima verosimilitud restringida (REML). Se definieron dos ecuaciones funcionales.
+
+La especificación adoptada como modelo principal se define como:
+\begin{equation}
+    \begin{split}        
+        \text{IPM}_d^{\text{dir}} = {} & \beta_0 + \beta_1 \text{repitencia}_d + \beta_2 \text{infraestructura\_basica}_d \\ 
+        & + \beta_3 \text{mortalidad\_infantil}_d + u_d + e_d
+    \end{split}
+\end{equation}
+
+donde $\text{IPM}_d^{\text{dir}}$ es la estimación directa de la encuesta en el departamento $d$, $u_d$ representa el efecto aleatorio del área y $e_d$ el error de muestreo condicionado a la varianza de diseño conocida.
+
+La ecuación para el análisis de sensibilidad formaliza el siguiente comportamiento:
+
+\begin{equation}
+    \begin{split}        
+        \text{IPM}_d^{\text{dir}} = \beta_0 + \beta_1 \text{repitencia}_d + \beta_2  \text{infraestructura\_basica}_d  \\ + \beta_3 \text{log\_mortalidad\_infantil}_d + u_d + e_d
+    \end{split}
+\end{equation}
+
+El modelo principal se seleccionó por exhibir un balance óptimo entre bondad de ajuste estadístico y parsimonia. La alternativa de sensibilidad se preservó exclusivamente como contraste para evaluar la estabilidad de las estimaciones ante cambios en la especificación funcional de la dimensión salud.
+
+\subsection{Comparación de especificaciones y análisis de robustez}
+Ambos algoritmos convergieron en cinco iteraciones, generando estimaciones lineales insesgadas óptimas empíricas (EBLUP) para la totalidad de los dominios departamentales. 
+
+Los coeficientes estimados para el modelo principal se fijaron en: intercepto de -13,84; coeficiente de \texttt{repitencia} de 393,71; efecto de \texttt{infraestructura\_basica} de -18,48; y coeficiente de \texttt{mortalidad\_infantil} de 0,121. En el modelo de sensibilidad, los parámetros se estimaron en: intercepto de -23,72; \texttt{repitencia} en 435,19; \texttt{infraestructura\_basica} en -21,00; y \texttt{log\_mortalidad\_infantil} en 5,94. En ambos escenarios, el rezago educativo (\texttt{repitencia}) se consolidó como el predictor de mayor magnitud y estabilidad; la infraestructura básica conservó un efecto contractivo persistente sobre la pobreza y el componente de salud aportó señal estadística significativa.
+
+En términos de ajuste, el modelo principal demostró superioridad predictiva al exhibir menores criterios de información (AIC = 227,26; BIC = 234,75) en comparación con la alternativa de sensibilidad (AIC = 232,84; BIC = 240,32), además de contraer la varianza residual del efecto aleatorio de área. 
+
+Las desviaciones entre las estimaciones directas de la encuesta y los estimadores EBLUP resultaron moderadas en ambas opciones. Para la especificación principal, la diferencia respecto a la estimación directa presentó una mediana de -0,005, una media de -0,038 y un rango acotado entre -1,038 y 1,387. En el caso del modelo de sensibilidad, los errores respecto al estimador directo arrojaron una mediana de 0,025, una media de -0,022 y extremos de -0,903 y 1,098. La discrepancia neta entre los EBLUP de ambos modelos resultó marginal (mediana de -0,007; media de -0,016; rango de -0,520 a 0,463), confirmando que el proceso de calibración en la escala departamental es robusto ante especificaciones alternativas del bloque de salud.
+
+\subsection{Predicción municipal del IPM 2024}
+Utilizando los vectores de parámetros calibrados en la escala departamental, se ejecutó una proyección sintética del IPM 2024 a nivel municipal. Esta operación consistió en trasladar los coeficientes estructurales desde el nivel de agregación macro (donde la encuesta ofrece validez empírica) hacia la matriz de covariables del nivel micro, escala que carece de encuestas directas pero dispone de registros auxiliares censales o administrativos. La estimación sintética municipal se derivó de aplicar las pendientes de los modelos principal y de sensibilidad directamente sobre las características locales.
+
+Esta fase evidenció una restricción metodológica crítica: al operar bajo un supuesto lineal gaussiano, las predicciones sintéticas no se encuentran restringidas al soporte analítico del indicador. En la práctica, la especificación principal proyectó 159 municipios con valores de pobreza negativos y 5 casos con estimaciones superiores al 100\%; anomalía que se repitió al emplear el modelo de sensibilidad.
+
+Estas distorsiones indican que, si bien el modelo de áreas lineal es válido como cimiento analítico y línea de referencia para la investigación, su uso directo para la inferencia municipal resulta conceptualmente inviable por la naturaleza acotada del IPM en el intervalo $[0, 100]$. En consecuencia, las fases subsecuentes del estudio no adoptan estas proyecciones sintéticas como resultados definitivos, sino como un umbral de contraste frente a modelos SAE con estructuras de correlación espacial o transformaciones no lineales de la variable respuesta diseñadas para preservar el soporte del indicador.

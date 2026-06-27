@@ -1,0 +1,50 @@
+La etapa de preprocesamiento comprende la construcción, depuración y armonización de los datos que sustentarán el modelado de Estimación para Áreas Pequeñas (SAE) con componente espacial. Este procedimiento integra encuestas y registros administrativos en estructuras territoriales coherentes, garantizando la trazabilidad mediante llaves geográficas estandarizadas (códigos DANE de departamento y municipio) y unificando definiciones, periodos de referencia y unidades de análisis.
+
+Bajo este esquema, se calculó el Índice de Pobreza Multidimensional (IPM) 2024 a nivel departamental utilizando la Encuesta Nacional de Calidad de Vida (ECV) 2024. Esta estimación directa opera como la "verdad parcial" del ejercicio y, junto con sus varianzas asociadas —calculadas como el cuadrado del error estándar por dominio—, funciona como el anclaje metodológico del enfoque SAE.
+
+En paralelo, se consolidó una matriz de covariables auxiliares a escala municipal a partir de registros administrativos y fuentes oficiales complementarias. Esta matriz agrupa variables vinculadas a condiciones estructurales de salud, educación e infraestructura básica, seleccionadas bajo criterios de disponibilidad territorial, pertinencia conceptual y capacidad explicativa respecto a la pobreza multidimensional. La estructura y el detalle de estos predictores se describen en la Tabla 4.1.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Variables identificadoras y covariables auxiliares de la matriz municipal para la estimación del IPM 2024}
+\label{tab:matriz-auxiliar-ipm}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{4.2cm} p{2.6cm} p{6.2cm}}
+\hline
+\textbf{Variable} & \textbf{Bloque} & \textbf{Descripción} \\
+\hline
+Código DANE del departamento & Identificación territorial & Código oficial DANE del departamento. \\
+Nombre del departamento & Identificación territorial & Nombre del departamento. \\
+Código DANE del municipio & Identificación territorial & Código oficial DANE del municipio. \\
+Nombre del municipio & Identificación territorial & Nombre del municipio. \\
+Porcentaje de afiliados al régimen subsidiado (2024) & Salud & Porcentaje de afiliados al régimen subsidiado en 2024. \\
+Porcentaje de afiliados al régimen contributivo (2024) & Salud & Porcentaje de afiliados al régimen contributivo en 2024. \\
+Aseguramiento en salud ajustado o capado (2024) & Salud & Cobertura total de aseguramiento en salud ajustada mediante truncamiento superior. \\
+Razón subsidiado/contributivo (2024) & Salud & Razón entre afiliados al régimen subsidiado y contributivo. \\
+Logaritmo del total de afiliados en salud (2024) & Salud & Logaritmo natural del total de afiliados al sistema de salud. \\
+Tasa de matriculación de 5 a 16 años & Educación & Tasa de matriculación de la población entre 5 y 16 años. \\
+Cobertura neta educativa total & Educación & Cobertura neta total del sistema educativo. \\
+Cobertura neta en educación media & Educación & Cobertura neta en educación media. \\
+Tasa de deserción escolar & Educación & Tasa de deserción escolar. \\
+Tasa de repitencia escolar & Educación & Tasa de repitencia escolar. \\
+Tasa de reprobación escolar & Educación & Tasa de reprobación escolar. \\
+Cobertura de acueducto & Infraestructura básica & Cobertura municipal del servicio de acueducto. \\
+Cobertura de alcantarillado & Infraestructura básica & Cobertura municipal del servicio de alcantarillado. \\
+Cobertura de aseo & Infraestructura básica & Cobertura municipal del servicio de aseo. \\
+Índice de infraestructura básica & Infraestructura básica & Índice compuesto calculado como el promedio simple de acueducto, alcantarillado y aseo. \\
+Cobertura de energía rural & Infraestructura básica & Cobertura de energía eléctrica en zona rural. \\
+\hline
+\end{tabular}
+\end{table}
+\noindent \textit{Nota.} Las variables de identificación territorial no operan como predictores en el modelo, sino como llaves de integración, validación y representación cartográfica. \\
+
+El control de calidad de la información incluyó la verificación de la consistencia interna, la unicidad de los registros municipales, la correspondencia del codigoficado DANE, la identificación de valores faltantes y la detección de coberturas atípicas. Particularmente en el bloque de salud, se diseñó un indicador de aseguramiento ajustado mediante truncamiento superior para corregir registros de cobertura nominalmente mayores al 100\%. Asimismo, se aplicaron transformaciones logarítmicas al total de afiliados para mitigar asimetrías y estabilizar el comportamiento del modelo.
+
+En el componente de infraestructura básica, se estimó un indicador sintético a partir del promedio simple de las coberturas de acueducto, alcantarillado y aseo. Por su parte, la cobertura de energía rural se preservó como una covariable independiente para evaluar de manera aislada su contribución durante la fase de selección de predictores.
+
+Para armonizar las escalas de análisis, las covariables de la matriz municipal se agregaron a nivel departamental mediante promedios simples. Esto permitió estructurar una base analítica departamental de 33 observaciones, correspondiente a los dominios con estimación directa del IPM y varianza calculada. El cruce entre la estimación directa y la matriz auxiliar agregada se ejecutó mediante el código DANE departamental, mitigando inconsistencias por variaciones en la nomenclatura textual de las regiones. La base final resultante presenta una cobertura casi exhaustiva, registrando un único dato faltante en la variable de cobertura de aseo.
+
+Al cierre de esta etapa se dispuso de la base de estimación directa de la ECV 2024 con sus varianzas, la matriz municipal de covariables y la base departamental integrada, listas para el análisis exploratorio y la especificación del modelo. Los insumos geoespaciales —*shapefile* municipal y matriz de vecindad— se acoplarán posteriormente al activar el componente espacial del estimador SAE.
+
+Con la base analítica consolidada, el paso siguiente consistió en evaluar el potencial explicativo de las covariables. El análisis exploratorio subsiguiente se orientó a examinar la asociación entre estos predictores y el IPM departamental directo, buscando el equilibrio entre consistencia teórica, estabilidad estadística y parsimonia. Dado que este proceso fundamenta la estrategia analítica del modelo y trasciende la descripción de las fuentes, su desarrollo formal se detalla en el capítulo de Metodología.

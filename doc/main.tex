@@ -1,0 +1,127 @@
+
+
+\PassOptionsToPackage{table}{xcolor} % to use colors in tables
+\PassOptionsToPackage{pdfa}{hyperref}
+\documentclass{unipd-thesis-modern} % src: https://github.com/baronefr/unipd-
+
+
+% additional packages
+\usepackage{amsmath}
+\usepackage{lipsum} % for DEMO only
+\usepackage{threeparttable}
+\usepackage{threeparttable}
+\usepackage{siunitx}
+\usepackage[titles]{tocloft} % to modify spacing in toc chapters
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{array}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec} % Paquete para controlar espaciado de títulos
+\usepackage{graphicx}
+\usepackage{float} % para usar [H] si quieres fijar la figura
+
+\setlength{\cftbeforechapskip}{7pt}
+\setcounter{tocdepth}{4} % ToC depth
+
+% titles
+\title{Estimación de la Tasa de Pobreza en Colombia: Estimación de Área Pequeña Usando Modelos Mixtos y Componentes Espaciales}
+\thesisHeader{Pontificia Universidad Javeriana Cali \\Facultad de Ingeniería y Ciencias.\\MAESTRÍA EN CIENCIA DE DATOS}
+\academicYear{02-2026/06-2026}
+
+% students
+\author{Brayan Salgado Blanco \\Erick Caicedo Ruiz \\Juan Trochez Guayara
+}
+
+% supervisor(s)
+\advisor{Sandra Milena Ramírez Buelvas}{Pontificia Universidad Javeriana} % (mandatory)
+\coadvisor{Luis Fernando Aguado Quintero }{Pontificia Universidad Javeriana} 
+% (optional, comment to remove)
+%\otheradvisor{Prof. Paolino Paperino}{University of Padua} % (optional, comment to remove)
+% ^ NOTE: you can use optional arg to customize the label "Internal Supervisor"
+%   example:   \otheradvisor[The best supervisor!]{Prof. Paolino Paperino}{University of Padua}
+
+% dedication (comment to remove)
+\dedication{\textit{A nuestras familias y amigos\\}}
+
+% custom symbols (optional)
+\input{custom-symbols}
+
+% bibliography file
+\addbibresource{refs.bib}
+
+\sisetup{
+  output-decimal-marker = {.},
+  group-separator = {,},
+  detect-all = true
+}
+
+
+% Ajustes de espacio
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt minus 2pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 2pt minus 2pt}{3pt}
+% Otros paquetes y configuraciones
+\setlength{\intextsep}{6pt}      % Espacio entre texto y figuras
+\setlength{\textfloatsep}{6pt}   % Espacio entre texto y flotantes
+
+
+\begin{document}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\listfigurename}{Lista de figuras}
+\renewcommand{\listtablename}{Lista de tablas}
+    \frontmatter
+    % --------------------------
+    \newpage
+    \input{chapters/introduction}
+    \newpage
+    % --------------------------
+    \mainmatter
+    % --------------------------
+    \chapter{Definición del problema}
+El presente proyecto se centra en abordar la falta de una metodología estadística validada que permita estimar la pobreza multidimensional con precisión y coherencia espacial a nivel municipal en Colombia. Este vacío metodológico se origina en la carencia de representatividad muestral de las encuestas oficiales como la Gran Encuesta Integrada de Hogares (GEIH) y la Encuesta Nacional de Calidad de Vida (ECV), las cuales están diseñadas para producir estimaciones departamentales o regionales, pero no locales \cite{DANE_ENCV_2022}. Esta limitación impide identificar desigualdades territoriales específicas y restringe la capacidad institucional para focalizar políticas públicas efectivas en municipios con alta vulnerabilidad socioeconómica \cite{CEPAL_PanoramaSocial_2023}.
+
+Si la falta de estimaciones municipales precisas se mantiene, las implicaciones serán concretas y de alto impacto para la gestión pública: i) la asignación de recursos continuará guiándose por promedios departamentales, lo que puede ocultar diferencias relevantes entre municipios y dejar sin focalización adecuada a territorios altamente vulnerables; ii) programas sociales y proyectos de inversión podrían
+seguir implementándose en zonas no prioritarias, reduciendo la eficacia y la eficiencia del gasto público;
+y iii) la ausencia de información granular a nivel municipal limita la capacidad institucional de monitorear intervenciones, evaluar resultados y ajustar políticas basadas en evidencia. En conjunto, la falta de indicadores confiables a esta escala perpetúa decisiones menos informadas y debilita la capacidad del Estado para responder de manera diferenciada a los desafíos territoriales.
+
+La definición del problema, por tanto, delimita su alcance a la esfera cuantitativa y metodológica del análisis estadístico, con un enfoque en el desarrollo, ajuste y evaluación de modelos SAE con dependencia espacial. El estudio se restringe al territorio colombiano y se aplicará de manera experimental sobre información proveniente de censos, encuestas y registros administrativos públicos.
+De esta manera, se busca reducir la brecha de información a escala municipal y aportar una herramienta técnica que fortalezca la medición de la pobreza y la gestión pública basada en evidencia \cite{MolinaRao_2010} \cite{PratesiSalvati_2019} \cite{RaoMolina_2015}.
+    
+    \input{chapters/planteamiento-problema}
+    \newpage
+    \input{chapters/formulacion-problema}
+    % --------------------------
+    \chapter{Objetivos del proyecto} % 
+    \input{chapters/objetivo-general}
+    \input{chapters/objetivos-especificos}
+    % --------------------------
+    \chapter{Marco de referencia}
+El estudio de la pobreza desde una perspectivaerritorial exige bases conceptuales y metodológicas que permitan comprender tanto la naturaleza multidimensional del fenómeno como los desafíos asociados a su medición en escalas geográficas pequeñas. En particular, la combinación de encuestas de hogares con fuentes censales y registros administrativos abre la posibilidad de utilizar metodologías estadísticas avanzadas que compensen la falta de representatividad muestral en dominios territoriales pequeños.
+
+Este capítulo presenta los fundamentos teóricos que sustentan el uso de técnicas de Estimación para Áreas Pequeñas (Small Area Estimation, SAE), sus extensiones espaciales y los aportes recientes de la ciencia de datos para el análisis territorial de la pobreza. Además, se integran antecedentes relevantes que demuestran el uso y la pertinencia de estas metodologías en América Latina y Colombia.
+    \input{chapters/marco-teorico}
+    \input{chapters/antecedentes}
+    % --------------------------
+    \chapter{Datos}
+        \input{chapters/datos}
+    % --------------------------
+    \chapter{Metodología}
+        \input{chapters/metodologia}
+     % --------------------------
+     \chapter{Resultados}
+     \input{chapters/resultados}
+    % --------------------------
+    \chapter{Discusión y trabajo futuro}
+    \input{chapters/discusion}
+   % --------------------------
+    \chapter{Conclusiones}
+    \input{chapters/conclusiones}
+   % --------------------------
+    \clearpage
+    \printbibliography
+    % --------------------------
+     \begin{appendices}
+    \chapter{Appendix}
+        \input{chapters/appendice}
+    \end{appendices}
+\end{document}
