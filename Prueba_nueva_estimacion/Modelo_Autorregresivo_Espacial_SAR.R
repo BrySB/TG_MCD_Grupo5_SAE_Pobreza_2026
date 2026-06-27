@@ -12,13 +12,16 @@ library(tidyverse) # Para manipulación de datos (dplyr, ggplot2)
 
 # 2. Cargar el Shapefile municipal de Colombia
 # Reemplaza la ruta por la ubicación real de tu archivo
-mpios_shp <- st_read("Ruta/A/Tu/Archivo/mpios_colombia.shp")
+
+ruta_mapa <- "C:/Users/basbo/PUJ Cali/Erick Caicedo Ruiz - TDG Ciencia de Datos/Prueba_nueva_estimacion/mpios_shp/Municipios.shp"
+
+mpios_shp <- st_read(ruta_mapa)
 
 # Asegurar que el código DANE municipal sea numérico para el cruce
 # Nota: Ajusta "MPIO_CCDGO" si tu shapefile tiene otro nombre de columna
 mpios_shp$cod_mpio <- as.numeric(mpios_shp$MPIO_CCDGO)
 
-# 3. Cargar tus datos consolidados del 2018 (IPM + Covariables + ICA)
+# 3. Cargar tus datos consolidados del 2018 (IPM + Covariables [Incluyendo nueva ICA])
 datos_2018 <- read.csv("Ruta/A/Tu/Archivo/datos_municipales_2018.csv")
 datos_2018$cod_mpio <- as.numeric(datos_2018$cod_mpio)
 
