@@ -1,0 +1,189 @@
+
+\label{sec:datos} 
+
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Falta cita de la ECV 2024 (ficha técnica/metodológica del DANE). No existe aún en refs.bib.
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+Para el desarrollo del ejercicio de Estimación para Áreas Pequeñas (SAE) se integraron dos tipos de información: la primera, las estimaciones directas del Índice de Pobreza Multidimensional (IPM) al año 2024 y, por otra, un conjunto de covariables auxiliares provenientes de registros administrativos y fuentes oficiales con disponibilidad territorial a escala municipal.
+
+El IPM 2024 a nivel departamental, a partir de la Encuesta Nacional de Calidad de Vida 2024 del Departamento Administrativo Nacional de Estadística y representa la estimación directa de referencia del ejercicio. Para cada dominio departamental se obtuvo la estimación del índice y su error estándar correspondiente. Con ese dicho valor, se determinó la varianza de muestreo al elevar al cuadrado el error estándar, dato necesario para la especificación de los modelos SAE de área. La muestra incluye 33 dominios territoriales, equivalentes a los 32 departamentos y Bogotá D.C. Idea de Negocio Datos.
+
+Asimismo, se consolidó una matriz de covariables auxiliares a escala municipal a partir de registros administrativos y fuentes oficiales complementarias, agrupadas en salud, educación, infraestructura básica y actividad económica. La estructura, el detalle y la fuente de estos predictores se describen en la Tabla~\ref{tab:matriz-auxiliar-ipm}.
+
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\footnotesize
+\begin{longtable}{
+>{\raggedright\arraybackslash}p{2.9cm}
+>{\raggedright\arraybackslash}p{1.7cm}
+>{\raggedright\arraybackslash}p{4.2cm}
+>{\raggedright\arraybackslash}p{5.0cm}
+}
+
+\caption{Variables identificadoras y covariables auxiliares de la matriz municipal para la estimación del IPM 2024}
+\label{tab:matriz-auxiliar-ipm}\\
+
+\hline
+\textbf{Variable} & 
+\textbf{Bloque} & 
+\textbf{Descripción} & 
+\textbf{Fuente} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}%
+{\tablename\ \thetable\ -- continuación} \\
+
+\hline
+\textbf{Variable} & 
+\textbf{Bloque} & 
+\textbf{Descripción} & 
+\textbf{Fuente} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{4}{r}{\textit{Continúa en la siguiente página}}\\
+\endfoot
+
+\hline
+\endlastfoot
+
+Porcentaje de afiliados al régimen subsidiado (2024) 
+& Salud 
+& Proporción de la población municipal afiliada al régimen subsidiado de salud. 
+& ADRES. Reporte de afiliados activos por departamento y municipio. \\
+
+Porcentaje de afiliados al régimen contributivo (2024) 
+& Salud 
+& Proporción de la población municipal afiliada al régimen contributivo de salud. 
+& ADRES. Reporte de afiliados activos por departamento y municipio. \\
+
+Población asegurada en salud (2024)
+& Salud
+& Población afiliada a los regímenes subsidiado, contributivo y de excepción respecto al total de la población municipal.
+& ADRES. Reporte de afiliados activos por departamento y municipio; población municipal DANE. \\
+
+Aseguramiento en salud ajustado o capado (2024) 
+& Salud 
+& Cobertura total de aseguramiento en salud construida a partir de la población afiliada a los regímenes subsidiado, contributivo y de excepción, ajustada mediante truncamiento superior al 100\,\%. 
+& Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio, y población municipal DANE. \\
+
+Razón subsidiado/contributivo (2024) 
+& Salud 
+& Razón entre la población afiliada al régimen subsidiado y la afiliada al régimen contributivo. 
+& Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio. \\
+
+Logaritmo del total de afiliados en salud (2024) 
+& Salud 
+& Logaritmo natural del total de personas afiliadas al sistema de salud en el municipio. 
+& Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio. \\
+
+Tasa de mortalidad infantil 
+& Salud 
+& Tasa de defunciones de menores de un año respecto al número de nacidos vivos. 
+& DANE. Estadísticas Vitales: nacimientos y defunciones. \\
+
+Transformación logarítmica de la mortalidad infantil 
+& Salud 
+& Logaritmo de uno más la tasa de mortalidad infantil, utilizado para reducir la asimetría de la distribución. 
+& Elaboración propia a partir de DANE, Estadísticas Vitales. \\
+
+Tasa de matriculación de 5 a 16 años 
+& Educación 
+& Proporción de la población entre 5 y 16 años vinculada al sistema educativo. 
+& Ministerio de Educación Nacional (MEN), registros de matrícula; población por edad DANE. \\
+
+Cobertura neta educativa total 
+& Educación 
+& Proporción de estudiantes matriculados en la edad teórica correspondiente al nivel educativo respecto a la población en edad escolar. 
+& Ministerio de Educación Nacional (MEN), registros e indicadores de matrícula. \\
+
+Cobertura neta en educación media 
+& Educación 
+& Cobertura neta correspondiente al nivel de educación media. 
+& Ministerio de Educación Nacional (MEN), registros e indicadores de matrícula. \\
+
+Tasa de deserción escolar 
+& Educación 
+& Proporción de estudiantes que abandonan el sistema educativo durante el periodo de referencia. 
+& Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
+
+Tasa de repitencia escolar 
+& Educación 
+& Proporción de estudiantes que cursan nuevamente el mismo grado escolar. 
+& Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
+
+Tasa de reprobación escolar 
+& Educación 
+& Proporción de estudiantes que no aprueban el grado cursado durante el periodo de referencia. 
+& Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
+
+Cobertura de acueducto 
+& Infraestructura básica 
+& Cobertura municipal del servicio público de acueducto. 
+& Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
+
+Cobertura de alcantarillado 
+& Infraestructura básica 
+& Cobertura municipal del servicio público de alcantarillado. 
+& Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
+
+Cobertura de aseo 
+& Infraestructura básica 
+& Cobertura municipal del servicio público de aseo. 
+& Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
+
+Índice de infraestructura básica 
+& Infraestructura básica 
+& Indicador sintético calculado como el promedio simple de las coberturas municipales de acueducto, alcantarillado y aseo. 
+& Elaboración propia a partir de información de cobertura de la SSPD--REC-SUI. \\
+
+Cobertura de energía eléctrica rural 
+& Infraestructura básica 
+& Índice de Cobertura de Energía Eléctrica correspondiente a la zona rural del municipio. 
+& Unidad de Planeación Minero Energética (UPME), Índice de Cobertura de Energía Eléctrica (ICEE). \\
+
+Luminosidad nocturna (VIIRS) 
+& Actividad económica 
+& Radiancia nocturna promedio observada mediante el sensor VIIRS-DNB, agregada al territorio municipal y utilizada como proxy de intensidad de la actividad económica. 
+& Earth Observation Group (EOG), Payne Institute for Public Policy, Colorado School of Mines. Producto Annual VIIRS Nighttime Lights V2, 2024. \\
+
+Transformación logarítmica de la luminosidad nocturna 
+& Actividad económica 
+& Logaritmo de uno más la radiancia nocturna municipal derivada de VIIRS, empleado para reducir la asimetría de la variable. 
+& Elaboración propia a partir del producto Annual VIIRS Nighttime Lights V2 del EOG. \\
+
+Recaudo del impuesto de industria y comercio per cápita 
+& Actividad económica 
+& Recaudo municipal del impuesto de industria y comercio dividido por la población municipal, utilizado como aproximación a la actividad económica local. 
+& Información fiscal municipal sobre recaudo del impuesto de industria y comercio y población municipal DANE. \\
+
+Transformación logarítmica del recaudo per cápita 
+& Actividad económica 
+& Logaritmo de uno más el recaudo municipal del impuesto de industria y comercio per cápita. 
+& Elaboración propia a partir del recaudo del impuesto de industria y comercio y población municipal DANE. \\
+
+Población municipal 2024
+& Variable auxiliar
+& Proyección de población utilizada como denominador para la construcción de indicadores y como ponderador en la agregación departamental de determinadas covariables.
+& DANE. Proyecciones de población municipal. \\
+
+Población de 5 a 16 años
+& Variable auxiliar
+& Población municipal entre 5 y 16 años utilizada en la construcción y ponderación de indicadores educativos.
+& DANE. Proyecciones de población por edad y municipio. \\
+
+Nacidos vivos
+& Variable auxiliar
+& Número de nacidos vivos registrado en el municipio, utilizado como denominador y ponderador de la tasa de mortalidad infantil.
+& DANE. Estadísticas Vitales -- nacimientos. \\
+
+\end{longtable}
+
+\begin{flushleft}
+\footnotesize
+\textit{Nota:} Las variables de identificación territorial, población municipal, población de 5 a 16 años y nacidos vivos cumplen principalmente funciones de integración, construcción de indicadores, ponderación y validación, y no necesariamente operan como predictores directos en las especificaciones finales. Algunas de las covariables presentadas fueron consideradas durante las etapas exploratorias y de comparación de especificaciones, aunque no todas fueron retenidas en el conjunto parsimonioso final.
+\end{flushleft}
+
+Ahora bien, es importante mencionar, que durante la fase de exploración y validación de fuentes de información, se examinaron microdatos de la Gran Encuesta Integrada de Hogares (GEIH) y del Censo Nacional de Población y Vivienda 2018. Aunque estas fuentes no formarán parte del procesamiento final para la estimación del IPM municipal, su revisión aportó el marco de referencia técnico para entender las dinámicas muestrales territoriales y guiaron la selección mostrada de registros administrativos y variables con mayor consistencia y cobertura.

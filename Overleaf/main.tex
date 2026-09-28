@@ -1,0 +1,117 @@
+
+
+\PassOptionsToPackage{table}{xcolor} % to use colors in tables
+\PassOptionsToPackage{pdfa}{hyperref}
+\documentclass{unipd-thesis-modern} % src: https://github.com/baronefr/unipd-
+
+
+% additional packages
+\usepackage{amsmath}
+\usepackage{lipsum} % for DEMO only
+\usepackage{threeparttable}
+\usepackage{threeparttable}
+\usepackage{siunitx}
+\usepackage[titles]{tocloft} % to modify spacing in toc chapters
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{array}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec} % Paquete para controlar espaciado de títulos
+\usepackage{graphicx}
+\usepackage{float} % para usar [H] si quieres fijar la figura
+\usepackage{longtable}
+
+\setlength{\cftbeforechapskip}{7pt}
+\setcounter{tocdepth}{4} % ToC depth
+
+% titles
+\title{Estimación de la Tasa de Pobreza en Colombia: SAE usando Modelos Mixtos y Componentes Espaciales}
+\thesisHeader{Pontificia Universidad Javeriana Cali \\Facultad de Ingeniería y Ciencias\\MAESTRÍA EN CIENCIA DE DATOS}
+\academicYear{Santiago de Cali, Colombia, 2026}
+
+% students
+\author{Brayan Salgado Blanco \\Erick Caicedo Ruiz \\Juan Trochez Guayara
+}
+
+% supervisor(s)
+\advisor{Sandra Milena Ramírez Buelvas}{Pontificia Universidad Javeriana Cali} % (mandatory)
+\coadvisor{Luis Fernando Aguado Quintero }{Pontificia Universidad Javeriana Cali} 
+% (optional, comment to remove)
+%\otheradvisor{Prof. Paolino Paperino}{University of Padua} % (optional, comment to remove)
+% ^ NOTE: you can use optional arg to customize the label "Internal Supervisor"
+%   example:   \otheradvisor[The best supervisor!]{Prof. Paolino Paperino}{University of Padua}
+
+% dedication (comment to remove)
+\dedication{\textit{A nuestras familias y amigos\\ Brayan, Erick y Juan }}
+
+% custom symbols (optional)
+\input{custom-symbols}
+
+% bibliography file
+\addbibresource{refs.bib}
+
+\sisetup{
+  output-decimal-marker = {.},
+  group-separator = {,},
+  detect-all = true
+}
+
+
+% Ajustes de espacio
+\titlespacing*{\subsection}{0pt}{10pt plus 2pt minus 2pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{5pt plus 2pt minus 2pt}{3pt}
+% Otros paquetes y configuraciones
+\setlength{\intextsep}{6pt}      % Espacio entre texto y figuras
+\setlength{\textfloatsep}{6pt}   % Espacio entre texto y flotantes
+
+
+\begin{document}
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\listfigurename}{Lista de figuras}
+\renewcommand{\listtablename}{Lista de tablas}
+    \frontmatter
+    % --------------------------
+    \input{chapters/introduction}
+    \newpage
+    % --------------------------
+    \mainmatter
+    % --------------------------
+    \chapter{Definición del problema}
+        \input{chapters/planteamiento-problema}
+        \input{chapters/formulacion-problema}
+    % --------------------------
+    \chapter{Objetivos del proyecto} % 
+        \input{chapters/objetivo-general}
+        \input{chapters/objetivos-especificos}
+    % --------------------------
+    \chapter{Marco de referencia}
+        \input{chapters/marco-teorico}
+        \input{chapters/antecedentes}
+    % --------------------------
+    \chapter{Datos}
+        \input{chapters/datos}
+    % --------------------------
+    \chapter{Metodología}
+        \input{chapters/metodologia}
+     % --------------------------
+     \chapter{Resultados}
+        \input{chapters/resultados}
+    % --------------------------
+    \chapter{Discusión y trabajo futuro}
+        \input{chapters/discusion}
+   % --------------------------
+    \chapter{Conclusiones}
+        \input{chapters/conclusiones}
+   % --------------------------
+    \clearpage
+    \printbibliography
+    % --------------------------
+     \begin{appendices}
+    \chapter{Apéndice}
+        \input{chapters/appendice}
+    \end{appendices}
+\end{document}
+
+
+

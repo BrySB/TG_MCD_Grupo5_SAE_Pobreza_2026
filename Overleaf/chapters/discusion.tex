@@ -1,0 +1,101 @@
+\label{sec:discusion}
+Con base en los resultados obtenidos y las limitaciones metodológicas encontradas, es necesario expresar algunas consideraciones clave para tener en cuenta en futuras estimaciones de pobreza multidimensional que se deseen realizar en el país. Esta discusión nos permite tanto dimensionar el alcance real de nuestros hallazgos a la luz de la literatura existente, como trazar una hoja de ruta clara para mejorar la precisión y utilidad de estos modelos en la toma de decisiones públicas. 
+
+\section{Discusión}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Comparativa analítica de los modelos SAE evaluados ($M_1, M_2, M_3$)}
+\label{tab:comparativa_modelos}
+\begin{tabularx}{\textwidth}{>{\hsize=0.7\hsize}X >{\hsize=1.0\hsize}X >{\hsize=1.15\hsize}X >{\hsize=1.15\hsize}X}
+\toprule
+\textbf{Modelo / Método} & \textbf{Ventajas Clave} & \textbf{Limitaciones / Debilidades} & \textbf{Pertinencia frente al Objetivo} \\
+\midrule
+\textbf{$M_1$: Fay-Herriot Tradicional} & 
+Alta estabilidad frente a cambios en el conjunto de covariables ($RMSE \in [7.70, 7.88]$). & 
+Genera un número considerable de estimaciones fuera del intervalo válido $[0,1]$ (199 municipios en el escenario Completo). & 
+Sirve como línea base de comparación, pero se hace inadecuado para proyectar tasas acotadas a un intervalo correcto. \\
+\addlinespace
+\textbf{$M_2$: Desagregación No Lineal Acotada (Logit)} & 
+Resuelve la falla de soporte asegurando por construcción estimaciones dentro del intervalo $(0,1)$. & 
+Muestra una alta sensibilidad a la selección de predictores ($RMSE$ pasa de $5.10$ a $8.41$). & 
+Garantiza coherencia matemática en el indicador, pero depende críticamente de la calidad de la matriz de predictores. \\
+\addlinespace
+\textbf{$M_3$: Extensión Espacial CAR No Lineal} & 
+Alcanza el mejor desempeño global en el escenario Parsimonioso ($RMSE=4.72$, $MAE=3.67$, $r=0.941$). & 
+Sensible a la matriz de covariables y supeditado a criterios de contigüidad física en la matriz $W$. & 
+Logra capturar la variabilidad geográficamente estructurada y la autocorrelación residual. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Al analizar los resultados de nuestro ejercicio de estimación sintética en contraste con la literatura sobre estimación en áreas pequeñas (SAE) y econometría espacial, emergen varios hallazgos clave sobre el comportamiento de los modelos, el aporte de las covariables y las dinámicas territoriales de la pobreza. A continuación, se exponen algunos casos según cada objetivo de investigación del presente trabajo.
+
+\begin{itemize}
+    \item \textbf{Objetivo 1: Modelos SAE y componente espacial}.
+    
+    El desempeño de los modelos evaluados confirma discusiones teóricas centrales sobre los desafíos de estimar proporciones acotadas. El modelo Fay-Herriot tradicional ($M_1$) demostró una alta estabilidad frente a cambios en el conjunto de covariables (RMSE $\in$ [7.70,7.88]). Sin embargo, al proyectar sus coeficientes sobre la matriz municipal, este arrojó una cantidad considerable de predicciones fuera del rango válido [0,1] (199 municipios en el escenario Completo). No obstante, este comportamiento va en línea a evidencias de una limitación estructural documentada en la literatura: es posible que haya inadecuación del supuesto de normalidad lineal cuando se trabaja con indicadores acotados.
+    
+    Para corregir esto, la formulación no lineal acotada ($M_2$) resolvió el problema del soporte mediante la función logística, asegurando por construcción estimaciones dentro del intervalo (0,1). Sin embargo, este modelo, al igual que la especificación CAR espacial ($M_3$), mostró una alta sensibilidad a la selección de predictores (un RMSE pasando de 5.10 en el escenario Completo a 8.41 en el Alternativo). Resultados como este invitan a matizar lo planteado por cierta parte de la literatura, que asume que la estructura espacial suple por sí sola las deficiencias en las covariables; en este ejercicio, la calidad de la matriz de predictores continúa siendo un factor determinante para la estabilidad de las estimaciones no lineales espaciales.
+    
+    Por su parte, el modelo $M_3$ alcanzó el mejor desempeño global bajo el escenario Parsimonioso (RMSE=4.72, MAE=3.67, r=0.941). Esto indicaría, de nuevo, que cuando el conjunto de covariables es acotado, la inclusión de la estructura autorregresiva logra capturar con éxito la variabilidad geográficamente estructurada que los predictores no alcanzan a explicar. 
+    
+    \item \textbf{Objetivo 2: Variables auxiliares de fuentes oficiales}.
+
+    La inclusión de predictores como el índice de infraestructura básica, el aseguramiento en salud capado y la luminosidad nocturna (\textit{log(VIIRS)}) reafirman los hallazgos de la literatura reciente sobre el uso de fuentes satelitales y proxies geoespaciales para predecir privaciones multidimensionales. Estas variables mostraron capacidad para capturar la heterogeneidad económica en áreas con limitada cobertura muestral.
+    
+    Ahora bien, se identifica una divergencia llamativa respecto a la teoría económica tradicional: en los modelos exploratorios OLS, la tasa de matriculación presenta una relación positiva e imprevista con el IPM directo en el escenario Completo. Mientras que la literatura asume que, en general, a mayor cobertura educativa disminuye la pobreza. En este trabajo se podría entender que un comportamiento podría responder varios factores: 
+    \begin{itemize}
+        \item 
+        En primer lugar, lo metodológico, la presencia de multicolinealidad moderada con la tasa de repitencia escolar presenta un VIF de 5.01, la cual podría hacer inestables los coeficientes e incluso invertir su signo esperado: efecto que podría corregirse al evaluar la especificación sin redundancia de predictores.
+        \item 
+        En segundo lugar: la naturaleza escalar propia del indicador. Dado que se trata de una tasa en donde municipios con denominadores poblacionales muy reducidos pueden registrar tasas de matriculación artificialmente altas al tiempo que un IPM alto. Subrayando de esta forma la importancia de auditar las métricas relativas en unidades territoriales pequeñas antes de asumir comportamientos macroeconómicos sin una validación de su estructura.
+        \item 
+        Por otro lado, desde una perspectiva socioespacial, este patrón puede reflejar una centralización de la infraestructura educativa en cabeceras municipales, las cuales atraen o colindan con asentamientos periurbanos con altas privaciones multidimensionales acumuladas. De esta forma, la expansión de la cobertura escolar respondería a dinámicas de oferta pública de rápido alcance que coexisten temporalmente con rezagos estructurales en vivienda, empleo y saneamiento básico.
+    \end{itemize}   
+
+    \item \textbf{Objetivo 3: Patrones y dependencia espacial}.
+    
+    Las pruebas del I de Moran aplicadas sobre los residuos de las especificaciones no lineales sin componente espacial ($M_2$) confirmaron la presencia de autocorrelación espacial positiva y estadísticamente significativa ($p < 0.05$), de forma persistente en los escenarios parsimoniosos. Desde la perspectiva del modelado econométrico, este hallazgo sugiere que los predictores auxiliares, incluso al incorporar fuentes satelitales, no logran absorber por completo los patrones geográficos del fenómeno. De esta manera, los resultados revelan una estructura de dependencia espacial no observada que se manifiesta en clústeres de municipios colindantes con niveles de privaciones similares. 
+    
+    Como se mencionó anteriormente, este comportamiento ofrece una justificación teórica y empírica directa para la transición hacia el modelo $M_3$, mediante la incorporación explícita de la matriz de adyacencia espacial $W$ y la estructura condicional autorregresiva (CAR). La inclusión del componente espacial permite capturar las interdependencias territoriales y los efectos de desborde (*spillovers*) entre municipios contiguos, logrando una "suavización estructurada" (*spatial smoothing*) de las estimaciones. Dicho mecanismo contribuye a reducir el sesgo y la inestabilidad muestral característicos de los dominios con muestras muy pequeñas o nulas, evitando que la falta de datos locales distorsione la estimación puntual.
+    
+    En el plano aplicado y de política pública, la comparación de los resultados georreferenciados entre los modelos no lineales ($M_2$ y $M_3$) evidenció que las estimaciones agregadas a nivel departamental actúan como promedios estáticos que suelen invisibilizar heterogeneidades intra-departamentales severas. El modelado no lineal espacial permitió visibilizar una marcada polarización territorial, distinguiendo las cabeceras urbanas consolidadas —que impulsan hacia abajo los promedios de pobreza— de los municipios perimétricos, de frontera o de difícil acceso, donde se concentran tramas persistentes de privaciones multidimensionales. Este hallazgo sugiere que orientar la asignación de transferencias e inversión pública basándose de forma exclusiva en agregados departamentales podría perpetuar trampas de pobreza en las periferias municipales, reforzando la pertinencia de las herramientas SAE espaciales para una focalización más precisa e inequívoca.     
+\end{itemize}
+
+\subsection{Limitaciones identificadas y su Impacto Metodológico}
+Para interpretar adecuadamente los alcances de esta investigación, es fundamental reconocer algunas restricciones metodológicas identificadas en el ejercicio y cómo estas condicionan la lectura de los resultados obtenidos: 
+\begin{itemize}
+    \item \textit{Supuesto de Varianzas Directas Conocidas}: las estimaciones asumen que las varianzas de las estimaciones directas se conocen sin error. Sin embargo, en municipios con tamaños de muestra pequeños, estas varianzas estimadas tienden a ser inestables, lo cual puede derivar en una sobreestimación de la precisión en dominios marginales y generar un efecto de sobre-suavizamiento (over-smoothing) en las estimaciones finales.
+    
+	\item \textit{Dependencia de la Contigüidad Geográfica Física}: La matriz de pesos espaciales (W) se estructuró bajo el criterio de contigüidad física (tipo Reina con ajustes por distancia). Ahora bien, esta aproximación podría no reflejar plenamente la realidad geográfica de Colombia, donde accidentes topográficos (como las cordilleras) o la falta de infraestructura vial desconectan municipios adyacentes, limitando la captura real de los efectos de derrame (spillovers).
+    
+    \item \textit{Naturaleza de Corte Transversal}: Al trabajar con información de un único punto en el tiempo ($t$), el análisis podría estar ofreciendo una visión estática del fenómeno de la pobreza, impidiendo evaluar dinámicas de transición o la persistencia temporal de la pobreza multidimensional. Asimismo, asumir una relación contemporánea entre las covariables y el IPM puede enmascarar los tiempos de maduración de la política pública; por ejemplo, inversiones en infraestructura o cobertura social realizadas en un periodo “$t-1$”, (por ejemplo, 2023) suelen tener un efecto diferido que podrían explicarse con mayor precisión los niveles de privación observados en el periodo siguiente “$t$” (2024).
+\end{itemize}
+
+\section{Trabajo futuro}
+Con el propósito de superar las limitaciones detectadas y perfeccionar las estimaciones sintéticas de pobreza municipal, se proponen las siguientes líneas de investigación y desarrollo futuro:
+
+\begin{itemize}
+    \item \textbf{Implementación de un Enfoque Bayesiano}
+    
+    Para evitar el supuesto rígido de varianzas directas conocidas, se sugiere la posibilidad de migrar hacia estimaciones completamente bayesianas mediante algoritmos MCMC o Aproximaciones Anidadas Integradas de Laplace (INLA). Este abordaje permitiría modelar de forma conjunta la tasa de pobreza y la varianza muestral, lo que apoyaría en capturar de manera más precisa la incertidumbre en municipios con muestras pequeñas o nulas.
+    
+    \item \textbf{Reestructuración de la Matriz Espacial ($W$) basada en Flujos Funcionales}
+    
+    Resulta de interés analizar la sustitución de la contigüidad geográfica pura por matrices basadas en conectividad funcional (como tiempos de viaje, flujos comerciales o matrices origen-destino). Esto aportaría, por ejemplo, a la integración formal de las entidades insulares (como el Archipiélago de San Andrés, Providencia y Santa Catalina) en la estructura espacial sin necesidad de recurrir a ajustes ad-hoc.
+
+    \item \textbf{Esquema Híbrido con Machine Learning y Optimización por IA}
+    
+    Para mitigar la sensibilidad de los modelos no lineales e hiperparámetros espaciales ante la especificación de predictores, se sugiere explorar en la literatura esquemas híbridos que integren técnicas de Machine Learning e Inteligencia Artificial en dos fases estructuradas:
+    \begin{itemize}
+        \item \textit{Selección algorítmica e interacciones complejas (Fase Previa):} Implementar algoritmos basados en árboles de decisión (Random Forest, Gradient Boosting o LASSO espacial) para seleccionar de manera objetiva las covariables de mayor relevancia. Este enfoque permitiría identificar automáticamente interacciones no lineales de alto orden entre los estimadores, reduciendo redundancias tipicas de multicolinealidad indicadores socioeconómicos.
+        \item \textit{Optimización de superficies de pérdida y máximos locales (Fase de Estimación):} Dado que la función de verosimilitud en la especificación no lineal ($M_2$) y la estimación de parámetros autorregresivos en el modelo CAR ($M_3$) suelen presentar superficies de optimización no convexas, el uso de métodos de optimización heurística supervisados por IA (como Optimización Bayesiana) podría apoyar en la búsqueda de valores iniciales y de hiperparámetros para mejorar la convergencia hacia óptimos globales.
+    \end{itemize}
+
+    \item \textbf{Tratamiento de Datos Faltantes}
+    Dado que la muestra analítica se restringió a 1.100 municipios debido a la ausencia de información en algunas covariables para ciertas unidades territoriales, la omisión de estas unidades altera la estructura de contigüidad en la matriz de pesos $W$ y genera distorsiones en la etapa de agregación y \textit{benchmarking}. Para investigaciones futuras, se propone evaluar e implementar esquemas avanzados de imputación múltiple (como MICE o arquitecturas de \textit{Deep Learning} basadas en \textit{Autoencoders} espacialmente condicionados) para reconstruir la matriz completa para la totalidad del universo municipal (1.122 municipios) y preservar la topología de la matriz $W$.
+\end{itemize}
+
+En general, este trabajo aporta evidencia a que el avance hacia métodos no lineales y modelos con dependencia espacial podrían representar un salto cualitativo indispensable para los modelos de Estimación en Áreas Pequeñas (SAE) aplicados a la pobreza multidimensional en Colombia. Al superar las rigideces de las especificaciones lineales tradicionales y visibilizar la heterogeneidad que ocultan los agregados departamentales, este marco metodológico apoya en fortalecer la literatura de SAE en la ciencia de datos aplicada. La implementación de las recomendaciones y consideraciones futuras aquí planteadas podrían permitir consolidar sistemas de estimación sintética en dominios no representativos cada vez más robustos, incluyentes y precisos para la toma de decisiones territoriales.

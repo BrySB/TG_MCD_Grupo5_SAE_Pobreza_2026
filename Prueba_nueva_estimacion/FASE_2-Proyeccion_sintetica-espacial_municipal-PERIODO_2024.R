@@ -15,7 +15,7 @@ base_analitica_2024 <- data.frame(cod_mpio = base_analitica_2018$cod_mpio) %>%
   left_join(base_2024, by = "cod_mpio")
 
 # ==============================================================================
-# 3. CONSTRUCCIÓN DE LA MATRIZ INVERSA DE LEONTIEF (I - Rho * W)
+# FASE 3. CONSTRUCCIÓN DE LA MATRIZ INVERSA DE LEONTIEF (I - Rho * W)
 # ==============================================================================
 cat("Generando la estructura matricial inversa de Leontief para 2024...\n")
 
@@ -27,48 +27,58 @@ I_matriz <- diag(nrow(W_matriz)) # Matriz Identidad
 matriz_espacial_inversa <- solve(I_matriz - rho_estimado * W_matriz)
 
 # ==============================================================================
-# 4. CALCULAR EL COMPONENTE DE REGRESIÓN (X * Beta) CORREGIDO
+# FASE 4: CÁLCULO DEL COMPONENTE DE REGRESIÓN (X * Beta) - MODELO 3
 # ==============================================================================
-# Construimos la matriz X para 2024 respetando la fórmula exacta de la Fase 1
-X_2024 <- model.matrix(~ tasa_matriculacion_5_16 + desercion +
-                         infraestructura_basica + mortalidad_infantil_1 +
-                         log(Rec_ICA_PC + 1) + pct_subsidiado, 
-                       data = base_analitica_2024)
 
-# Extraemos los nombres de las columnas que realmente generó la matriz X
-nombres_variables <- colnames(X_2024)
+# 1. Verificar y tratar valores NA en las covariables de 2024 (Relleno de seguridad con la media)
+vars_modelo3 <- c("tasa_matriculacion_5_16", "infraestructura_basica", 
+                  "mortalidad_infantil_1", "log_viirs", "pct_subsidiado", 
+                  "ICEE_rural", "rmm42")
 
-# Filtramos el vector de coeficientes para quedarnos SOLO con los que coinciden con X
-# Esto elimina de forma segura a Rho o Sigma si estaban metidos en 'coeficientes_beta'
-betas_limpios <- coeficientes_beta[nombres_variables]
+base_analitica_2024 <- base_analitica_2024 %>%
+  mutate(across(all_of(vars_modelo3), ~ ifelse(is.na(.), mean(., na.rm = TRUE), .)))
 
-cat("Dimensiones de verificación:\n")
-cat("Columnas de la matriz X 2024:", ncol(X_2024), "\n")
-cat("Elementos del vector Beta limpio:", length(betas_limpios), "\n")
+# 2. Construcción de la Matriz X 2024 (na.action = na.pass evita que elimine filas)
+X_2024 <- model.matrix(~ 1 + tasa_matriculacion_5_16 + infraestructura_basica + 
+                         mortalidad_infantil_1 + log_viirs + pct_subsidiado + 
+                         ICEE_rural + rmm42, 
+                       data = base_analitica_2024,
+                       na.action = na.pass)
 
-# Predicción lineal pura (Ya no dará error porque las dimensiones coinciden)
-X_beta_2024 <- X_2024 %*% betas_limpios
+# 3. Extraer y alinear Betas del Modelo 3 con la Matriz X
+betas_mod3 <- coef(mod_sar_3)[colnames(X_2024)]
+
+# Verificación en consola
+cat("Dimensiones Matriz X 2024:", dim(X_2024), "\n")
+cat("Cantidad de Betas alineados:", length(betas_mod3), "\n")
+
+# 4. Predicción lineal estructural (X * Beta)
+X_beta_2024 <- X_2024 %*% betas_mod3
 
 # ==============================================================================
-# 5. PROYECCIÓN ESPACIAL SIMULTÁNEA (Multiplicador Inverso)
-# ==============================================================================
-# Multiplicamos la matriz inversa por el vector X_beta para propagar el efecto vecino
+# FASE 5: PROYECCIÓN ESPACIAL SIMULTÁNEA Y TRANSFORMACIÓN INVERSA LOGIT
+# =============================================================================
+
+# 1. Matriz de pesos W en formato denso e Identidad
+W_matriz <- listw2mat(W_municipal)
+I_matriz <- diag(nrow(W_matriz))
+
+# 2. Inversa de Leontief usando el Rho del Modelo 3 (rho = 0.6181)
+rho_mod3 <- mod_sar_3$rho
+matriz_espacial_inversa <- solve(I_matriz - rho_mod3 * W_matriz)
+
+# 3. Propagación del efecto espacial sobre X_beta
 ipm_logit_pred_2024 <- matriz_espacial_inversa %*% X_beta_2024
 
-# Guardamos el vector en nuestra base analítica
-base_analitica_2024$ipm_logit_pred <- as.vector(ipm_logit_pred_2024)
-
-# ==============================================================================
-# 6. TRANSFORMACIÓN INVERSA LOGIT (Retorno a Porcentaje 0% - 100%)
-# ==============================================================================
+# 4. Asignar vector a la base y aplicar la transformación Logit Inversa (Escala 0-100%)
 base_analitica_2024 <- base_analitica_2024 %>%
   mutate(
+    ipm_logit_pred = as.vector(ipm_logit_pred_2024),
+    # Transformación logística inversa
     ipm_pred_0_1 = exp(ipm_logit_pred) / (1 + exp(ipm_logit_pred)),
     ipm_municipal_sintetico_2024 = ipm_pred_0_1 * 100
   )
 
-# ==============================================================================
-# 7. INSPECCIÓN VISUAL DESCRIPTIVA PRELIMINAR
-# ==============================================================================
-cat("\n--- RESUMEN DESCRIPTIVO DEL IPM MUNICIPAL ESTIMADO 2024 ---\n")
+# 5. Comprobación del resultado
+cat("\n--- RESUMEN DEL IPM SINTÉTICO MUNICIPAL PROYECTADO 2024 ---\n")
 print(summary(base_analitica_2024$ipm_municipal_sintetico_2024))

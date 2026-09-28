@@ -1,0 +1,54 @@
+
+\chapter*{Introducción}
+\addcontentsline{toc}{chapter}{Introducción}
+
+% Seccion modificada pendiente a validacion 31/07/2026
+
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Aquí hay que agregar citas de IPM y de lo que se afirma del Censo
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+En Colombia, la medición de la pobreza es un insumo crítico para el diseño, seguimiento y evaluación de las políticas públicas de bienestar social y equidad territorial. Este análisis se aborda mediante dos enfoques complementarios: la pobreza monetaria, que identifica a los hogares con ingresos insuficientes para adquirir una canasta básica de bienes y servicios, y la pobreza multidimensional, instrumentada a través del Índice de Pobreza Multidimensional (IPM), que evalúa privaciones estructurales en educación, salud, trabajo, niñez y vivienda. Mientras el primer enfoque examina la suficiencia de ingresos, el IPM captura las carencias materiales y de capacidades que afectan el bienestar de los hogares \cite{DANE_PobrezaMultidimensional_2023}.
+
+% Cita de IPM faltante pero el equipo dice que es la del dane / falta confirmacion 
+La medición de esta problemática enfrenta desafíos derivados de la limitada representatividad muestral de las encuestas de hogares y de la ausencia de información actualizada con cobertura completa para todos los municipios del país. En el caso particular del IPM, la última medición con alcance municipal proviene del Censo de 2018, lo que genera un vacío significativo para el análisis territorial y la focalización de políticas públicas. Esta carencia dificulta identificar desigualdades persistentes, evaluar agendas como el avance en los Objetivos de Desarrollo Sostenible (ODS) y orientar intervenciones sociales de manera precisa.
+
+
+Para mejorar las estimaciones del IPM a nivel de municipios con pocos datos, la estadística aplicada y la ciencia de datos ofrecen metodologías como la de Small Area Estimation (SAE), diseñada para producir inferencias precisas en dominios con muestras insuficientes mediante la integración de múltiples fuentes de información \cite{RaoMolina_2015}. Estos enfoques combinan los datos de encuestas con variables auxiliares procedentes de censos, registros administrativos o imágenes satélites, empleando modelos jerárquicos o mixtos que incorporan estructuras espaciales \cite{MolinaRao_2010}. Al aprovechar la correlación geográfica entre unidades territoriales contiguas, estos modelos mejoran la precisión y la coherencia espacial de las estimaciones \cite{PratesiSalvati_2019}.
+
+En el contexto nacional, el uso de metodologías SAE se encuentra en desarrollo. Aunque estudios recientes demuestran su potencial para optimizar la medición de indicadores sociales a escala subnacional \cite{DANE_PobrezaMultidimensional_2023, LopezSanchezPerez_2021}, su aplicación al IPM sigue siendo incipiente. La adopción de modelos mixtos con componentes espaciales representa un avance metodológico clave para generar estimaciones consistentes, especialmente en municipios con baja representatividad muestral o registros administrativos deficientes.
+
+La resolución de este problema técnico es indispensable para consolidar una gestión pública basada en evidencia, donde la disponibilidad de datos robustos a nivel municipal es el eje para optimizar la asignación presupuestal y formular políticas con precisión geoespacial \cite{PNUD_HDR_2022}. Desde la perspectiva de la ciencia de datos, el desafío radica en el desarrollo de arquitecturas analíticas capaces de integrar fuentes heterogéneas para mitigar la invisibilidad estadística de las comunidades más vulnerables, cuya situación socioeconómica suele quedar subrepresentada en los agregados oficiales.
+
+Cabe destacar que la información proveniente del Censo Nacional de Población y Vivienda 2018 y las bases asociadas a dicho periodo constituyeron una etapa exploratoria y de fundamentación metodológica. Este ejercicio inicial facilitó la identificación de la estructura de variables auxiliares a nivel municipal además de evaluar la viabilidad de otros modelos econométricos espaciales, como especificaciones SAR (Spatial Auto-Regressive). Si bien, estas pruebas no se incorporan de manera directa en la formulación del trabajo, resultaron útiles para seleccionar y depurar el conjunto definitivo tanto de predictores como modelos finalmente utilizados.
+
+Con el desarrollo de este proyecto, se busca facilitar insumos que ayuden a reducir la brecha de información a escala municipal y aportar una herramienta técnica que fortalezca la medición de la pobreza y la gestión pública basada en evidencia \cite{MolinaRao_2010, PratesiSalvati_2019, RaoMolina_2015}. Es necesario, en este sentido, desarrollar una metodología basada en la ciencia de datos que permita estimar el IPM a nivel municipal en Colombia y que considere las limitaciones del tamaño de muestra por municipio.
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Aquí hay que agregar citas de SAE
+% Además, hay que mencionar algunos de los modelos SAE
+% No es obvio que tipos de modelos son y hay que ubicar al lector.
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+% Parrafo modificado pendiente a validacion 31/07/2026
+En este contexto, el uso de modelos SAE se presenta como una alternativa metodológica adecuada para generar indicadores robustos en dominios con escasa o nula representatividad muestral, como lo son los municipios. Entre los modelos SAE más utilizados se encuentra el modelo Fay-Herriot, que combina un estimador directo del dominio con una estimación basada en variables auxiliares, incorporando además un componente aleatorio a nivel de área. Sus extensiones espaciales incluyen adicionalmente la correlación existente entre dominios geográficamente cercanos, lo que resulta particularmente útil para capturar dependencias territoriales. Esto genera la posibilidad de integrar información censal, administrativa y muestral, así como de municipios vecinos, para formular estimaciones coherentes y territorialmente consistentes. La combinación de modelos SAE y un enfoque espacial es pertinente para el caso colombiano, donde las brechas territoriales requieren instrumentos analíticos más finos y precisos \cite{MolinaRao_2010, PratesiSalvati_2019, RaoMolina_2015}.
+
+
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Aquí hay que especificar otras fuentes y hay que referenciarlas
+% Hay que agregar cita del DANE
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+% Parrafo modificado pendiente a referencias 31/07/2026
+El proyecto desarrolla una metodología de estimación municipal del IPM que articule modelos SAE con el uso de fuentes oficiales del Departamento Administrativo Nacional de Estadística (DANE) \cite{DANE_PobrezaMultidimensional_2023}, otras bases de datos complementarias (también abiertas) % Referenciar base de datos (2 o mas )
+y herramientas de visualización. Los resultados aportan una herramienta metodológica reproducible para el estudio del IPM en contextos de baja representatividad estadística y buscan fortalecer el análisis territorial con mayor precisión estadística.
+
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Revisen y adapten este párrafo para que quede más fiel a lo que se presenta
+% en cada sección.
+%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+% Parrafo modificado pendiente ajuste metodologia / resultados 31/07/2026
+El documento se organiza de la siguiente manera. En la Sección~\ref{sec:problema} se presenta el planteamiento y la formulación del problema, mientras que en la Sección~\ref{sec:objetivos} se exponen los objetivos que orientan el desarrollo del trabajo. En la Sección~\ref{sec:Marco-referencia} se abordan los fundamentos conceptuales y metodológicos del estudio, incluyendo IPM, modelos SAE y los métodos empleados para su implementación,como el modelo Fay-Herriot, los Ordinary Least Squares (OLS) y las métricas utilizadas para evaluar el desempeño y la auto-correlación espacial de las estimaciones, así como los antecedentes más relevantes relacionados con el IPM y modelos SAE. Posteriormente, en la Sección~\ref{sec:datos} se describe la fuente de información utilizada, sin incorporar aún los procesos de manipulación, tratamiento o construcción de variables requeridos para el análisis. Estos procedimientos se desarrollan en la Sección~\ref{sec:metodologia}, donde se presentan las etapas metodológicas del estudio, desde la consolidación de la base de datos, el preprocesamiento y la preparación de las variables, hasta la implementación y comparación de un modelo de área clásico, un modelo de desagregación municipal no lineal acotada y su extensión espacial. En la Sección~\ref{sec:resultados} se exponen los resultados obtenidos para cada una de las etapas definidas en la metodología, siguiendo el mismo orden de desarrollo. Luego, en la Sección~\ref{sec:discusion} se presenta la discusión de los hallazgos y se plantean posibles trabajos futuros; esta sección se organiza en función de los objetivos del estudio, con el propósito de analizar el alcance, los aportes y las limitaciones de los resultados frente a cada objetivo planteado. Finalmente, en la Sección~\ref{sec:conclusion} se presentan las conclusiones del trabajo, estructuradas también de acuerdo con los objetivos propuestos y articuladas con los principales resultados asociados al problema de investigación.
+
+% 
+
+ 

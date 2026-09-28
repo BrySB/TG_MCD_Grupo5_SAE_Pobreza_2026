@@ -7,7 +7,8 @@ library(tidyverse)
 
 # 1. Cargar el archivo de IPM Departamental Oficial 2024 del DANE
 # (Ajusta la ruta y el nombre del archivo según corresponda en tu equipo)
-ruta_depto_oficial <- "Ruta/A/Tu/Archivo/IPM_Depto_2024.xlsx"
+
+ruta_depto_oficial <- "C:/Users/basbo/PUJ Cali/Erick Caicedo Ruiz - TDG Ciencia de Datos/IPM_2024_ECV/IPM_Depto_2024.xlsx"
 df_depto_oficial <- read.xlsx(ruta_depto_oficial)
 
 # Asegurar nombres estándar y escala 0-100 para el IPM oficial
@@ -71,7 +72,7 @@ verificacion <- base_ipm_final_2024 %>%
     .groups = "drop"
   )
 
-print(head(verificacion, 10))
+print(as.data.frame(verificacion))
 
 # ==============================================================================
 # 6. EXPORTACIÓN DEL ENTREGABLE FINAL DE LA TESIS
@@ -83,3 +84,8 @@ entregable_tesis <- base_ipm_final_2024 %>%
 
 write.csv(entregable_tesis, "Resultados_IPM_Municipal_Final_2024.csv", row.names = FALSE)
 cat("\n¡Fase 3 completada! Archivo 'Resultados_IPM_Municipal_Final_2024.csv' exportado.\n")
+
+
+
+
+

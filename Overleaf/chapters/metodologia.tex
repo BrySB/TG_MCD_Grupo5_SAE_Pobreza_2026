@@ -1,0 +1,659 @@
+\label{sec:metodologia}
+
+El diseño metodológico articula tres formulaciones orientadas a la estimación en áreas pequeñas del Índice de Pobreza Multidimensional (IPM): un modelo de área Fay-Herriot, un modelo de desagregación municipal no lineal acotada y una extensión espacial de este último mediante una estructura condicional autorregresiva (CAR) de rango reducido. Las tres formulaciones se desarrollaron bajo un esquema común de preparación de datos, definición de escenarios de covariables, calibración departamental y validación por exclusión de dominio.
+
+La estrategia parte de estimaciones directas departamentales del IPM para 2024 y de información auxiliar disponible a escala municipal. Debido a que no se dispone de una estimación directa municipal del IPM para el mismo periodo, los parámetros de los modelos se calibran utilizando los 33 dominios departamentales y posteriormente se generan estimaciones sintéticas a escala municipal. En consecuencia, la evaluación predictiva se realiza a nivel departamental mediante exclusión sucesiva de dominios, mientras que las estimaciones municipales se analizan en términos de coherencia, estabilidad, comportamiento espacial y concordancia entre formulaciones.
+
+%--------------------------------------------------------------------------------------
+\section{Limpieza, filtrado y reglas de integración de la información}
+\label{sec:met-limpieza}
+
+La fase inicial consistió en consolidar una fuente única de covariables municipales que reúne información correspondiente a los periodos 2018 y 2024 bajo una estructura homogénea de variables. Para el presente ejercicio de estimación se seleccionó exclusivamente el periodo 2024, con el propósito de mantener correspondencia temporal entre la variable respuesta y la información auxiliar.
+
+Sobre este subconjunto se verificó la ausencia de códigos municipales duplicados y se excluyeron los registros sin identificadores territoriales válidos. Los códigos de departamento y municipio se estandarizaron como variables numéricas enteras de acuerdo con la codificación territorial oficial del DANE.
+
+Asimismo, se armonizó la nomenclatura de las variables provenientes de diferentes fuentes y se normalizaron los nombres de los denominadores poblacionales utilizados posteriormente como ponderadores.
+
+Las variables expresadas originalmente como proporciones, porcentajes o coberturas fueron llevadas a una escala homogénea cuando correspondía. Cuando el valor máximo observado indicaba que una variable se encontraba expresada en escala 0--100, sus valores se dividieron entre 100. En caso contrario, la variable se mantuvo sin modificaciones. Esta regla no implicó truncamiento de los valores, debido a que determinadas tasas educativas pueden superar el 100\%\ de manera conceptualmente válida.
+
+Como control adicional de calidad se implementaron verificaciones de alineación entre las covariables y sus respectivas llaves municipales. Estas comprobaciones buscaron identificar posibles desplazamientos derivados del uso de posiciones de fila en lugar de cruces explícitos por código territorial. Cuando una fuente disponía simultáneamente de un valor total y de una medida per cápita asociada, se verificó la consistencia entre ambos utilizando el denominador poblacional correspondiente. Adicionalmente, se revisó la plausibilidad territorial de los valores extremos, contrastando que los municipios con mayores poblaciones correspondieran con las principales ciudades del país.
+
+La integración entre la base municipal y la información departamental se efectuó exclusivamente mediante el código numérico de departamento. Se descartó el uso de nombres territoriales como llave de unión debido a las diferencias de escritura observadas en algunos dominios. La base departamental final quedó conformada por 33 dominios: los 32 departamentos y Bogotá D.C.
+
+%--------------------------------------------------------------------------------------
+\section{Construcción de la variable respuesta}
+\label{sec:met-respuesta}
+
+La variable respuesta corresponde a la estimación directa del IPM departamental para 2024 obtenida a partir de la Encuesta Nacional de Calidad de Vida (ECV) 2024. Para cada dominio $d$, esta estimación se denota como $\widehat{Y}^{\mathrm{dir}}_d$, con $d=1,\ldots,D$ y $D=33$.
+
+Para cada departamento se dispone adicionalmente de la varianza de muestreo asociada a la estimación directa, definida como:
+
+\begin{equation}
+v_d = \widehat{\operatorname{Var}}\left(\widehat{Y}^{\mathrm{dir}}_d\right).
+\label{eq:vardir}
+\end{equation}
+
+Cuando la fuente reportó el error estándar de la estimación directa, la varianza empleada en la modelación se obtuvo mediante:
+
+\begin{equation}
+v_d = EE_d^2.
+\label{eq:vardir_ee}
+\end{equation}
+
+Estas varianzas se trataron como cantidades conocidas provenientes del diseño muestral. De esta manera, los modelos incorporan explícitamente que las estimaciones directas de los distintos departamentos presentan niveles diferentes de precisión.
+
+Esta información desempeña un papel central en el modelo Fay-Herriot y en las dos formulaciones municipales, dado que permite que los departamentos con mayor incertidumbre muestral sean diferenciados de aquellos cuyas estimaciones directas presentan mayor precisión.
+
+%--------------------------------------------------------------------------------------
+\section{Construcción de variables predictoras y escenarios de covariables}
+\label{sec:met-predictoras}
+
+Las covariables municipales se organizaron buscando representar dimensiones conceptualmente relacionadas con el IPM, particularmente educación, salud, condiciones de infraestructura básica y actividad económica.
+
+A partir del conjunto disponible se definieron tres escenarios de especificación, los cuales fueron evaluados de manera común bajo las tres formulaciones de modelación.
+
+El escenario \textit{Completo} incorporó la tasa de repitencia escolar, la tasa de matriculación entre 5 y 16 años, el índice de infraestructura básica, la cobertura de energía rural, la tasa de mortalidad infantil, el aseguramiento en salud capado y la luminosidad nocturna transformada mediante logaritmo.
+
+El escenario \textit{Parsimonioso} incluyó la tasa de repitencia escolar, el índice de infraestructura básica, el aseguramiento en salud capado y la luminosidad nocturna.
+
+Finalmente, el escenario \textit{Alternativo de vivienda} incluyó la tasa de repitencia escolar, la cobertura de energía rural, el aseguramiento en salud capado y la luminosidad nocturna.
+
+Debido a que la estimación directa del IPM utilizada para calibrar los modelos se encuentra disponible únicamente a escala departamental, las covariables municipales requeridas por el modelo Fay-Herriot fueron agregadas previamente a ese mismo nivel territorial.
+
+La agregación se realizó mediante promedios ponderados de acuerdo con la población conceptualmente expuesta a cada indicador. Las variables educativas se ponderaron utilizando la población entre 5 y 16 años; la mortalidad infantil, mediante el total de nacidos vivos; y las restantes covariables, mediante la población municipal total.
+
+Para una covariable genérica $x_{id}$ correspondiente al municipio $i$ perteneciente al departamento $d$, el agregado departamental se representa como:
+
+\begin{equation}
+\bar{x}_d = \sum_{i \in \mathcal{M}_d} w_{id}x_{id}.
+\label{eq:agregacion_covariables}
+\end{equation}
+
+En esta expresión, $\mathcal{M}_d$ representa el conjunto de municipios pertenecientes al departamento $d$ y $w_{id}$ corresponde al peso definido a partir del denominador poblacional pertinente para cada indicador.
+
+Este procedimiento evita asignar el mismo peso a municipios con tamaños poblacionales considerablemente diferentes y preserva la unidad de exposición conceptualmente asociada con cada covariable.
+
+No obstante, cualquier procedimiento de agregación departamental implica una pérdida de información respecto a la heterogeneidad existente entre municipios de un mismo departamento. Esta característica establece una diferencia importante entre el primer modelo y las formulaciones M2 y M3: mientras Fay-Herriot utiliza covariables previamente agregadas, los modelos de desagregación evalúan directamente las covariables observadas en cada municipio antes de construir el agregado departamental utilizado para la calibración.
+
+%--------------------------------------------------------------------------------------
+\section{Identificación de datos faltantes, ventanas temporales y estrategia de validación}
+\label{sec:met-muestra}
+
+Con el propósito de que las diferencias encontradas entre escenarios y formulaciones fueran atribuibles a sus especificaciones y no a modificaciones en las observaciones utilizadas, se definió una muestra analítica común.
+
+El criterio de completitud exigió información válida para todas las covariables incluidas en el escenario Completo, así como disponibilidad de los denominadores poblacionales requeridos para la agregación y una población municipal estrictamente positiva.
+
+Los municipios que no cumplían estas condiciones fueron excluidos de manera común para las tres formulaciones y para los tres escenarios de covariables.
+
+La modelación se estructuró como un análisis de corte transversal correspondiente al año 2024. Tanto la estimación directa departamental del IPM como las covariables utilizadas como predictores corresponden al mismo periodo de referencia. Esta delimitación permitió evitar que las relaciones estimadas entre respuesta y predictores estuvieran afectadas por diferencias sistemáticas derivadas de ventanas temporales distintas.
+
+En cuanto a la estrategia de validación, la estructura del problema presenta una particularidad metodológica: los parámetros se calibran utilizando información departamental, mientras que el objetivo final consiste en generar estimaciones sintéticas a nivel municipal.
+
+En estas condiciones, una partición aleatoria convencional de municipios entre conjuntos de entrenamiento y validación no resultaría apropiada, debido a que municipios pertenecientes al mismo departamento podrían quedar simultáneamente en ambos conjuntos. Esto permitiría que información procedente del mismo dominio territorial participara tanto en la estimación de parámetros como en la evaluación del modelo.
+
+Para evitar esta situación se implementó una estrategia de validación \textit{Leave-One-Domain-Out} (LODO). En cada iteración se excluyó completamente uno de los 33 departamentos, los parámetros fueron reestimados utilizando únicamente los 32 dominios restantes y posteriormente se generó una predicción para el dominio excluido.
+
+Si $\widehat{Y}^{(-d)}_d$ representa la predicción obtenida para el departamento $d$ cuando este fue excluido del proceso de estimación, el error de predicción correspondiente se definió como:
+
+\begin{equation}
+e_d = \widehat{Y}^{\mathrm{dir}}_d - \widehat{Y}^{(-d)}_d.
+\label{eq:error_lodo}
+\end{equation}
+
+La implementación de LODO incorporó tres salvaguardas destinadas a reducir la fuga de información.
+
+En primer lugar, el departamento excluido no recibió el procedimiento de \textit{benchmarking}, debido a que este requiere utilizar la estimación directa del mismo dominio que se pretende predecir.
+
+En segundo lugar, la estandarización de las covariables municipales fue recalculada dentro de cada iteración utilizando exclusivamente los municipios pertenecientes a los departamentos de entrenamiento.
+
+En tercer lugar, para las formulaciones estimadas mediante optimización numérica se utilizaron múltiples puntos de inicio con el propósito de evaluar la estabilidad de la solución y reducir la dependencia frente a valores iniciales particulares.
+
+La estrategia LODO permitió establecer una base común de evaluación para las tres formulaciones y los tres escenarios de covariables.
+
+%--------------------------------------------------------------------------------------
+\section{Análisis exploratorio y diagnóstico espacial}
+\label{sec:met-exploratorio}
+
+El análisis exploratorio tuvo dos propósitos principales: examinar el comportamiento de las covariables candidatas frente al IPM y evaluar la existencia de patrones espaciales que justificaran la incorporación explícita de dependencia territorial.
+
+En primer lugar, se analizaron las asociaciones bivariadas entre la estimación directa departamental del IPM y las covariables agregadas, prestando especial atención a la dirección de las relaciones observadas y a su coherencia conceptual.
+
+También se examinó la posible presencia de redundancia entre predictores como insumo previo a la estimación de las especificaciones multivariadas.
+
+En segundo lugar, se evaluó la autocorrelación espacial de los residuos departamentales mediante el estadístico global de Moran. Con el propósito de reducir la dependencia del resultado frente a una única definición de vecindad, se consideraron diferentes estructuras espaciales, incluyendo contigüidad tipo Reina, contigüidad tipo Torre y esquemas basados en $k$ vecinos más cercanos.
+
+La significancia estadística del índice de Moran se evaluó mediante pruebas de permutación con 999 iteraciones. La presencia de dependencia espacial residual constituyó evidencia empírica para evaluar posteriormente una formulación con estructura espacial explícita.
+
+%--------------------------------------------------------------------------------------
+\section{Preprocesamiento específico para la modelación}
+\label{sec:met-preprocesamiento}
+
+Las formulaciones M2 y M3 utilizan directamente las covariables observadas a nivel municipal, por lo que requirieron un preprocesamiento adicional respecto al modelo de área Fay-Herriot.
+
+Las covariables municipales utilizadas en estas formulaciones se estandarizaron mediante una transformación $z$:
+
+\begin{equation}
+z_{ik} = \frac{x_{ik}-\bar{x}_k}{s_k}.
+\label{eq:estandarizacion}
+\end{equation}
+
+En esta expresión, $x_{ik}$ representa el valor observado de la covariable $k$ para el municipio $i$, mientras que $\bar{x}_k$ y $s_k$ representan, respectivamente, la media y la desviación estándar de dicha covariable calculadas utilizando el conjunto de entrenamiento correspondiente.
+
+Durante la validación LODO, ambos parámetros fueron recalculados en cada iteración utilizando exclusivamente los municipios pertenecientes a los departamentos no excluidos.
+
+Para agregar posteriormente las estimaciones municipales a escala departamental se definieron pesos poblacionales como:
+
+\begin{equation}
+w_{id} = \frac{N_{id}}{\sum_{j \in \mathcal{M}_d}N_{jd}}.
+\label{eq:pesos_municipales}
+\end{equation}
+
+En esta expresión, $N_{id}$ corresponde a la población del municipio $i$ perteneciente al departamento $d$.
+
+Por construcción:
+
+\begin{equation}
+\sum_{i \in \mathcal{M}_d} w_{id} = 1.
+\label{eq:suma_pesos}
+\end{equation}
+
+Para la formulación espacial se construyó adicionalmente una estructura de vecindad municipal a partir de la cartografía oficial utilizada en el estudio. Se adoptó como criterio principal la contigüidad tipo Reina, según la cual dos municipios son considerados vecinos cuando comparten al menos un punto o segmento de frontera.
+
+Cuando una unidad territorial no presentó vecinos bajo la contigüidad física, se implementó una regla complementaria basada en proximidad geográfica, evitando unidades completamente aisladas dentro de la estructura espacial empleada por el modelo.
+
+%--------------------------------------------------------------------------------------
+\section{Implementación de modelos exploratorios mediante mínimos cuadrados ordinarios}
+\label{sec:met-ols}
+
+Los modelos estimados mediante mínimos cuadrados ordinarios (OLS) se utilizaron exclusivamente como herramienta exploratoria y diagnóstica previa a las formulaciones principales.
+
+Para cada uno de los tres escenarios de covariables se estimó un modelo departamental general de la forma:
+
+\begin{equation}
+\widehat{Y}^{\mathrm{dir}}_d = \beta_0 + \mathbf{x}_d^{\top}\boldsymbol{\beta} + \varepsilon_d.
+\label{eq:ols}
+\end{equation}
+
+Estos modelos permitieron examinar la dirección y magnitud de las asociaciones condicionales entre el IPM y las covariables consideradas, el ajuste global de cada escenario y la presencia de posibles problemas de multicolinealidad.
+
+La multicolinealidad se evaluó mediante el factor de inflación de varianza (VIF), mientras que el ajuste general se documentó mediante el coeficiente de determinación ajustado y la relación entre el número de dominios disponibles y el número de parámetros incluidos en cada especificación.
+
+También se examinaron los residuos del ajuste y la presencia de observaciones potencialmente influyentes.
+
+Los resultados OLS se emplearon como evidencia diagnóstica y no como criterio automático para eliminar covariables ni como formulación definitiva para estimar el IPM municipal. La comparación formal entre escenarios y modelos se realizó posteriormente mediante la estrategia de validación LODO.
+
+%--------------------------------------------------------------------------------------
+\section{Modelo 1: Fay-Herriot de área}
+\label{sec:met-fh}
+
+La primera formulación corresponde al modelo de área Fay-Herriot, utilizado como referencia para combinar las estimaciones directas departamentales con información auxiliar agregada al mismo nivel territorial.
+
+Para cada departamento $d$ se especificó:
+
+\begin{equation}
+\widehat{Y}^{\mathrm{dir}}_d = \mathbf{x}_d^{\top}\boldsymbol{\beta} + u_d + e_d.
+\label{eq:fh}
+\end{equation}
+
+En esta expresión, $\mathbf{x}_d$ representa el vector de covariables departamentales correspondiente al escenario evaluado, $\boldsymbol{\beta}$ contiene los coeficientes del componente fijo, $u_d$ representa la heterogeneidad no observada entre áreas y $e_d$ corresponde al error de muestreo asociado a la estimación directa.
+
+Se asumió que:
+
+\begin{equation}
+u_d \sim \mathcal{N}(0,A).
+\label{eq:fh_area}
+\end{equation}
+
+Asimismo:
+
+\begin{equation}
+e_d \sim \mathcal{N}(0,v_d).
+\label{eq:fh_sampling}
+\end{equation}
+
+Se consideró independencia entre el efecto de área $u_d$ y el error de muestreo $e_d$. El parámetro $A$ representa la varianza entre áreas, mientras que $v_d$ corresponde a la varianza de muestreo conocida para cada estimación directa.
+
+La varianza entre áreas y los coeficientes del componente fijo fueron estimados mediante máxima verosimilitud restringida (REML).
+
+La estimación EBLUP correspondiente a cada dominio se obtuvo como:
+
+\begin{equation}
+\widehat{\theta}^{\mathrm{FH}}_d = \widehat{\gamma}_d\widehat{Y}^{\mathrm{dir}}_d + \left(1-\widehat{\gamma}_d\right)\mathbf{x}_d^{\top}\widehat{\boldsymbol{\beta}}.
+\label{eq:eblup_fh}
+\end{equation}
+
+El factor de contracción se definió como:
+
+\begin{equation}
+\widehat{\gamma}_d = \frac{\widehat{A}}{\widehat{A}+v_d}.
+\label{eq:gamma_fh}
+\end{equation}
+
+Por tanto, los departamentos cuyas estimaciones directas presentan menor varianza de muestreo conservan una mayor participación de la información observada, mientras que aquellos con mayor incertidumbre reciben relativamente más información de la componente sintética derivada de las covariables.
+
+El modelo fue ajustado de manera independiente bajo los escenarios Completo, Parsimonioso y Alternativo de vivienda.
+
+La evaluación interna del ajuste consideró la positividad y finitud de las varianzas de muestreo, la no negatividad y finitud de la varianza estimada entre áreas, la estabilidad de los coeficientes, la ausencia de multicolinealidad severa, el comportamiento de los residuos y la identificación de dominios potencialmente influyentes.
+
+También se utilizaron los criterios de información de Akaike y Bayesiano como medidas complementarias para caracterizar el equilibrio entre ajuste y complejidad de las diferentes especificaciones.
+
+Debido a que Fay-Herriot se calibra a escala departamental, sus estimaciones propiamente dichas corresponden a ese nivel territorial. Para obtener una proyección municipal comparable con las formulaciones M2 y M3, se generó posteriormente una desagregación sintética utilizando los coeficientes estimados sobre las covariables municipales y conservando el efecto estimado del departamento al cual pertenece cada municipio:
+
+\begin{equation}
+\widehat{\theta}^{\mathrm{FH}}_{id} = \mathbf{x}_{id}^{\top}\widehat{\boldsymbol{\beta}} + \widehat{u}_d.
+\label{eq:fh_municipal}
+\end{equation}
+
+Esta proyección debe interpretarse como una desagregación sintética derivada de un modelo calibrado a escala departamental y no como una estimación Fay-Herriot ajustada directamente a nivel municipal.
+
+Debido al carácter lineal de esta proyección, se verificó adicionalmente la proporción de estimaciones municipales que se ubicaban fuera del intervalo admisible del IPM. Este diagnóstico permitió documentar una limitación estructural de la desagregación lineal y constituyó una motivación adicional para evaluar las formulaciones no lineales M2 y M3.
+
+%--------------------------------------------------------------------------------------
+\section{Modelo 2: desagregación municipal no lineal acotada}
+\label{sec:met-m2}
+
+La segunda formulación fue diseñada para utilizar directamente las covariables observadas a nivel municipal y garantizar por construcción que las estimaciones generadas permanecieran dentro del intervalo admisible del IPM.
+
+Para cada municipio $i$ perteneciente al departamento $d$ se definió el predictor lineal:
+
+\begin{equation}
+\eta_{id} = \beta_0 + \mathbf{x}_{id}^{\top}\boldsymbol{\beta}.
+\label{eq:predictor_m2}
+\end{equation}
+
+En esta expresión, $\mathbf{x}_{id}$ corresponde al vector de covariables municipales estandarizadas y $\boldsymbol{\beta}$ contiene sus respectivos coeficientes.
+
+El predictor se transformó mediante una función logística escalada al intervalo 0--100:
+
+\begin{equation}
+\mu_{id} = 100\,\operatorname{logit}^{-1}(\eta_{id}) = 100\left(\frac{\exp(\eta_{id})}{1+\exp(\eta_{id})}\right).
+\label{eq:logistica_m2}
+\end{equation}
+
+Esta transformación garantiza que:
+
+\begin{equation}
+0 < \mu_{id} < 100.
+\label{eq:rango_m2}
+\end{equation}
+
+A diferencia del modelo de área, esta transformación se aplica a cada municipio antes de efectuar la agregación departamental. Por tanto, la heterogeneidad existente entre municipios interviene directamente en la construcción de la predicción departamental.
+
+Utilizando los pesos poblacionales definidos previamente, la predicción sintética departamental anterior al procedimiento de \textit{benchmarking} se obtuvo mediante:
+
+\begin{equation}
+\widetilde{\mu}_d = \sum_{i \in \mathcal{M}_d} w_{id}\mu_{id}.
+\label{eq:agregacion_m2}
+\end{equation}
+
+La calibración de los parámetros se efectuó comparando este agregado sintético con la estimación directa departamental. Para ello se especificó:
+
+\begin{equation}
+\widehat{Y}^{\mathrm{dir}}_d = \widetilde{\mu}_d + \varepsilon_d.
+\label{eq:modelo_departamental_m2}
+\end{equation}
+
+El término residual se definió como:
+
+\begin{equation}
+\varepsilon_d \sim \mathcal{N}\left(0,v_d+\tau^2\right).
+\label{eq:error_m2}
+\end{equation}
+
+En esta formulación, $v_d$ corresponde a la varianza de muestreo conocida de la estimación directa, mientras que $\tau^2$ representa una componente adicional de variabilidad departamental no explicada por la estructura sintética del modelo.
+
+El vector de parámetros se definió como:
+
+\begin{equation}
+\boldsymbol{\theta} = \left(\beta_0,\boldsymbol{\beta},\tau\right).
+\label{eq:parametros_m2}
+\end{equation}
+
+Los parámetros fueron estimados mediante máxima verosimilitud. Ignorando constantes independientes de los parámetros, la función objetivo utilizada se expresó como:
+
+\begin{equation}
+-\ell(\boldsymbol{\theta}) = \frac{1}{2}\sum_{d=1}^{D}\left[\log\left(v_d+\tau^2\right)+\frac{\left(\widehat{Y}^{\mathrm{dir}}_d-\widetilde{\mu}_d\right)^2}{v_d+\tau^2}\right].
+\label{eq:objetivo_m2}
+\end{equation}
+
+Debido al carácter no lineal de la formulación, la superficie de optimización puede ser sensible a los valores iniciales. Por esta razón, el procedimiento se ejecutó utilizando múltiples puntos de inicio y más de un procedimiento numérico de optimización. Entre las soluciones obtenidas se conservó aquella que alcanzó el menor valor de la función objetivo y cumplió las condiciones de convergencia establecidas.
+
+\subsection{Benchmarking del Modelo 2}
+
+Una vez estimados los parámetros, las predicciones municipales se ajustaron para garantizar coherencia con el agregado departamental observado.
+
+En lugar de realizar una corrección aditiva directamente sobre el valor estimado del IPM, se aplicó un desplazamiento común $\delta_d$ sobre la escala del predictor lineal:
+
+\begin{equation}
+\widehat{\mu}^{B}_{id} = 100\,\operatorname{logit}^{-1}\left(\widehat{\eta}_{id}+\delta_d\right).
+\label{eq:benchmark_m2}
+\end{equation}
+
+El valor de $\delta_d$ se determinó imponiendo la siguiente restricción de coherencia:
+
+\begin{equation}
+\sum_{i \in \mathcal{M}_d} w_{id}\widehat{\mu}^{B}_{id} = \widehat{Y}^{\mathrm{dir}}_d.
+\label{eq:restriccion_benchmark_m2}
+\end{equation}
+
+Para ello se definió la función:
+
+\begin{equation}
+h_d(\delta) = \sum_{i \in \mathcal{M}_d} w_{id}\,100\,\operatorname{logit}^{-1}\left(\widehat{\eta}_{id}+\delta\right)-\widehat{Y}^{\mathrm{dir}}_d.
+\label{eq:funcion_benchmark_m2}
+\end{equation}
+
+El desplazamiento departamental corresponde a la solución de:
+
+\begin{equation}
+h_d(\delta_d)=0.
+\label{eq:raiz_benchmark_m2}
+\end{equation}
+
+Este procedimiento permite conservar simultáneamente el rango admisible de las estimaciones municipales y la coherencia de su promedio ponderado con la estimación directa departamental.
+
+El \textit{benchmarking} se utilizó exclusivamente para la producción de las estimaciones municipales finales. Durante la validación LODO, el departamento excluido no recibió este ajuste, debido a que utilizar su estimación directa para calcular $\delta_d$ introduciría información del dominio de evaluación.
+
+La validez interna del Modelo 2 se examinó mediante la convergencia del optimizador, la finitud de los parámetros, la estabilidad de la solución frente a múltiples arranques, la identificación local, la variación suficiente de los predictores, el cumplimiento del intervalo admisible, la precisión numérica del \textit{benchmarking}, el comportamiento de los residuos departamentales previos al ajuste y la relación entre el número de dominios y el número de parámetros estimados.
+
+%--------------------------------------------------------------------------------------
+\section{Modelo 3: desagregación municipal no lineal con estructura espacial CAR de rango reducido}
+\label{sec:met-car}
+
+La tercera formulación extiende el Modelo 2 mediante la incorporación de un componente espacial municipal destinado a representar patrones compartidos entre unidades territorialmente relacionadas.
+
+La estructura espacial se construyó mediante una matriz de adyacencia municipal $\mathbf{W}$ basada principalmente en un criterio de contigüidad tipo Reina.
+
+A partir de la matriz de vecindad se definió la matriz diagonal de grados:
+
+\begin{equation}
+\mathbf{D} = \operatorname{diag}(d_1,\ldots,d_n), \qquad d_i = \sum_{j=1}^{n} w_{ij}.
+\label{eq:matriz_grados_car}
+\end{equation}
+
+La estructura de precisión espacial de referencia se expresó como:
+
+\begin{equation}
+\mathbf{Q}(\rho) = \mathbf{D}-\rho\mathbf{W}.
+\label{eq:precision_car}
+\end{equation}
+
+En esta expresión, $\rho$ controla la intensidad de la relación espacial inducida por la estructura de vecindad.
+
+Debido a que los parámetros del modelo se calibran utilizando únicamente 33 dominios departamentales, estimar un efecto espacial independiente para cada municipio produciría una parametrización excesiva con relación a la información disponible. Por esta razón se utilizó una representación espacial de rango reducido.
+
+Para construirla se definió inicialmente la matriz normalizada:
+
+\begin{equation}
+\mathbf{A} = \mathbf{D}^{-1/2}\mathbf{W}\mathbf{D}^{-1/2}.
+\label{eq:matriz_normalizada_car}
+\end{equation}
+
+Posteriormente se obtuvo su descomposición espectral:
+
+\begin{equation}
+\mathbf{A} = \mathbf{B}\boldsymbol{\Lambda}\mathbf{B}^{\top}.
+\label{eq:descomposicion_espectral_car}
+\end{equation}
+
+A partir de los autovectores asociados con los patrones espaciales retenidos se construyó la base reducida:
+
+\begin{equation}
+\mathbf{B}_K = \left[\mathbf{b}_1,\ldots,\mathbf{b}_K\right].
+\label{eq:base_car}
+\end{equation}
+
+En la implementación utilizada se fijó:
+
+\begin{equation}
+K=6.
+\label{eq:k_car}
+\end{equation}
+
+El componente espacial municipal se representó entonces mediante:
+
+\begin{equation}
+\mathbf{s} = \mathbf{B}_K\boldsymbol{\alpha}.
+\label{eq:efecto_espacial}
+\end{equation}
+
+En esta expresión, $\boldsymbol{\alpha}$ contiene los coeficientes asociados con los patrones espaciales retenidos.
+
+La estructura de precisión fue proyectada sobre el espacio reducido mediante:
+
+\begin{equation}
+\mathbf{Q}_K(\rho) = \mathbf{B}_K^{\top}\mathbf{Q}(\rho)\mathbf{B}_K.
+\label{eq:precision_car_reducida}
+\end{equation}
+
+Para cada municipio $i$ perteneciente al departamento $d$, el predictor de la formulación espacial se definió como:
+
+\begin{equation}
+\eta^{\mathrm{CAR}}_{id} = \beta_0 + \mathbf{x}_{id}^{\top}\boldsymbol{\beta} + s_{id}.
+\label{eq:predictor_car}
+\end{equation}
+
+El componente $s_{id}$ representa la contribución espacial correspondiente al municipio.
+
+Al igual que en M2, el predictor se transformó mediante una función logística escalada al rango del IPM:
+
+\begin{equation}
+\mu^{\mathrm{CAR}}_{id} = 100\,\operatorname{logit}^{-1}\left(\eta^{\mathrm{CAR}}_{id}\right).
+\label{eq:logistica_car}
+\end{equation}
+
+Por construcción:
+
+\begin{equation}
+0 < \mu^{\mathrm{CAR}}_{id} < 100.
+\label{eq:rango_car}
+\end{equation}
+
+Las predicciones municipales fueron agregadas posteriormente al nivel departamental utilizando los mismos pesos poblacionales empleados en M2:
+
+\begin{equation}
+\widetilde{\mu}^{\mathrm{CAR}}_d = \sum_{i \in \mathcal{M}_d} w_{id}\mu^{\mathrm{CAR}}_{id}.
+\label{eq:agregacion_car}
+\end{equation}
+
+La relación con la estimación directa departamental se definió como:
+
+\begin{equation}
+\widehat{Y}^{\mathrm{dir}}_d = \widetilde{\mu}^{\mathrm{CAR}}_d + \varepsilon_d.
+\label{eq:modelo_departamental_car}
+\end{equation}
+
+El término residual mantiene la misma estructura utilizada en el Modelo 2:
+
+\begin{equation}
+\varepsilon_d \sim \mathcal{N}\left(0,v_d+\tau^2\right).
+\label{eq:error_car}
+\end{equation}
+
+\subsection{Criterio de estimación espacial}
+
+La estimación del Modelo 3 combinó el ajuste frente a las estimaciones directas departamentales con una penalización destinada a restringir el componente espacial de acuerdo con la estructura de vecindad proyectada en el espacio de rango reducido.
+
+El criterio utilizado se expresa como:
+
+\begin{equation}
+\mathcal{L}_{\mathrm{CAR}} = \frac{1}{2}\sum_{d=1}^{D}\left[\log\left(v_d+\tau^2\right)+\frac{\left(\widehat{Y}^{\mathrm{dir}}_d-\widetilde{\mu}^{\mathrm{CAR}}_d\right)^2}{v_d+\tau^2}\right]+\frac{1}{2}\boldsymbol{\alpha}^{\top}\mathbf{Q}_K(\rho)\boldsymbol{\alpha}.
+\label{eq:objetivo_car}
+\end{equation}
+
+El primer término mide el ajuste de los agregados sintéticos del modelo frente a las estimaciones directas departamentales considerando su incertidumbre de muestreo. El segundo término penaliza configuraciones del componente espacial que presentan menor compatibilidad con la estructura territorial definida mediante $\mathbf{Q}_K(\rho)$.
+
+En consecuencia, esta expresión se interpreta como el criterio penalizado empleado para estimar la formulación espacial de rango reducido y no como la expresión de una log-verosimilitud marginal completa de un modelo CAR gaussiano.
+
+Debido al reducido número de dominios disponibles para la calibración, el parámetro $\rho$ no se estimó libremente junto con el resto de los parámetros. En su lugar se evaluó la siguiente grilla:
+
+\begin{equation}
+\rho \in \left\{0.25,\,0.50,\,0.75,\,0.90\right\}.
+\label{eq:rho_grid}
+\end{equation}
+
+Para la comparación principal se utilizó como especificación de referencia:
+
+\begin{equation}
+\rho = 0.50.
+\label{eq:rho_referencia}
+\end{equation}
+
+Los restantes valores se utilizaron para analizar la sensibilidad de los resultados frente a diferentes intensidades de dependencia espacial.
+
+Para cada valor de $\rho$, los demás parámetros fueron estimados mediante optimización numérica con múltiples puntos de inicio. Se verificaron la convergencia del algoritmo, la estabilidad de las soluciones, la finitud de los parámetros, la identificación local y la validez numérica de la estructura espacial utilizada.
+
+\subsection{Benchmarking del Modelo 3}
+
+El ajuste de coherencia aplicado a las estimaciones finales del Modelo 3 siguió el mismo principio empleado en M2.
+
+Para cada departamento se determinó un desplazamiento $\delta^{\mathrm{CAR}}_d$ sobre la escala del predictor:
+
+\begin{equation}
+\widehat{\mu}^{B,\mathrm{CAR}}_{id} = 100\,\operatorname{logit}^{-1}\left(\widehat{\eta}^{\mathrm{CAR}}_{id}+\delta^{\mathrm{CAR}}_d\right).
+\label{eq:benchmark_car}
+\end{equation}
+
+El desplazamiento fue determinado imponiendo la condición:
+
+\begin{equation}
+\sum_{i \in \mathcal{M}_d} w_{id}\widehat{\mu}^{B,\mathrm{CAR}}_{id} = \widehat{Y}^{\mathrm{dir}}_d.
+\label{eq:restriccion_benchmark_car}
+\end{equation}
+
+Este procedimiento se aplicó únicamente para producir las estimaciones municipales finales.
+
+Durante la validación LODO, el dominio excluido no recibió \textit{benchmarking}. Asimismo, la estandarización y los componentes requeridos para la estimación se recalcularon utilizando exclusivamente la información correspondiente a los dominios de entrenamiento.
+
+La evaluación interna del Modelo 3 consideró la convergencia, la estabilidad frente a distintos puntos de inicio, la identificación local, la finitud de los parámetros, la validez de la estructura espacial, el cumplimiento del intervalo admisible, la precisión numérica del \textit{benchmarking}, el comportamiento de los residuos departamentales previos al ajuste y la sensibilidad frente a los diferentes valores de $\rho$.
+
+Como diagnóstico espacial complementario se calculó el estadístico global de Moran sobre el componente espacial estimado, con el propósito de caracterizar el patrón territorial capturado por la representación de rango reducido. Este diagnóstico se mantuvo separado de la evaluación predictiva, la cual se realizó mediante LODO.
+
+%--------------------------------------------------------------------------------------
+\section{Comparación integrada y producción cartográfica}
+\label{sec:met-comparacion}
+
+La comparación final consideró las nueve combinaciones resultantes de las tres formulaciones de modelación y los tres escenarios de covariables.
+
+La evaluación se estructuró alrededor de tres dimensiones complementarias: desempeño predictivo fuera de dominio, sensibilidad frente a cambios en la especificación de covariables y concordancia entre las estimaciones municipales producidas por los diferentes enfoques.
+
+\subsection{Desempeño predictivo mediante LODO}
+
+A partir de los errores generados mediante LODO se calculó el error cuadrático medio de predicción:
+
+\begin{equation}
+\mathrm{RMSE} = \sqrt{\frac{1}{D}\sum_{d=1}^{D}\left(\widehat{Y}^{\mathrm{dir}}_d-\widehat{Y}^{(-d)}_d\right)^2}.
+\label{eq:rmse}
+\end{equation}
+
+Asimismo, se calculó el error absoluto medio:
+
+\begin{equation}
+\mathrm{MAE} = \frac{1}{D}\sum_{d=1}^{D}\left|\widehat{Y}^{\mathrm{dir}}_d-\widehat{Y}^{(-d)}_d\right|.
+\label{eq:mae}
+\end{equation}
+
+El MAE representa la magnitud promedio del error de predicción expresada en puntos porcentuales del IPM, mientras que el RMSE penaliza con mayor intensidad los errores de gran magnitud.
+
+En ambas métricas, valores menores representan un mejor desempeño predictivo fuera de dominio.
+
+Como medida complementaria se calculó la correlación entre las estimaciones directas observadas y las predicciones generadas mediante exclusión sucesiva:
+
+\begin{equation}
+r_{\mathrm{LODO}} = \operatorname{Cor}\left(\widehat{\mathbf{Y}}^{\mathrm{dir}},\widehat{\mathbf{Y}}^{(-d)}\right).
+\label{eq:cor_lodo}
+\end{equation}
+
+La correlación se interpretó conjuntamente con RMSE y MAE, debido a que una asociación elevada entre valores observados y predichos no implica necesariamente una baja magnitud de los errores.
+
+Las tres métricas fueron calculadas sobre exactamente los mismos dominios y empleando la misma estrategia de exclusión para las nueve combinaciones. De esta manera, las diferencias observadas entre especificaciones pueden atribuirse a las características de los modelos y de las covariables utilizadas, y no a cambios en las unidades empleadas para la evaluación.
+
+\subsection{Estabilidad frente a los escenarios de covariables}
+
+Además del desempeño puntual de cada combinación, se analizó la estabilidad de cada familia de modelos frente a cambios en el conjunto de covariables utilizado.
+
+Para cada formulación $m$, la amplitud del RMSE entre escenarios se definió como:
+
+\begin{equation}
+A^{\mathrm{RMSE}}_m = \max_s\left(\mathrm{RMSE}_{m,s}\right)-\min_s\left(\mathrm{RMSE}_{m,s}\right).
+\label{eq:amplitud_rmse}
+\end{equation}
+
+En esta expresión, $s$ representa los escenarios Completo, Parsimonioso y Alternativo de vivienda.
+
+Una amplitud menor indica que el desempeño predictivo de una formulación cambia relativamente poco frente a modificaciones del conjunto de covariables, mientras que una amplitud mayor refleja mayor sensibilidad a la especificación.
+
+Dentro de cada familia se identificó adicionalmente el escenario que obtuvo el menor RMSE bajo validación LODO. Esta identificación se utilizó para caracterizar el comportamiento predictivo de cada formulación, pero no se consideró de manera aislada como criterio suficiente para determinar un único modelo global, debido a que la evaluación también incorpora estabilidad, comportamiento espacial, coherencia de las estimaciones y restricciones estructurales propias de cada enfoque.
+
+\subsection{Concordancia de las estimaciones municipales}
+ Para la comparación de las estimaciones municipales debido a que no se dispone de una estimación directa municipal del IPM para 2024 que pueda utilizarse como valor observado de referencia, las estimaciones municipales generadas por los tres modelos no fueron evaluadas mediante métricas de error directo.
+
+En su lugar se comparó el grado de concordancia entre formulaciones utilizando un escenario común de covariables.
+
+Sea $\widehat{\theta}^{(a)}_i$ la estimación del IPM para el municipio $i$ generada mediante la formulación $a$ y $\widehat{\theta}^{(b)}_i$ la estimación correspondiente obtenida mediante la formulación $b$.
+
+La correlación entre ambos conjuntos de estimaciones se definió como:
+
+\begin{equation}
+r_{ab} = \operatorname{Cor}\left(\widehat{\boldsymbol{\theta}}^{(a)},\widehat{\boldsymbol{\theta}}^{(b)}\right).
+\label{eq:cor_modelos}
+\end{equation}
+
+También se calculó la diferencia absoluta media:
+
+\begin{equation}
+\mathrm{DAM}_{ab} = \frac{1}{n}\sum_{i=1}^{n}\left|\widehat{\theta}^{(a)}_i-\widehat{\theta}^{(b)}_i\right|.
+\label{eq:dam_modelos}
+\end{equation}
+
+En esta expresión, $n$ corresponde al número de municipios incluidos en la muestra analítica.
+
+La correlación permite evaluar hasta qué punto las formulaciones reproducen patrones de ordenamiento territorial similares, mientras que la diferencia absoluta media cuantifica la discrepancia promedio entre sus estimaciones en puntos porcentuales del IPM.
+
+Estas medidas fueron interpretadas exclusivamente como indicadores de concordancia entre modelos y no como medidas de precisión municipal.
+
+\subsection{Producción cartográfica}
+
+Finalmente, lo que corresponde a la producción cartográfica,las estimaciones municipales generadas por M1, M2 y M3 bajo un escenario común de referencia se vincularon con la cartografía municipal utilizada para construir la estructura espacial.
+
+Se produjeron mapas temáticos nacionales empleando criterios de clasificación y escalas gráficas comunes, con el propósito de facilitar la comparación visual directa de los patrones territoriales generados por las tres formulaciones.
+
+La cartografía se utilizó como herramienta complementaria para identificar concentraciones espaciales de estimaciones altas y bajas, examinar diferencias territoriales entre los enfoques y la cartografía se utilizó como herramienta complementaria para identificar concentraciones espaciales de estimaciones altas y bajas, examinar diferencias territoriales entre los enfoques y visualizar los cambios derivados de las distintas arquitecturas de estimación y, en M3, de la incorporación explícita de dependencia espacial.
+
+La semejanza visual entre mapas no se utilizó como criterio independiente de validación. La interpretación cartográfica se realizó conjuntamente con las métricas LODO, las medidas de concordancia municipal y los diagnósticos espaciales.
+
+%--------------------------------------------------------------------------------------
+\section{Relación entre las etapas metodológicas y los objetivos específicos}
+\label{sec:met-objetivos}
+
+Como síntesis del procedimiento desarrollado, la Tabla~\ref{tab:etapas-objetivos} relaciona las principales etapas metodológicas con los objetivos específicos de la investigación.
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Relación entre las etapas de la metodología y los objetivos específicos del trabajo. OE1 corresponde a evaluar el desempeño de las formulaciones SAE consideradas; OE2, a identificar las covariables con mayor poder explicativo; y OE3, a caracterizar la distribución y dependencia espacial de las estimaciones.}
+\label{tab:etapas-objetivos}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{p{9.5cm} c}
+\hline
+\textbf{Etapa metodológica} & \textbf{Objetivo(s)} \\
+\hline
+Limpieza, filtrado e integración de información & OE1 \\
+Construcción de la variable respuesta & OE1 \\
+Construcción de variables predictoras y escenarios & OE2 \\
+Definición de la muestra analítica & OE1 \\
+Validación por exclusión de dominio & OE1 \\
+Análisis exploratorio y diagnóstico espacial & OE2, OE3 \\
+Preprocesamiento para formulaciones municipales & OE1 \\
+Modelos exploratorios OLS & OE2 \\
+Modelo 1: Fay-Herriot & OE1 \\
+Modelo 2: desagregación municipal no lineal & OE1 \\
+Modelo 3: formulación no lineal con estructura CAR & OE1, OE3 \\
+Comparación integrada de modelos y escenarios & OE1, OE3 \\
+Comparación de estimaciones municipales & OE1, OE3 \\
+Producción cartográfica y análisis territorial & OE3 \\
+Trazabilidad y consolidación de resultados & OE1 \\
+\hline
+\end{tabular}
+\end{table}
+

@@ -1,0 +1,35 @@
+// 1. Cargar la división municipal de Colombia (Límites oficiales de FAO/GAUL)
+var municipios = ee.FeatureCollection("FAO/GAUL/2015/level2")
+  .filter(ee.Filter.eq("ADM0_NAME", "Colombia"));
+
+// 2. Función para calcular el promedio anual de luces nocturnas (VIIRS)
+function extraerVIIRS(anio) {
+  var inicio = anio + "-01-01";
+  var fin    = anio + "-12-31";
+  
+  var viirs = ee.ImageCollection("NOAA/VIIRS/DNB/MONTHLY_V1/VCMSLCFG")
+    .filterDate(inicio, fin)
+    .select("avg_rad")
+    .mean();
+    
+  return viirs.reduceRegions({
+    collection: municipios,
+    reducer: ee.Reducer.mean(),
+    scale: 500
+  }).map(function(f) {
+    return f.set('periodo', anio);
+  });
+}
+
+// 3. Extraer 2018 y 2024
+var viirs2018 = extraerVIIRS(2018);
+var viirs2024 = extraerVIIRS(2024);
+var viirsTotal = viirs2018.merge(viirs2024);
+
+// 4. Exportar el resultado a tu Google Drive como CSV
+Export.table.toDrive({
+  collection: viirsTotal,
+  description: 'VIIRS_Municipios_Colombia_18_24',
+  fileFormat: 'CSV',
+  selectors: ['ADM2_CODE', 'ADM2_NAME', 'periodo', 'mean']
+});
