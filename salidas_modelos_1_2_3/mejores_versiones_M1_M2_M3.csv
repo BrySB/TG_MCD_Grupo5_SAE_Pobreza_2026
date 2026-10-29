@@ -1,0 +1,4 @@
+"modelo","version","RMSE","MAE","correlacion","criterio"
+"M1_FayHerriot","E1_Completa",7.7047,5.2993,0.8316,"Menor RMSE LODO"
+"M2_NoLineal","E1_Completa",5.0971,3.7048,0.9301,"Menor RMSE LODO"
+"M3_SAR","E2_Parsimoniosa",16.6653756200266,14.5785722808416,0.595511436352467,"Evaluacion temporal 2024 pre-benchmark"

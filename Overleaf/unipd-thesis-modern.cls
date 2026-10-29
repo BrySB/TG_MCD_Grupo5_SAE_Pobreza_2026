@@ -76,9 +76,9 @@
 \RequirePackage{colorprofiles}
 \RequirePackage[a-3a,latxmp,mathxmp]{pdfx}
 %   (to patch warnings)
-\selectcolormodel{natural}
+% \selectcolormodel{natural}
 \RequirePackage{ninecolors}
-\selectcolormodel{rgb}
+% \selectcolormodel{rgb}
 \RequirePackage{booktabs}
 
 

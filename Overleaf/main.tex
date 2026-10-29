@@ -1,9 +1,14 @@
-
-
 \PassOptionsToPackage{table}{xcolor} % to use colors in tables
 \PassOptionsToPackage{pdfa}{hyperref}
+% Mantener marcadores PDF hasta el nivel de subsección
 \documentclass{unipd-thesis-modern} % src: https://github.com/baronefr/unipd-
+% Mostrar en el índice hasta subsecciones
+\setcounter{tocdepth}{2}
 
+% Limitar los marcadores del PDF hasta subsecciones
+\AtBeginDocument{%
+    \hypersetup{bookmarksdepth=2}%
+}
 
 % additional packages
 \usepackage{amsmath}
@@ -21,7 +26,11 @@
 \usepackage{graphicx}
 \usepackage{float} % para usar [H] si quieres fijar la figura
 \usepackage{longtable}
-
+\AtBeginDocument{%
+  \ifcsname decimalpoint\endcsname
+    \decimalpoint
+  \fi
+}
 \setlength{\cftbeforechapskip}{7pt}
 \setcounter{tocdepth}{4} % ToC depth
 
@@ -65,8 +74,21 @@
 \setlength{\intextsep}{6pt}      % Espacio entre texto y figuras
 \setlength{\textfloatsep}{6pt}   % Espacio entre texto y flotantes
 
+% Mejor aprovechamiento del espacio en páginas con tablas y figuras
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.80}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.85}
 
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{3}
+\setcounter{totalnumber}{6}
+
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 \begin{document}
+\raggedbottom
 \renewcommand{\tablename}{Tabla}
 \renewcommand{\listfigurename}{Lista de figuras}
 \renewcommand{\listtablename}{Lista de tablas}

@@ -6,20 +6,20 @@
 %--------------------------------------------------------------------------------------
 \section{Marco teórico}
 \label{sec:Marco-teorico}
-    El estudio de la pobreza desde una perspectiva territorial exige bases conceptuales y metodológicas que permitan comprender tanto la naturaleza multidimensional del fenómeno como los desafíos asociados a su medición en escalas geográficas pequeñas. En particular, la combinación de encuestas de hogares con fuentes censales y registros administrativos abre la posibilidad de utilizar metodologías estadísticas avanzadas que compensen la falta de representatividad muestral en dominios territoriales pequeños.  
-    
-    Este capítulo presenta los fundamentos teóricos que sustentan el uso de técnicas de SAE, sus extensiones espaciales y los aportes recientes de la ciencia de datos para el análisis territorial de la pobreza. Se integran además antecedentes relevantes que demuestran el uso y la pertinencia de estas metodologías en América Latina y Colombia. Las definiciones, ecuaciones y criterios que se presentan a continuación son los que se aplican operativamente en la Sección~\ref{sec:metodologia} y cuyos valores se reportan en la Sección~\ref{sec:resultados}.
+    El estudio de la pobreza desde una perspectiva territorial exige bases conceptuales y metodológicas que permitan comprender tanto la naturaleza multidimensional del fenómeno como los desafíos asociados a su medición en escalas geográficas pequeñas. En particular, la combinación de encuestas de hogares con fuentes censales y registros administrativos abre la posibilidad de utilizar metodologías estadísticas avanzadas que compensen la falta de representatividad muestral en dominios territoriales pequeños.
+
+    Este capítulo presenta los fundamentos teóricos que sustentan el uso de técnicas de SAE, sus extensiones espaciales y los aportes recientes de la ciencia de datos para el análisis territorial de la pobreza. Cada tema se desarrolla en dos niveles: primero el fundamento general, es decir, qué es el concepto o modelo y qué problema estadístico resuelve; y a continuación su particularización al presente trabajo, es decir, cómo se utiliza exactamente en este estudio, con qué unidades, en qué escala geográfica, qué parámetros se estiman, cuáles se fijan y cuáles son las limitaciones derivadas de los datos disponibles. Las definiciones, ecuaciones y criterios que se presentan a continuación son los que se aplican operativamente en la Sección~\ref{sec:metodologia} y cuyos valores se reportan en la Sección~\ref{sec:resultados}; ninguna formulación de este capítulo difiere de lo que efectivamente se implementa.
 
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
-\subsection{Contexto del estudio}
+\subsection{IPM y parámetro de interés}
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Índice de Pobreza Multidimensional (IPM)}
+\subsubsection{Definición del IPM}
+\label{subsec:def_IPM}
 
-La pobreza multidimensional reconoce que las privaciones que enfrentan los hogares trascienden el ingreso e incluyen dimensiones como salud, educación, vivienda, servicios básicos y empleo. Su medición se apoya en el método de conteo propuesto por Alkire y Foster \cite{alkire2011}, que identifica a los hogares privados en un número suficiente de indicadores y agrega esa información en una medida única. En Colombia, la medición oficial se realiza mediante el IPM, lo que permite identificar privaciones específicas y orientar intervenciones focalizadas \cite{DANE_PobrezaMultidimensional_2023}.
-
-El método de Alkire y Foster parte de una matriz de privaciones en la que cada hogar $h$ recibe un valor $g_{hj}$ igual a uno si presenta privación en el indicador $j$ y cero en caso contrario. A cada indicador se le asigna un peso $w_j$, de modo que el puntaje de privación del hogar corresponde a la suma ponderada de sus privaciones, según la Ecuación~\ref{eq:puntaje-privacion}.
+\paragraph{Fundamento general.}
+La pobreza multidimensional reconoce que las privaciones que enfrentan los hogares trascienden el ingreso e incluyen dimensiones como salud, educación, vivienda, servicios básicos y empleo. Su medición se apoya en el método de conteo propuesto por Alkire y Foster \cite{alkire2011}, que identifica a los hogares privados en un número suficiente de indicadores y agrega esa información en una medida única. El método parte de una matriz de privaciones en la que cada hogar $h$ recibe un valor $g_{hj}$ igual a uno si presenta privación en el indicador $j$ y cero en caso contrario. A cada indicador se le asigna un peso $w_j$, de modo que el puntaje de privación del hogar corresponde a la suma ponderada de sus privaciones, según la Ecuación~\ref{eq:puntaje-privacion}.
 
 \begin{equation}
     c_h = \sum_{j=1}^{J} w_j\, g_{hj},
@@ -36,368 +36,436 @@ El método de Alkire y Foster parte de una matriz de privaciones en la que cada 
     \item $J$: número total de indicadores considerados.
 \end{itemize}
 
-Un hogar se identifica como pobre multidimensional cuando su puntaje de privación alcanza o supera un umbral $k$, fijado en la medición oficial colombiana en un tercio de las privaciones ponderadas. La incidencia de pobreza multidimensional del dominio corresponde entonces a la proporción de personas que residen en hogares identificados como pobres, tal como expresa la Ecuación~\ref{eq:incidencia-ipm}.
+Un hogar se identifica como pobre multidimensional cuando su puntaje de privación alcanza o supera un umbral $k$, fijado en la medición oficial colombiana en un tercio de las privaciones ponderadas. La incidencia de pobreza multidimensional del dominio corresponde a la proporción de personas que residen en hogares identificados como pobres, tal como expresa la Ecuación~\ref{eq:incidencia-ipm}.
 
 \begin{equation}
-    H = \frac{1}{N} \sum_{h=1}^{N} \mathbb{1}(c_h \geq k)
+    H = \frac{\sum_{h=1}^{M} n_h\, \mathbb{1}(c_h \geq k)}{\sum_{h=1}^{M} n_h} = \frac{1}{N}\sum_{h=1}^{M} n_h\, \mathbb{1}(c_h \geq k)
     \label{eq:incidencia-ipm}
 \end{equation}
 
-\noindent donde $N$ es el total de personas del dominio, $\mathbb{1}(\cdot)$ es la función indicadora y $k$ el umbral de identificación. Esta incidencia es la cantidad que el presente trabajo estima a escala municipal y la que, calculada sobre la ECV, constituye la estimación directa departamental descrita en la Subsección~\ref{subsec:estimadores-directos}.
+\noindent donde $H$ es la incidencia de pobreza multidimensional, $M$ es el número de hogares del dominio, $n_h$ el número de personas del hogar $h$, $N=\sum_h n_h$ el total de personas del dominio, $\mathbb{1}(\cdot)$ la función indicadora y $k$ el umbral de identificación.
+
+Al respecto, vale la pena recordar el concepto específico de pobreza multidimensional estimado en este estudio. En el marco de la metodología de Alkire y Foster \cite{alkire2011}, el indicador analizado corresponde estrictamente a la \textbf{incidencia o tasa de recuento ($H$)}, la cual mide la proporción de personas que residen en hogares identificados como multidimensionalmente pobres. Por lo que conviene distinguirlo explícitamente del índice ajustado de pobreza multidimensional ($M_0 = H \times A$), donde $A$ representa la intensidad promedio de las privaciones sufridas por la población en situación de pobreza.
+
+Asimismo, operativamente se destaca que, aunque la condición de privación ($\mathbb{1}(c_h \geq k)$) se evalúa a nivel del hogar $h$, la estimación final se calcula sobre las personas. Como se formaliza en las Ecuaciones~\ref{eq:incidencia-ipm} y~\ref{eq:estimador-directo}, esta transición se realiza ponderando cada hogar tanto por el número de sus integrantes ($n_h$) como por su factor de expansión ($\pi_h^{-1}$) derivado del diseño muestral complejo de la ECV, garantizando que la proporción estimada represente correctamente a la población total de personas del dominio.
+
+\paragraph{Particularización al trabajo.}
+La cantidad que este trabajo estima a escala municipal es $H$, expresada en una escala de 0 a 100, es decir, en puntos porcentuales de personas en condición de pobreza multidimensional. Esta es la única escala que se utiliza en todo el documento: en el resumen, en las ecuaciones de los modelos, en la metodología, en las tablas de resultados, en la cartografía y en las unidades de la varianza directa $v_d$ y del error cuadrático medio. Cuando una covariable o un indicador auxiliar se procesa internamente en proporción (0 a 1), dicha transformación se documenta de forma explícita en la Sección~\ref{sec:metodologia} y no afecta la escala en que se reporta el IPM.
 
 La disponibilidad territorial del IPM es limitada: salvo la estimación derivada del Censo 2018, no existen mediciones periódicas para los 1{,}122 municipios del país \cite{DANE_PobrezaMultidimensional_2023}. Esta brecha de información dificulta el diagnóstico local y la formulación de políticas basadas en evidencia, especialmente en zonas con baja representatividad estadística, y motiva el uso de técnicas capaces de producir estimaciones confiables a nivel municipal mediante fuentes auxiliares, como SAE \cite{DANE_ProyectoSAE_2023}.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Modelos SAE}
+\subsubsection{Arquitectura estadística del estudio}
 
-Los modelos SAE ofrecen una base estadística sólida para generar estimaciones precisas en dominios con escasa muestra, mediante la integración de información proveniente de censos, registros administrativos y encuestas \cite{CEPAL_PovertyMapping_2022}. Existen dos grandes enfoques: los modelos de área, como el modelo Fay-Herriot, que utilizan estimaciones directas agregadas y covariables auxiliares; y los modelos de unidad, que emplean microdatos para capturar variabilidad individual \cite{RaoMolina_2015}. La selección depende de la calidad y granularidad de las fuentes disponibles, pero ambos enfoques permiten mejorar la precisión, reducir la varianza y generar estimaciones territorialmente consistentes, lo cual es fundamental en contextos municipales.
+\paragraph{Fundamento general.}
+Un ejercicio de estimación en áreas pequeñas distingue dos niveles territoriales: el nivel en el que existe información muestral directa, denominado dominio, y el nivel sobre el cual se desea producir una estimación, denominado unidad objetivo. Cuando ambos niveles coinciden no es necesario recurrir a SAE; la necesidad de estas técnicas surge precisamente cuando la unidad objetivo es más fina que el dominio con información directa \cite{RaoMolina_2015}.
 
-No obstante, cuando los indicadores presentan patrones territoriales no explicados completamente por las covariables, resulta necesario recurrir a enfoques espaciales que modelen explícitamente la dependencia geográfica. Los modelos espaciales integran estructuras de vecindad o efectos aleatorios espaciales, lo que permite suavizar las estimaciones entre municipios contiguos y reducir variabilidad no explicada. La literatura demuestra que estos modelos mejoran la coherencia territorial, especialmente en dominios pequeños y heterogéneos como los municipios colombianos \cite{PratesiSalvati_2019}.
-
-Las herramientas de ciencia de datos complementan la metodología de estimación en tres frentes. El primero es la selección de variables auxiliares, apoyada en criterios de relevancia temática, disponibilidad de fuentes oficiales y diagnósticos econométricos como el Factor de Inflación de Varianza descrito en la Subsección~\ref{subsec:ols}, que permite descartar predictores redundantes \cite{Greene_2018}. El segundo es la incorporación de fuentes heterogéneas, entre ellas información satelital como el Visible Infrared Imaging Radiometer Suite (VIIRS), cuya luminosidad nocturna opera como aproximación de la actividad económica municipal. El tercero es la visualización mediante mapas temáticos, que facilita a instituciones y tomadores de decisión la interpretación de los patrones territoriales resultantes \cite{CEPAL_DPS_MapaPobreza_2021}.
-
-La aplicación de modelos SAE y de sus extensiones espaciales depende directamente de la disponibilidad de covariables confiables y de cobertura completa. En este proyecto se emplean fuentes oficiales como el Censo Nacional de Población y Vivienda 2018, la GEIH y la ECV del DANE, registros administrativos sectoriales y datos geoespaciales abiertos \cite{DANE_PobrezaMultidimensional_2023, DANE_ENCV_2022, dane2024}. A partir de estas fuentes se derivan variables relacionadas con condiciones de vivienda, servicios públicos, educación, entorno e infraestructura, orientadas a mejorar la capacidad de estimación del modelo y compensar la baja representatividad muestral en muchos municipios.
-
-Estas herramientas conceptuales y metodológicas sustentan el desarrollo del proyecto al permitir generar estimaciones municipales del IPM más precisas y territorialmente coherentes, y aportan una base para el análisis territorial en contextos con limitaciones de información estadística.
+\paragraph{Particularización al trabajo.}
+En este estudio el dominio con información directa es el departamento: se dispone de 33 estimaciones directas del IPM 2024, una por departamento, cada una con su varianza de muestreo. La unidad objetivo es el municipio: el propósito del trabajo es generar una estimación del IPM 2024 para 1{,}121 municipios que no cuentan con una respuesta directa observada en ese año. Las covariables auxiliares, en cambio, sí están disponibles a escala municipal para la totalidad del territorio. Esta asimetría, con 33 respuestas departamentales observadas frente a covariables municipales completas, es la que justifica el uso de modelos de área calibrados a nivel departamental (Modelo 1) y de formulaciones que explotan la información municipal de las covariables antes de agregar (Modelos 2 y 3), según se detalla en las Subsecciones~\ref{subsec:fay-herriot} a~\ref{subsec:car}.
 
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
-\subsection{Métodos y modelos}
 
-%--------------------------------------------------------------------------------------
-\subsubsection{Estimadores directos}
+\subsection{Estimador directo y varianza muestral}
 \label{subsec:estimadores-directos}
 
-Se denomina estimador directo a aquel que utiliza exclusivamente la información muestral del dominio de interés, sin recurrir a información externa ni a supuestos de modelo. Bajo el diseño muestral probabilístico de una encuesta como la ECV, el estimador directo de una proporción se construye mediante los factores de expansión del diseño, según la Ecuación~\ref{eq:estimador-directo}, y es aproximadamente insesgado por diseño \cite{SarndalSwenssonWretman_1992}.
+\paragraph{Fundamento general.}
+Se denomina estimador directo a aquel que utiliza la información muestral del dominio de interés y los elementos correspondientes de su diseño muestral, sin recurrir a un modelo de predicción basado en covariables auxiliares. Bajo el diseño probabilístico de una encuesta de hogares, el estimador directo de una proporción puede construirse mediante los factores de expansión del diseño, según la Ecuación~\ref{eq:estimador-directo} \cite{SarndalSwenssonWretman_1992}.
 
 \begin{equation}
-    \hat{y}_d = \frac{\sum_{h \in s_d} \pi_h^{-1}\, \mathbb{1}(c_h \geq k)}{\sum_{h \in s_d} \pi_h^{-1}}
+    \hat{Y}_d^{dir} = 100 \cdot \frac{\sum_{h \in s_d} \pi_h^{-1}\, n_h\, \mathbb{1}(c_h \geq k)}{\sum_{h \in s_d} \pi_h^{-1}\, n_h}
     \label{eq:estimador-directo}
 \end{equation}
 
 \noindent donde:
 
 \begin{itemize}
-    \item $\hat{y}_d$: estimación directa del IPM para el departamento $d$.
-    \item $s_d$: conjunto de unidades de la muestra pertenecientes al dominio $d$.
-    \item $\pi_h$: probabilidad de inclusión de la unidad $h$ en la muestra.
-    \item $\mathbb{1}(c_h \geq k)$: identificación del hogar como pobre multidimensional, según la Ecuación~\ref{eq:incidencia-ipm}.
+    \item $\hat{Y}_d^{dir}$: estimación directa de la incidencia del IPM para el dominio $d$, expresada en la escala 0--100.
+    \item $s_d$: conjunto de hogares de la muestra pertenecientes al dominio $d$.
+    \item $\pi_h$: probabilidad de inclusión del hogar $h$ en la muestra, cuyo inverso $\pi_h^{-1}$ representa su factor de expansión.
+    \item $n_h$: número de personas del hogar $h$, utilizado para expresar la incidencia en términos de población y no de hogares.
+    \item $\mathbb{1}(c_h \geq k)$: función indicadora que identifica al hogar como pobre multidimensional, según la Ecuación~\ref{eq:incidencia-ipm}.
 \end{itemize}
 
-La propiedad de insesgamiento por diseño es la que justifica tratar la estimación directa como punto de referencia empírico del ejercicio. Su limitación es la precisión: en dominios con muestra reducida, la varianza de muestreo crece hasta comprometer la utilidad del estimador, que es precisamente el problema que los modelos SAE buscan resolver \cite{RaoMolina_2015}.
+La utilización de estimaciones directas como referencia empírica se fundamenta en sus propiedades bajo el diseño muestral. Sin embargo, su precisión depende del tamaño y de las características de la muestra disponible en cada dominio. Cuando esta resulta insuficiente, la varianza de muestreo puede aumentar y limitar la utilidad de la estimación directa, situación que motiva la aplicación de modelos de Estimación en Áreas Pequeñas (SAE) \cite{RaoMolina_2015}.
 
-La varianza directa se calcula como en la Ecuación~\ref{eq:varianza-directa}, como el cuadrado del error estándar reportado para cada estimación directa:
+En este estudio, la varianza de muestreo de cada dominio se obtiene elevando al cuadrado el error estándar correspondiente a la estimación directa, según la Ecuación~\ref{eq:varianza-directa}.
 
 \begin{equation}
-    v_d = [SE(\hat{y}_d)]^2
+    v_d = \left[SE\!\left(\hat{Y}_d^{dir}\right)\right]^2
     \label{eq:varianza-directa}
 \end{equation}
 
-\noindent donde:
+\noindent donde $v_d$ representa la varianza de muestreo del dominio $d$ y $SE(\hat{Y}_d^{dir})$ corresponde al error estándar de su estimación directa.
 
-\begin{itemize}
-    \item $\hat{y}_d$: IPM directo estimado para el departamento $d$.
-    \item $SE(\hat{y}_d)$: error estándar de la estimación directa.
-    \item $v_d$: varianza directa asociada al departamento $d$.
-\end{itemize}
+En los modelos de área utilizados en esta investigación, las varianzas $v_d$ se tratan como cantidades conocidas y fijas, aunque proceden de estimaciones basadas en el diseño muestral. Esta es una aproximación habitual en la formulación Fay--Herriot, que permite incorporar la incertidumbre de las estimaciones directas al combinar información muestral y auxiliar \cite{RaoMolina_2015}, tal como se desarrolla en la Subsección~\ref{subsec:fay-herriot}.
 
-En la arquitectura de los modelos de área, esta varianza se trata como una cantidad fija y conocida, derivada del diseño muestral de la encuesta y no de la especificación del modelo sintético \cite{RaoMolina_2015}. Este supuesto es el que permite que la estimación directa y la información auxiliar se combinen de manera óptima, tal como se describe en la Subsección~\ref{subsec:fay-herriot}.
+\paragraph{Particularización al trabajo.}
+Las estimaciones directas departamentales de la incidencia del IPM correspondientes a 2024 y sus respectivos errores estándar se obtuvieron de las estadísticas oficiales del Departamento Administrativo Nacional de Estadística (DANE), derivadas de la Encuesta Nacional de Calidad de Vida (ECV) 2024. Por tanto, el equipo de investigación no recalculó las estimaciones directas ni sus errores estándar a partir de los microdatos de la encuesta, sino que consolidó los valores publicados y calculó las varianzas de muestreo mediante la Ecuación~\ref{eq:varianza-directa}.
+
+La Ecuación~\ref{eq:estimador-directo} se presenta como fundamento conceptual del estimador directo de incidencia, y no como un procedimiento de estimación ejecutado nuevamente por el equipo. Las estimaciones oficiales utilizadas incorporan el tratamiento del diseño muestral correspondiente a la operación estadística del DANE.
+
+Las estimaciones directas $\hat{Y}_d^{dir}$ y sus errores estándar se expresan en puntos porcentuales, dentro de la escala de 0 a 100 definida para el indicador. En consecuencia, las varianzas $v_d$ se encuentran expresadas en puntos porcentuales al cuadrado. Esta distinción de unidades se mantiene en las formulaciones y resultados de los tres modelos.
+
+La información comprende 33 dominios territoriales, correspondientes a los 32 departamentos y Bogotá D.C., que constituyen las unidades de calibración y validación departamental de los modelos. En contraste, no se dispone de estimaciones directas oficiales del IPM 2024 con representatividad para los municipios del país, por lo que las estimaciones municipales generadas corresponden a resultados indirectos o modelados.
+
+Esta diferencia entre el nivel geográfico de la información directa y el nivel objetivo de estimación constituye el fundamento de la estrategia metodológica adoptada: el Modelo 1 utiliza una formulación Fay--Herriot departamental con proyección sintética municipal, mientras que los Modelos 2 y 3 aprovechan la información auxiliar municipal para producir estimaciones no lineales acotadas, incorporando en el tercero un componente espacial de rango reducido. Las formulaciones se desarrollan en las Subsecciones~\ref{subsec:fay-herriot} a~\ref{subsec:car}, y el origen de las fuentes utilizadas se detalla en la Sección~\ref{sec:datos}.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Matriz de covariables auxiliares y agregación de dominios}
+%--------------------------------------------------------------------------------------
+\subsection{Covariables y agregación}
 \label{subsec:covariables}
 
-La información auxiliar se organiza en una matriz $\mathbf{X}$ cuyas filas corresponden a las unidades territoriales y cuyas columnas corresponden a los predictores considerados. Dado que la estimación directa del IPM está disponible únicamente a escala departamental, mientras que las covariables se construyen a escala municipal, la calibración de los modelos de área requiere agregar esa información al nivel departamental.
-
-El promedio aritmético simple resulta inadecuado para este propósito, ya que asigna el mismo peso relativo a municipios con magnitudes poblacionales muy distintas, lo que introduce un sesgo de agregación. La agregación se fundamenta entonces en promedios ponderados por la subpoblación de referencia de cada indicador, según la Ecuación~\ref{eq:agregacion-ponderada}.
+\paragraph{Fundamento general.}
+Cuando la información auxiliar se mide a una escala geográfica distinta de aquella en la que se calibra el modelo, es necesario definir un procedimiento de agregación que traslade la covariable de la escala fina a la escala del dominio. El promedio aritmético simple resulta inadecuado para este propósito en la mayoría de las aplicaciones, ya que asigna el mismo peso relativo a unidades con magnitudes poblacionales muy distintas, lo que introduce un sesgo de agregación. La alternativa estándar es el promedio ponderado por la subpoblación de referencia de cada indicador, según la Ecuación~\ref{eq:agregacion-ponderada}.
 
 \begin{equation}
     \bar{X}_{d}^{(j)} = \frac{\sum_{i \in d} p_i^{(j)}\, X_{i}^{(j)}}{\sum_{i \in d} p_i^{(j)}}
     \label{eq:agregacion-ponderada}
 \end{equation}
 
-\noindent donde:
+\noindent donde $\bar{X}_{d}^{(j)}$ es el valor agregado de la covariable $j$ para el dominio $d$, $X_{i}^{(j)}$ el valor de la covariable $j$ en la unidad fina $i$, y $p_i^{(j)}$ el denominador poblacional pertinente al indicador $j$ en la unidad $i$.
 
-\begin{itemize}
-    \item $\bar{X}_{d}^{(j)}$: valor agregado de la covariable $j$ para el departamento $d$.
-    \item $X_{i}^{(j)}$: valor de la covariable $j$ en el municipio $i$.
-    \item $p_i^{(j)}$: denominador poblacional pertinente al indicador $j$ en el municipio $i$.
-\end{itemize}
-
-La elección del denominador $p_i^{(j)}$ responde a la unidad de exposición de cada fenómeno: los indicadores educativos se ponderan por la población entre 5 y 16 años, que corresponde al grupo expuesto al riesgo de rezago o inasistencia; los indicadores de mortalidad infantil se ponderan por el total de nacidos vivos, que constituye la exposición epidemiológica real; y los indicadores de infraestructura y contexto económico se ponderan por la población total municipal, dada su naturaleza de cobertura universal.
-
-Corresponde señalar que la ponderación corrige el peso relativo de los municipios, pero no elimina la pérdida de información inherente a cualquier agregación. La varianza total de una covariable admite una descomposición entre la variación que ocurre entre departamentos y la que ocurre entre los municipios de un mismo departamento, como expresa la Ecuación~\ref{eq:descomposicion-varianza}.
+La ponderación corrige el peso relativo de las unidades, pero no elimina la pérdida de información inherente a cualquier agregación. La varianza total de una covariable admite una descomposición entre la variación que ocurre entre dominios y la que ocurre dentro de cada dominio, como expresa la Ecuación~\ref{eq:descomposicion-varianza}.
 
 \begin{equation}
     \underbrace{\sum_{d}\sum_{i \in d} (X_i - \bar{X})^2}_{\text{variación total}} =
-    \underbrace{\sum_{d} n_d (\bar{X}_d - \bar{X})^2}_{\text{entre departamentos}} +
-    \underbrace{\sum_{d}\sum_{i \in d} (X_i - \bar{X}_d)^2}_{\text{dentro de cada departamento}}
+    \underbrace{\sum_{d} n_d (\bar{X}_d - \bar{X})^2}_{\text{entre dominios}} +
+    \underbrace{\sum_{d}\sum_{i \in d} (X_i - \bar{X}_d)^2}_{\text{dentro de cada dominio}}
     \label{eq:descomposicion-varianza}
 \end{equation}
 
-Cuando la mayor parte de la variación es intradepartamental, condensar los datos en una sola medida departamental oculta los contrastes internos del territorio. Esta restricción afecta de manera desigual a las formulaciones evaluadas en este trabajo: el modelo de área utiliza únicamente los promedios departamentales $\bar{X}_d$, mientras que las formulaciones de desagregación municipal evalúan el modelo sobre la covariable específica de cada municipio $X_i$ antes de agregar sus resultados, lo que les permite conservar la dispersión interna de cada dominio.
+\noindent donde $X_i$ es el valor de la covariable en la unidad fina $i$, $\bar{X}_d$ su promedio dentro del dominio $d$, $\bar{X}$ su promedio sobre todas las unidades y $n_d$ el número de unidades finas que pertenecen al dominio $d$.
+
+Cuando la mayor parte de la variación es intradominio, condensar los datos en una sola medida agregada oculta los contrastes internos del territorio.
+
+\paragraph{Particularización al trabajo.}
+Las covariables auxiliares de este estudio se construyen a escala municipal, mientras que la respuesta directa solo está disponible a escala departamental (Subsección anterior). Por ello, la agregación de la Ecuación~\ref{eq:agregacion-ponderada} es indispensable para calibrar el Modelo 1 (Fay-Herriot), que requiere covariables departamentales $\bar{X}_d^{(j)}$. El denominador $p_i^{(j)}$ se elige según la unidad de exposición de cada fenómeno: los indicadores educativos (repitencia y tasa de matriculación) se ponderan por la población municipal entre 5 y 16 años; la mortalidad infantil se pondera por el total de nacidos vivos; y el resto de covariables (infraestructura básica, cobertura de energía rural, aseguramiento en salud y luminosidad nocturna satelital del sensor VIIRS, por las siglas de Visible Infrared Imaging Radiometer Suite) se ponderan por la población municipal total.
+
+Los Modelos 2 y 3, en cambio, no agregan las covariables antes de ajustar: evalúan el predictor sobre la covariable municipal específica $X_i$ de cada uno de los 1{,}121 municipios y solo agregan el resultado de esa evaluación al nivel departamental, mediante la Ecuación~\ref{eq:agregacion-nolineal} de la Subsección~\ref{subsec:no-lineal}. Esta distinción en el orden de las operaciones, que consiste en agregar las covariables antes de evaluar en el Modelo 1 y en evaluar antes de agregar en los Modelos 2 y 3, es la que permite a las formulaciones 2 y 3 conservar la dispersión interna de cada departamento que la Ecuación~\ref{eq:descomposicion-varianza} hace explícita, y se retoma en la Subsección~\ref{subsec:no-lineal}.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Datos de entrenamiento y prueba}
+%--------------------------------------------------------------------------------------
+\subsection{Preprocesamiento y datos faltantes}
+
+\paragraph{Fundamento general.}
+La presencia de registros incompletos en las fuentes auxiliares admite dos tratamientos generales. El primero consiste en imputar los valores ausentes mediante algoritmos que estiman el dato faltante a partir de la información disponible en el resto de la matriz. El segundo consiste en restringir el análisis a las unidades con información completa en todas las variables requeridas, procedimiento conocido como análisis de casos completos. La imputación resulta pertinente cuando la proporción de datos ausentes es elevada y su exclusión comprometería la representatividad del dominio, pero introduce valores que no provienen de la observación directa. El análisis de casos completos evita esa fuente adicional de incertidumbre, a costa de reducir el tamaño de la muestra analítica cuando la proporción de faltantes es relevante.
+
+\paragraph{Particularización al trabajo.}
+En este trabajo se adopta el análisis de casos completos, aplicando un criterio de completitud común a las tres formulaciones evaluadas: solo se conservan en la base analítica los municipios con información disponible en la totalidad de covariables del escenario más amplio. La muestra final retiene 1{,}121 de los 1{,}122 municipios del país, es decir, se excluye un único municipio por datos faltantes, proporción que no justifica recurrir a imputación. La razón para exigir el mismo criterio de completitud a las tres formulaciones es de comparabilidad: al ajustarse sobre exactamente el mismo conjunto de unidades territoriales, las diferencias observadas en las métricas de desempeño entre Modelos 1, 2 y 3 resultan atribuibles a la especificación de cada modelo y no a variaciones en la muestra subyacente. El municipio excluido, la variable que motivó la exclusión y el detalle de los demás controles de calidad aplicados a los datos (duplicados, códigos territoriales, valores fuera de rango) se documentan en la Sección~\ref{sec:metodologia}.
+
+%--------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------
+\subsection{Validación por dominio}
 \label{subsec:validacion}
 
-La evaluación del desempeño en estimación para áreas pequeñas exige un esquema de validación adaptado a la estructura jerárquica de los datos. A diferencia de los problemas de aprendizaje supervisado convencionales, donde la unidad de análisis y la unidad de inferencia coinciden, en este tipo de ejercicio el parámetro de interés se calibra a nivel de dominios agregados para proyectar estimaciones sobre subáreas que no cuentan con estimación directa observable.
+\paragraph{Fundamento general.}
+La evaluación del desempeño en estimación para áreas pequeñas exige un esquema de validación adaptado a la estructura jerárquica de los datos. A diferencia de los problemas de aprendizaje supervisado convencionales, donde la unidad de análisis y la unidad de inferencia coinciden, en este tipo de ejercicio el parámetro de interés se calibra a nivel de dominios agregados para proyectar estimaciones sobre unidades que no cuentan con estimación directa observable. Bajo esta estructura, los esquemas habituales de validación cruzada por partición aleatoria de observaciones resultan inadecuados: dividir unidades finas de forma aleatoria filtraría información del mismo dominio hacia los conjuntos de ajuste y de evaluación, midiendo la capacidad del modelo para reproducir patrones ya observados en lugar de su desempeño sobre dominios no observados.
 
-Bajo esta estructura, los esquemas habituales de validación cruzada por partición aleatoria de observaciones resultan inadecuados. Dividir municipios de forma aleatoria filtraría información del mismo departamento hacia los conjuntos de ajuste y de evaluación, midiendo la capacidad del modelo para reproducir patrones ya observados en lugar de su desempeño sobre dominios no observados.
-
-La alternativa adoptada en este trabajo es la validación por exclusión de dominio completo (Leave-One-Domain-Out, LODO). En cada iteración $d = 1, \dots, D$ se excluye la totalidad de la información del dominio $d$, se reestiman los parámetros del modelo utilizando únicamente los $D-1$ dominios restantes, y se estima el indicador del dominio omitido empleando exclusivamente la componente sintética, según la Ecuación~\ref{eq:lodo}.
+La alternativa es la validación por exclusión de dominio completo (LODO, por sus siglas en inglés). En cada iteración $d = 1, \dots, D$ se excluye la totalidad de la información del dominio $d$, se reestiman los parámetros del modelo utilizando únicamente los $D-1$ dominios restantes, y se estima el indicador del dominio omitido empleando exclusivamente la componente sintética, según la Ecuación~\ref{eq:lodo}.
 
 \begin{equation}
     \hat{\theta}_d^{(-d)} = f\!\left(\mathbf{X}_d,\; \hat{\boldsymbol{\beta}}^{(-d)}\right)
     \label{eq:lodo}
 \end{equation}
 
-\noindent donde $\hat{\boldsymbol{\beta}}^{(-d)}$ denota el vector de parámetros estimado sin la información del dominio $d$ y $f(\cdot)$ la forma funcional de la especificación evaluada. Este procedimiento reproduce el escenario operativo del estudio: estimar el indicador en unidades territoriales que no disponen de información directa.
+\noindent donde $\hat{\theta}_d^{(-d)}$ es la estimación del dominio $d$ obtenida sin utilizar ninguna información de ese dominio, $\mathbf{X}_d$ las covariables del dominio excluido, $\hat{\boldsymbol{\beta}}^{(-d)}$ el vector de parámetros estimado sin la información del dominio $d$ y $f(\cdot)$ la forma funcional de la especificación evaluada.
 
-La validez del esquema depende de que ninguna información del dominio excluido intervenga en su propia estimación. Por ello se aplican tres reglas de manera uniforme a las tres formulaciones evaluadas: el dominio excluido no recibe el ajuste de coherencia con los agregados oficiales descrito en la Subsección~\ref{subsec:no-lineal}, dado que ese procedimiento se apoya en la estimación directa que se busca reproducir; los parámetros de estandarización de las covariables se recalculan en cada iteración utilizando solo los dominios de entrenamiento; y la optimización se ejecuta con múltiples arranques para reducir el riesgo de converger a óptimos locales distintos entre iteraciones.
-
-La estandarización de predictores mencionada consiste en una transformación $z$, definida en la Ecuación~\ref{eq:zscore}, que mitiga los problemas de mal condicionamiento numérico derivados de las diferencias de escala entre covariables.
+\paragraph{Particularización al trabajo.}
+En este estudio $D=33$ departamentos constituyen los dominios de validación LODO, aplicados de manera uniforme a las tres formulaciones (M1, M2 y M3). La validez del esquema depende de que ninguna información del departamento excluido intervenga en su propia estimación. Por ello se aplican tres reglas en cada iteración: el departamento excluido no recibe el ajuste de benchmarking descrito en las Subsecciones~\ref{subsec:no-lineal} y~\ref{subsec:car}, dado que ese procedimiento se apoya en la estimación directa que se busca reproducir; los parámetros de estandarización de las covariables, definidos en la Ecuación~\ref{eq:zscore}, se recalculan en cada iteración utilizando solo los dominios de entrenamiento; y la optimización numérica de los Modelos 2 y 3 se ejecuta con múltiples arranques para reducir el riesgo de converger a óptimos locales distintos entre iteraciones. La base espacial de rango reducido del Modelo 3, descrita en la Subsección~\ref{subsec:car}, es la única cantidad que no se recalcula en cada pliegue, ya que se construye exclusivamente a partir de la geometría municipal y no incorpora información de la respuesta.
 
 \begin{equation}
     z_i^{(j)} = \frac{X_i^{(j)} - \mu_j^{(-d)}}{\sigma_j^{(-d)}}
     \label{eq:zscore}
 \end{equation}
 
-\noindent donde $\mu_j^{(-d)}$ y $\sigma_j^{(-d)}$ corresponden a la media y la desviación estándar de la covariable $j$ calculadas exclusivamente sobre los municipios de los dominios de entrenamiento.
+\noindent donde $z_i^{(j)}$ es el valor estandarizado de la covariable $j$ en el municipio $i$, y $\mu_j^{(-d)}$ y $\sigma_j^{(-d)}$ corresponden a la media y la desviación estándar de la covariable $j$ calculadas exclusivamente sobre los municipios de los departamentos de entrenamiento en la iteración que excluye el dominio $d$.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Datos faltantes y técnicas de imputación}
+%--------------------------------------------------------------------------------------
+\subsection{Construcción de los escenarios de covariables}
+\label{subsec:escenarios}
 
-La presencia de registros incompletos en las fuentes auxiliares admite dos tratamientos generales. El primero consiste en imputar los valores ausentes mediante algoritmos que estiman el dato faltante a partir de la información disponible en el resto de la matriz. El segundo consiste en restringir el análisis a las unidades con información completa en todas las variables requeridas, procedimiento conocido como análisis de casos completos.
+\paragraph{Fundamento general.}
+En presencia de múltiples covariables candidatas, es habitual contrastar varias configuraciones de variables auxiliares antes de seleccionar una especificación final, con el fin de evaluar la sensibilidad de los resultados a la composición del conjunto de predictores y de documentar la redundancia entre variables mediante diagnósticos como el Factor de Inflación de Varianza (VIF, por sus siglas en inglés), definido en la Subsección~\ref{subsec:ols}.
 
-La imputación resulta pertinente cuando la proporción de datos ausentes es elevada y su exclusión comprometería la representatividad del dominio, pero introduce valores que no provienen de la observación directa y cuya incertidumbre no siempre se propaga de manera explícita hacia las estimaciones finales. El análisis de casos completos evita esa fuente adicional de incertidumbre, a costa de reducir el tamaño de la muestra analítica.
-
-En este trabajo se adopta el análisis de casos completos, aplicando un criterio de completitud común a las tres formulaciones evaluadas. La razón es de comparabilidad: al exigir que todas las formulaciones se ajusten sobre exactamente el mismo conjunto de unidades territoriales, las diferencias observadas en las métricas de desempeño resultan atribuibles a la especificación de cada modelo y no a variaciones en la muestra subyacente. Esta decisión es viable en la medida en que la proporción de registros excluidos sea marginal, condición que se verifica en la Sección~\ref{sec:resultados}.
+\paragraph{Particularización al trabajo.}
+Este estudio contrasta tres escenarios de covariables, definidos de manera fija antes de ejecutar el análisis de regresión exploratorio (Subsección~\ref{subsec:ols}) y la validación LODO, de modo que ninguno de los tres se ajustó ni se modificó a partir de los resultados de desempeño obtenidos con ellos. El escenario E1 (Completa) incluye las siete covariables disponibles; el escenario E2 (Parsimoniosa) retiene una covariable por cada dimensión del IPM representada en los datos, con el fin de limitar el número de parámetros frente a los 33 dominios disponibles; y el escenario E3 (Alternativo) sustituye la covariable de infraestructura básica por la cobertura de energía rural, con el fin de evaluar una aproximación alternativa a la dimensión de vivienda del IPM. Los tres escenarios se evalúan bajo el mismo esquema LODO para las tres formulaciones (M1, M2 y M3), lo que permite comparar el aporte de la composición de covariables de manera independiente del modelo utilizado.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Modelos lineales ordinarios (OLS)}
+%--------------------------------------------------------------------------------------
+\subsection{Modelos lineales ordinarios (OLS)}
 \label{subsec:ols}
 
-La estimación por Mínimos Cuadrados Ordinarios (OLS, por sus siglas en inglés) no constituye una formulación competidora para la estimación final del IPM dentro de este diseño metodológico, sino una etapa previa de diagnóstico y selección de variables. El estimador OLS asume un error esférico y omite tanto la incertidumbre derivada del diseño muestral como la heterogeneidad no observada entre dominios, por lo que resulta insuficiente para la inferencia en áreas pequeñas \cite{RaoMolina_2015}. La forma general de los modelos OLS está dada por la Ecuación~\ref{eq:modelos-ols}:
+\paragraph{Fundamento general.}
+La estimación por OLS asume un error esférico y omite tanto la incertidumbre derivada del diseño muestral como la heterogeneidad no observada entre dominios, por lo que resulta insuficiente para la inferencia en áreas pequeñas \cite{RaoMolina_2015}. La forma general del modelo está dada por la Ecuación~\ref{eq:modelos-ols}.
 
 \begin{equation}
-    IPM_d = \beta_0 + \beta_1 X_{1d} + \beta_2 X_{2d} + \dots + \beta_k X_{kd} + \varepsilon_d,
+    \hat{Y}_d^{dir} = \beta_0 + \beta_1 X_{1d} + \beta_2 X_{2d} + \dots + \beta_k X_{kd} + \varepsilon_d
     \label{eq:modelos-ols}
 \end{equation}
 
-\noindent donde:
+\noindent donde $\hat{Y}_d^{dir}$ es el IPM directo del dominio $d$, $\beta_0$ el intercepto, $\beta_1,\dots,\beta_k$ los coeficientes asociados a cada covariable, $X_{1d},\dots,X_{kd}$ las covariables auxiliares agregadas para el dominio $d$, y $\varepsilon_d$ el término de error del modelo.
 
-\begin{itemize}
-    \item $IPM_d$: IPM directo del departamento $d$.
-    \item $\beta_0$: intercepto del modelo.
-    \item $\beta_1, \beta_2, \dots, \beta_k$: coeficientes asociados a cada covariable.
-    \item $X_{1d}, X_{2d}, \dots, X_{kd}$: covariables auxiliares agregadas para el departamento $d$.
-    \item $\varepsilon_d$: término de error del modelo.
-\end{itemize}
-
-Pese a sus limitaciones como estimador final, esta especificación opera como filtro técnico por tres razones. La primera es la verificación de signos, que permite auditar si los coeficientes asociados a cada predictor mantienen la dirección esperada según el marco conceptual del IPM. La segunda es el diagnóstico de multicolinealidad, orientado a prevenir inestabilidad numérica en la inversión de matrices durante la estimación de los modelos jerárquicos. La redundancia entre covariables se cuantifica mediante el Factor de Inflación de Varianza, definido en la Ecuación~\ref{eq:vif}.
+Pese a sus limitaciones como estimador final, esta especificación opera como filtro técnico en tres frentes: la verificación de signos, que permite auditar si los coeficientes mantienen la dirección esperada según el marco conceptual del indicador; el diagnóstico de multicolinealidad, cuantificado mediante el VIF de la Ecuación~\ref{eq:vif}; y la detección de observaciones influyentes mediante residuos estandarizados y distancias de Cook.
 
 \begin{equation}
     VIF_j = \frac{1}{1 - R^2_j}
     \label{eq:vif}
 \end{equation}
 
-\noindent donde $R^2_j$ representa el coeficiente de determinación que resulta de regresar la covariable auxiliar $X_j$ sobre el resto de covariables del sistema. Siguiendo las convenciones econométricas, se aplica el umbral $VIF_j < 5$ para descartar la presencia de multicolinealidad severa en la matriz de diseño \cite{Greene_2018}.
+\noindent donde $R^2_j$ es el coeficiente de determinación que resulta de regresar la covariable $X_j$ sobre el resto de covariables del sistema. Siguiendo las convenciones econométricas, se aplica el umbral $VIF_j < 5$ para descartar multicolinealidad severa \cite{Greene_2018}.
 
-La tercera razón es la detección de observaciones influyentes, que posibilita examinar la estructura de residuos estandarizados y las distancias de Cook a nivel departamental, identificando dominios atípicos antes de calibrar la varianza entre áreas del modelo de Fay-Herriot.
+\paragraph{Particularización al trabajo.}
+En este estudio, el OLS departamental ($D=33$) no constituye una formulación competidora para la estimación final del IPM, sino una etapa previa de diagnóstico sobre los tres escenarios de covariables de la Subsección~\ref{subsec:escenarios}: se utiliza para auditar signos, calcular el VIF de cada escenario y examinar dominios influyentes antes de calibrar la varianza entre áreas del Modelo 1. Las pruebas de Breusch-Pagan, RESET y Shapiro-Wilk aplicadas sobre estos ajustes se describen en la Subsección~\ref{subsec:diagnosticos}.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Modelo Fay-Herriot}
+%--------------------------------------------------------------------------------------
+\subsection{Modelo 1: Fay-Herriot}
 \label{subsec:fay-herriot}
 
-El modelo de áreas de Fay y Herriot \cite{FayHerriot_1979} constituye el estándar metodológico para combinar información muestral directa con información sintética derivada de fuentes administrativas o censales a nivel de dominio agregado. A diferencia de los modelos lineales convencionales, su arquitectura se estructura en dos niveles estocásticos independientes.
-
-El primer nivel corresponde al modelo muestral. La estimación directa observada $\hat{y}_d$ del IPM para el departamento $d$ se concibe como una medición sujeta a error de muestreo alrededor del valor poblacional verdadero no observado $\theta_d$, según la Ecuación~\ref{eq:fh-nivel1}.
+\paragraph{Fundamento general.}
+El modelo de áreas de Fay y Herriot \cite{FayHerriot_1979} constituye el estándar metodológico para combinar información muestral directa con información sintética derivada de fuentes auxiliares a nivel de dominio agregado. Su arquitectura se estructura en dos niveles estocásticos independientes. El primer nivel, o modelo muestral, concibe la estimación directa observada como una medición sujeta a error de muestreo alrededor del valor poblacional verdadero no observado $\theta_d$, según la Ecuación~\ref{eq:fh-nivel1}.
 
 \begin{equation}
-    \hat{y}_d = \theta_d + e_d, \qquad e_d \sim N(0, v_d)
+    \hat{Y}_d^{dir} = \theta_d + e_d, \qquad e_d \sim N(0, v_d)
     \label{eq:fh-nivel1}
 \end{equation}
 
-\noindent donde $e_d$ representa la perturbación muestral y $v_d$ la varianza de muestreo definida en la Ecuación~\ref{eq:varianza-directa}, tratada como fija y conocida a partir del diseño de la encuesta.
-
-El segundo nivel corresponde al modelo de enlace. La incidencia verdadera subyacente $\theta_d$ se relaciona de manera lineal con el vector de covariables auxiliares agregadas mediante un vector de parámetros fijos y un efecto aleatorio específico de dominio, como expresa la Ecuación~\ref{eq:fh-nivel2}.
+\noindent donde $e_d$ es la perturbación muestral y $v_d$ la varianza de muestreo definida en la Ecuación~\ref{eq:varianza-directa}, tratada como fija y conocida. El segundo nivel, o modelo de enlace, relaciona $\theta_d$ de manera lineal con el vector de covariables auxiliares agregadas, mediante un vector de parámetros fijos y un efecto aleatorio específico de dominio, como expresa la Ecuación~\ref{eq:fh-nivel2}.
 
 \begin{equation}
-    \theta_d = \mathbf{x}'_d \boldsymbol{\beta} + u_d, \qquad u_d \sim N(0, \sigma^2_u)
+    \theta_d = \bar{\mathbf{X}}'_d \boldsymbol{\beta} + u_d, \qquad u_d \sim N(0, \sigma^2_u)
     \label{eq:fh-nivel2}
 \end{equation}
 
-\noindent donde $u_d$ captura la heterogeneidad no explicada entre departamentos, se asume independiente e idénticamente distribuido e independiente del error muestral $e_d$.
-
-La integración de ambos niveles produce la especificación lineal mixta de la Ecuación~\ref{eq:fayherrior}, que es la forma en que habitualmente se presenta el modelo.
+\noindent donde $u_d$ captura la heterogeneidad no explicada entre dominios y es independiente del error muestral $e_d$. La integración de ambos niveles produce la especificación lineal mixta de la Ecuación~\ref{eq:fayherrior}.
 
 \begin{equation}
-    \hat{y}_d = \mathbf{x}'_d \boldsymbol{\beta} + u_d + e_d
+    \hat{Y}_d^{dir} = \bar{\mathbf{X}}'_d \boldsymbol{\beta} + u_d + e_d
     \label{eq:fayherrior}
 \end{equation}
 
-Bajo esta estructura, el Predictor Lineal Insesgado Empírico (EBLUP, por sus siglas en inglés) para el dominio $d$ adopta la forma de una media ponderada entre la estimación directa y la estimación sintética de regresión, según la Ecuación~\ref{eq:eblup}.
+Bajo esta estructura, el Predictor Lineal Insesgado Empírico (EBLUP, por sus siglas en inglés) para el dominio $d$ es una media ponderada entre la estimación directa y la estimación sintética de regresión, según la Ecuación~\ref{eq:eblup}, con ponderación gobernada por el factor de contracción de la Ecuación~\ref{eq:shrinkage}.
 
 \begin{equation}
-    \hat{\theta}_d^{EBLUP} = \gamma_d\, \hat{y}_d + (1 - \gamma_d)\, \mathbf{x}'_d \hat{\boldsymbol{\beta}}
+    \hat{\theta}_d^{EBLUP} = \hat{\gamma}_d\, \hat{Y}_d^{dir} + (1 - \hat{\gamma}_d)\, \bar{\mathbf{X}}'_d \hat{\boldsymbol{\beta}}
     \label{eq:eblup}
 \end{equation}
 
-La ponderación está gobernada por el factor de contracción definido en la Ecuación~\ref{eq:shrinkage}.
-
 \begin{equation}
-    \gamma_d = \frac{\hat{\sigma}^2_u}{\hat{\sigma}^2_u + v_d}
+    \gamma_d = \frac{\sigma^2_u}{\sigma^2_u + v_d}
     \label{eq:shrinkage}
 \end{equation}
 
-El comportamiento de $\gamma_d$ refleja la adaptación del modelo a la incertidumbre del diseño. Cuando el dominio presenta un tamaño de muestra amplio y por tanto un error de muestreo bajo, $\gamma_d$ tiende a uno y la estimación se apoya casi exclusivamente en la información directa. Cuando la estimación directa es imprecisa por un error muestral elevado, $\gamma_d$ tiende a cero y la estimación se contrae hacia la componente sintética, lo que reduce sustancialmente la varianza a costa de introducir un sesgo controlado.
+\noindent donde $\hat{\theta}_d^{EBLUP}$ es la estimación EBLUP del dominio $d$, $\gamma_d$ el factor de contracción definido por los parámetros del modelo y $\hat{\gamma}_d$ su estimación, que se obtiene al reemplazar $\sigma^2_u$ por su estimación $\hat{\sigma}^2_u$; esa sustitución es la que convierte el predictor lineal insesgado óptimo en su versión empírica. Cuando el dominio presenta un error de muestreo bajo, $\gamma_d$ tiende a uno y la estimación se apoya casi exclusivamente en la información directa; cuando la estimación directa es imprecisa, $\gamma_d$ tiende a cero y la estimación se contrae hacia la componente sintética. La varianza entre áreas $\sigma^2_u$ se estima mediante Máxima Verosimilitud Restringida (REML, por sus siglas en inglés), que corrige por los grados de libertad consumidos en la estimación de los efectos fijos \cite{RaoMolina_2015}.
 
-La varianza entre áreas $\sigma^2_u$ se estima mediante el método de Máxima Verosimilitud Restringida (REML, por sus siglas en inglés), que corrige por los grados de libertad consumidos en la estimación de los efectos fijos y evita el sesgo hacia abajo característico de la máxima verosimilitud ordinaria en muestras reducidas \cite{RaoMolina_2015}.
+\paragraph{Particularización al trabajo.}
+En este estudio el Modelo 1 se calibra a nivel departamental ($D=33$), empleando como covariables $\bar{\mathbf{X}}_d$ los promedios ponderados agregados según la Ecuación~\ref{eq:agregacion-ponderada}, bajo cada uno de los tres escenarios de la Subsección~\ref{subsec:escenarios}. Los parámetros $\boldsymbol{\beta}$ y $\sigma^2_u$ se estiman por REML para cada escenario, y el EBLUP departamental resultante es la estimación final del Modelo 1 a esa escala; su desempeño se valida mediante el esquema LODO de la Subsección~\ref{subsec:validacion}.
 
-Una vez estimados los parámetros a escala departamental, la estimación municipal se obtiene proyectando los coeficientes sobre las covariables del municipio y sumando el efecto aleatorio del departamento correspondiente, como indica la Ecuación~\ref{eq:fh-municipal}.
+El Modelo 1 no produce, por construcción, una estimación a escala municipal. La proyección municipal que se deriva de él, descrita en la Subsección~\ref{subsec:proyeccion-m1}, es una extensión del modelo departamental y debe entenderse como tal: no es un segundo modelo Fay-Herriot ajustado a nivel municipal, dado que no existe información muestral directa en esa escala para calibrarlo.
+
+%--------------------------------------------------------------------------------------
+\subsubsection{Proyección sintética municipal derivada del Modelo 1}
+\label{subsec:proyeccion-m1}
+
+\paragraph{Fundamento general.}
+Cuando un modelo de área se calibra en un nivel agregado, es posible evaluar su componente de regresión sobre covariables medidas en una escala más fina, generando una proyección sintética para esa escala. Esta proyección no constituye una segunda estimación Fay-Herriot, porque el nivel fino carece de las dos fuentes de información que sustentan la Ecuación~\ref{eq:fayherrior}: no existe estimación directa $\hat{Y}_i^{dir}$ ni varianza de muestreo $v_i$ propias de esa escala.
+
+\paragraph{Particularización al trabajo.}
+La proyección municipal del IPM a partir del Modelo 1 se obtiene evaluando los coeficientes estimados a escala departamental sobre las covariables de cada municipio y sumando el efecto aleatorio del departamento al que pertenece, como indica la Ecuación~\ref{eq:fh-municipal}.
 
 \begin{equation}
-    \hat{\theta}_{i,d} = \mathbf{x}'_{i,d} \hat{\boldsymbol{\beta}} + \hat{u}_d
+    \hat{\theta}_{i,d} = \mathbf{X}'_{i,d} \hat{\boldsymbol{\beta}} + \hat{u}_d
     \label{eq:fh-municipal}
 \end{equation}
 
-Esta proyección presenta una limitación estructural relevante para el presente trabajo. El predictor lineal de la Ecuación~\ref{eq:fh-municipal} no está acotado, de modo que nada impide que la estimación resultante caiga fuera del intervalo admisible del indicador cuando las covariables municipales toman valores alejados del promedio departamental sobre el que se calibró el modelo. La corrección habitual consiste en truncar la estimación al rango válido, según la Ecuación~\ref{eq:acotamiento}, procedimiento que resuelve la inconsistencia de soporte pero no la causa que la origina.
+\noindent donde $\hat{\theta}_{i,d}$ es la proyección resultante para el municipio $i$ del departamento $d$, $\mathbf{X}_{i,d}$ el vector de covariables de ese municipio, $\hat{\boldsymbol{\beta}}$ los coeficientes estimados a escala departamental y $\hat{u}_d$ el efecto aleatorio estimado del departamento $d$.
+
+En este trabajo, esta cantidad se denomina de forma consistente \emph{proyección sintética municipal derivada del modelo Fay-Herriot departamental}, y no estimación o predicción Fay-Herriot municipal, para evitar atribuirle una validación directa que no existe a esa escala. El predictor lineal de la Ecuación~\ref{eq:fh-municipal} no está acotado, de modo que nada impide que el resultado caiga fuera del intervalo admisible de 0 a 100 cuando las covariables municipales se alejan del promedio departamental sobre el que se calibró el modelo. La corrección habitual consiste en truncar la estimación al rango válido, según la Ecuación~\ref{eq:acotamiento}, procedimiento que resuelve la inconsistencia de soporte pero no la causa que la origina.
 
 \begin{equation}
     \hat{\theta}_{i,d}^{\,ac} = \min\!\left[100,\; \max(0,\; \hat{\theta}_{i,d})\right]
     \label{eq:acotamiento}
 \end{equation}
 
-Esta limitación no invalida al modelo, que sigue siendo una formulación metodológicamente robusta y de uso estándar en estimación para áreas pequeñas. Lo que revela es que la combinación de un predictor lineal con un indicador acotado, calibrado sobre promedios departamentales, resulta insuficiente cuando el objetivo es proyectar a una escala territorial más fina y heterogénea. Esta consideración es la que motiva las dos formulaciones alternativas que se describen a continuación.
+\noindent donde $\hat{\theta}_{i,d}^{\,ac}$ es la proyección municipal acotada al intervalo de 0 a 100.
+
+La presencia de valores fuera de 0--100 antes del truncamiento se interpreta en este trabajo como una limitación de la extrapolación lineal a escala municipal, y no como evidencia de que el modelo Fay-Herriot departamental esté mal especificado: a esa escala, y bajo la validación LODO descrita en la Subsección~\ref{subsec:validacion}, el modelo es una formulación metodológicamente robusta y de uso estándar en SAE. Esta consideración motiva las dos formulaciones alternativas que se describen a continuación.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Modelo de desagregación municipal no lineal acotada}
+%--------------------------------------------------------------------------------------
+\subsection{Modelo 2: desagregación sintética municipal no lineal acotada}
 \label{subsec:no-lineal}
 
-Esta formulación modifica dos elementos respecto al modelo de área: la forma funcional del predictor y el orden en que se realizan las operaciones de evaluación y agregación. Ambas modificaciones responden a una limitación documentada en la literatura: cuando el parámetro de interés está restringido a un intervalo acotado, el modelo lineal mixto resulta inapropiado, en particular para dominios cuyos valores se aproximan a los extremos del soporte, lo que ha motivado el desarrollo de modelos de muestreo no lineales con función de enlace logística para la estimación de proporciones y tasas de pobreza en áreas pequeñas \cite{Janicki_2020}.
+\paragraph{Fundamento general.}
+Cuando el parámetro de interés está restringido a un intervalo acotado, un predictor lineal sin restricciones resulta inapropiado, en particular para dominios cuyos valores se aproximan a los extremos del soporte, lo que ha motivado el desarrollo de modelos de muestreo no lineales con función de enlace logística para la estimación de proporciones y tasas de pobreza en áreas pequeñas \cite{Janicki_2020}. Bajo esta aproximación, el predictor lineal se transforma mediante una función logística, que toma valores estrictamente contenidos en el intervalo abierto entre 0 y 1 para cualquier valor finito de su argumento, satisfaciendo el soporte del indicador por construcción.
 
-En cuanto a la forma funcional, el predictor lineal se transforma mediante una función logística, definida en la Ecuación~\ref{eq:logistica}, que toma valores estrictamente contenidos en el intervalo abierto entre cero y uno para cualquier valor finito de su argumento.
+\paragraph{Particularización al trabajo.}
+El Modelo 2 se implementa en este estudio en la siguiente secuencia, sin que el ajuste de coherencia con los agregados oficiales (benchmarking) intervenga en la estimación de los parámetros. Primero, se evalúa el predictor logístico en cada municipio $i$ del departamento $d$, sobre las covariables estandarizadas según la Ecuación~\ref{eq:zscore}, según la Ecuación~\ref{eq:logistica}.
 
 \begin{equation}
-    \pi_{i,d} = \frac{1}{1 + \exp\!\left(-\left[\mathbf{z}'_{i,d}\boldsymbol{\beta} + \alpha_d\right]\right)}
+    \eta_{i,d} = \beta_0 + \mathbf{z}'_{i,d}\boldsymbol{\beta}, \qquad
+    \mu_{i,d} = 100 \cdot \text{logit}^{-1}(\eta_{i,d})
     \label{eq:logistica}
 \end{equation}
 
-\noindent donde $\mathbf{z}_{i,d}$ corresponde al vector de covariables estandarizadas del municipio $i$ del departamento $d$, según la Ecuación~\ref{eq:zscore}, y $\alpha_d$ a un desplazamiento específico del dominio. La estimación municipal respeta el rango admisible por construcción, sin requerir el truncamiento de la Ecuación~\ref{eq:acotamiento}. Esta propiedad es estructural y no depende de los valores que tomen los coeficientes ni las covariables.
+\noindent donde $\eta_{i,d}$ es el predictor lineal en la escala logit, $\mathbf{z}_{i,d}$ el vector de covariables estandarizadas del municipio $i$ del departamento $d$ según la Ecuación~\ref{eq:zscore}, $\boldsymbol{\beta}$ los coeficientes del modelo, y $\mu_{i,d}$ la media municipal modelada, ya expresada en la escala 0--100 del indicador.
 
-En cuanto al orden de las operaciones, el modelo evalúa la función en cada municipio y pondera únicamente los resultados, en lugar de agregar primero las covariables y evaluar la función una sola vez sobre el promedio departamental. La estimación departamental se obtiene entonces según la Ecuación~\ref{eq:agregacion-nolineal}.
+Segundo, los resultados municipales se ponderan por la participación poblacional de cada municipio en su departamento, en lugar de agregar primero las covariables y evaluar la función una sola vez sobre el promedio departamental, según la Ecuación~\ref{eq:agregacion-nolineal}.
 
 \begin{equation}
-    \hat{\theta}_d = \sum_{i \in d} w_{i,d}\, \pi_{i,d},
+    \tilde{\mu}_d = \sum_{i \in d} w_{i,d}\, \mu_{i,d},
     \qquad \text{con} \quad \sum_{i \in d} w_{i,d} = 1
     \label{eq:agregacion-nolineal}
 \end{equation}
 
-\noindent donde $w_{i,d}$ corresponde a la participación de la población del municipio $i$ en la población total de su departamento. La condición de suma unitaria garantiza que el agregado departamental conserve la escala e interpretación del indicador.
+\noindent donde $\tilde{\mu}_d$ es el agregado departamental sintético resultante y $w_{i,d}$ es la participación de la población del municipio $i$ en la población total del departamento $d$. Dado que la función logística no es lineal, evaluar la función sobre el promedio de las covariables no equivale, en general, a promediar la función evaluada en cada municipio; por esa no linealidad, la transformación del promedio no coincide con el promedio de las transformaciones individuales. La consecuencia práctica es que el Modelo 2 conserva la variabilidad interna de los municipios dentro de cada departamento, información que el Modelo 1 pierde al trabajar únicamente con promedios departamentales (Ecuación~\ref{eq:descomposicion-varianza}).
 
-La distinción entre ambos órdenes de operación no es trivial. Dado que la función logística no es lineal, la desigualdad de Jensen establece que evaluar la función sobre el promedio de las covariables no equivale a promediar la función evaluada en cada municipio, relación que expresa la Ecuación~\ref{eq:jensen}.
+Tercero, el agregado departamental sintético $\tilde{\mu}_d$ se relaciona con la estimación directa mediante una varianza adicional propia de la formulación, $\tau^2$, que captura la discrepancia entre el agregado sintético municipal y la estimación directa departamental más allá del error de muestreo, según la Ecuación~\ref{eq:m2-nivel-dep}.
 
 \begin{equation}
-    f\!\left(\sum_{i \in d} w_{i,d}\, \mathbf{z}_{i,d}\right) \neq \sum_{i \in d} w_{i,d}\, f(\mathbf{z}_{i,d})
-    \label{eq:jensen}
+    \hat{Y}_d^{dir} = \tilde{\mu}_d + \varepsilon_d, \qquad \varepsilon_d \sim N(0,\, v_d + \tau^2)
+    \label{eq:m2-nivel-dep}
 \end{equation}
 
-La consecuencia práctica es que esta formulación conserva la variabilidad interna de los municipios dentro de cada departamento, información que el modelo de área pierde al trabajar únicamente con promedios departamentales, según lo descrito en la Ecuación~\ref{eq:descomposicion-varianza}.
+\noindent donde $\varepsilon_d$ es la discrepancia aleatoria entre el agregado sintético municipal y la estimación directa departamental, con varianza $v_d+\tau^2$ que combina el error de muestreo conocido con la varianza adicional $\tau^2$ propia de la formulación.
 
-Los parámetros se estiman por máxima verosimilitud, incorporando tanto la varianza de muestreo del dominio como una varianza adicional propia de la formulación. Dado que la superficie de verosimilitud no es lineal y un único punto de partida puede converger a un óptimo local, la optimización se ejecuta con múltiples arranques, conservando la solución de menor valor entre todos los evaluados.
+Los parámetros $\boldsymbol{\beta}$ y $\tau^2$ se estiman conjuntamente por máxima verosimilitud sobre los 33 departamentos, sin incluir ningún desplazamiento específico de dominio en el predictor $\eta_{i,d}$. Dado que la superficie de verosimilitud no es lineal y un único punto de partida puede converger a un óptimo local, la optimización se ejecuta con múltiples arranques, conservando la solución de menor valor entre todas las evaluadas.
 
-Tras el ajuste se aplica un procedimiento de coherencia con los agregados oficiales, conocido como benchmarking. Para cada dominio se determina el desplazamiento $\alpha_d$ de la Ecuación~\ref{eq:logistica} que iguala el agregado ponderado de las estimaciones municipales a la estimación directa departamental, condición expresada en la Ecuación~\ref{eq:benchmarking}.
+Solo después de completado este ajuste se aplica el procedimiento de benchmarking, descrito a continuación como un paso posterior y separado de la estimación de $\boldsymbol{\beta}$ y $\tau^2$.
+
+%--------------------------------------------------------------------------------------
+\subsubsection{Benchmarking}
+\label{subsec:benchmarking}
+
+\paragraph{Fundamento general.}
+El benchmarking es el procedimiento mediante el cual una estimación en áreas pequeñas se ajusta para que su agregado coincida exactamente con una cifra oficial de mayor nivel de agregación, considerada más confiable por apoyarse en una muestra mayor. La literatura identifica este ajuste como deseable por dos motivos distintos, que conviene no confundir: garantiza la coherencia aritmética entre las estimaciones de áreas pequeñas y las cifras oficiales publicadas en el nivel superior, y ofrece cierta protección frente a errores de especificación del modelo sintético \cite{DattaGhoshSteortsMaples_2011}. Ninguno de los dos motivos implica, por sí mismo, que el benchmarking mejore la capacidad predictiva del modelo a la escala fina; esa capacidad se evalúa de forma independiente mediante el esquema LODO de la Subsección~\ref{subsec:validacion}.
+
+\paragraph{Particularización al trabajo.}
+En este estudio, el benchmarking se aplica después de obtener las predicciones municipales pre-benchmark del Modelo 2 ($\mu_{i,d}$ de la Ecuación~\ref{eq:logistica}) o del Modelo 3 (Subsección~\ref{subsec:car}). Para cada departamento $d$ se determina, sobre la escala logit, un desplazamiento único $\delta_d$ que iguala el agregado ponderado de las predicciones municipales ajustadas a la estimación directa departamental, condición expresada en la Ecuación~\ref{eq:benchmarking}.
 
 \begin{equation}
-    \sum_{i \in d} w_{i,d}\, \pi_{i,d}(\alpha_d) = \hat{y}_d
+    \sum_{i \in d} w_{i,d}\; 100 \cdot \text{logit}^{-1}(\eta_{i,d} + \delta_d) = \hat{Y}_d^{dir}
     \label{eq:benchmarking}
 \end{equation}
 
-Al tratarse de una función continua y estrictamente creciente en $\alpha_d$, esta ecuación admite solución única para cada dominio. La literatura identifica este tipo de ajuste como deseable por dos motivos: garantiza la coherencia institucional entre las estimaciones en áreas pequeñas y las cifras oficiales publicadas en el nivel de agregación superior, cuya mayor muestra las hace más confiables, y ofrece además cierta protección frente a errores de especificación del modelo \cite{DattaGhoshSteortsMaples_2011}.
+Al tratarse de una función continua y estrictamente creciente en $\delta_d$, esta ecuación admite solución única para cada departamento, que se obtiene numéricamente. Las predicciones municipales finales reportadas en este trabajo son $100\cdot\text{logit}^{-1}(\eta_{i,d}+\hat\delta_d)$, es decir, las predicciones pre-benchmark desplazadas por $\hat\delta_d$. La magnitud de $\hat\delta_d$ por departamento, su efecto sobre las predicciones municipales y su posible efecto sobre la estructura espacial de las estimaciones se cuantifican en la Sección~\ref{sec:resultados}, de modo que el cumplimiento aritmético del benchmarking no se confunda con una mejora en la capacidad predictiva del modelo.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Modelo de desagregación espacial CAR}
+%--------------------------------------------------------------------------------------
+\subsection{Dependencia espacial}
+\label{subsec:dependencia-espacial}
+
+\paragraph{Fundamento general.}
+La dependencia espacial describe el hecho de que los valores de una variable observados en unidades territoriales próximas tienden a ser más parecidos entre sí que los observados en unidades distantes. Esta semejanza puede originarse en múltiples mecanismos: covariables omitidas que varían suavemente en el espacio, procesos administrativos compartidos entre unidades vecinas, o una genuina interacción entre ellas. Detectar dependencia espacial en los residuos de un modelo indica que existe estructura territorial no explicada por las covariables incluidas, pero no identifica, por sí sola, cuál de esos mecanismos la origina.
+
+\paragraph{Particularización al trabajo.}
+En este trabajo, la dependencia espacial se interpreta exclusivamente como evidencia de estructura territorial residual no capturada por las covariables fijas del modelo, y no como evidencia de una relación causal entre municipios vecinos ni de efectos de desborde (\emph{spillovers}) de un municipio sobre otro. El índice de Moran, descrito en la Subsección~\ref{subsec:moran}, es la herramienta que se utiliza para detectar esta estructura; el Modelo 3, descrito a continuación, es la formulación que intenta absorberla mediante un componente espacial explícito, sin que ello implique un supuesto sobre el mecanismo que la genera.
+
+%--------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------
+\subsection{Modelo 3: componente espacial de rango reducido}
 \label{subsec:car}
 
-Esta formulación extiende el modelo de desagregación no lineal incorporando un componente espacial a escala municipal bajo una estructura Condicional Autorregresiva (CAR, por sus siglas en inglés), que modela explícitamente la dependencia entre unidades vecinas. La especificación condicional autorregresiva fue formalizada por Besag \cite{Besag_1974}, quien mostró que la distribución conjunta de un conjunto de variables espacialmente interactuantes puede construirse a partir de sus distribuciones condicionales respecto a la vecindad. La incorporación de efectos de área espacialmente correlacionados en modelos de estimación para áreas pequeñas ha documentado reducciones tanto en la varianza como en el sesgo del predictor frente a su versión sin componente espacial \cite{PratesiSalvati_2008, PratesiSalvati_2019}.
-
-La estructura CAR especifica la distribución conjunta de los efectos espaciales a partir de la matriz de adyacencia del territorio, según la Ecuación~\ref{eq:car}.
+\paragraph{Fundamento general.}
+La especificación Condicional Autorregresiva (CAR, por sus siglas en inglés) fue formalizada por Besag \cite{Besag_1974}, quien mostró que la distribución conjunta de un conjunto de variables espacialmente interactuantes puede construirse a partir de sus distribuciones condicionales respecto a la vecindad. Un efecto CAR propio especifica la distribución conjunta de los efectos espaciales a partir de la matriz de adyacencia del territorio, según la Ecuación~\ref{eq:car}.
 
 \begin{equation}
-    \boldsymbol{\phi} \sim N\!\left(\mathbf{0},\; \tau^{-1}(\mathbf{D} - \rho \mathbf{W})^{-1}\right)
+    \boldsymbol{\phi} \sim N\!\left(\mathbf{0},\; \tau_s^{-1}(\mathbf{D} - \rho \mathbf{W})^{-1}\right)
     \label{eq:car}
 \end{equation}
 
-\noindent donde:
-
-\begin{itemize}
-    \item $\boldsymbol{\phi}$: vector de efectos espaciales municipales.
-    \item $\mathbf{W}$: matriz de adyacencia, con $w_{ij}=1$ si los municipios $i$ y $j$ son vecinos y cero en caso contrario.
-    \item $\mathbf{D}$: matriz diagonal cuyo elemento $d_{ii}$ corresponde al número de vecinos del municipio $i$.
-    \item $\rho$: parámetro que gobierna la intensidad de la dependencia espacial.
-    \item $\tau$: parámetro de precisión del componente espacial.
-\end{itemize}
-
-El predictor municipal combina entonces la componente fija de covariables con el efecto espacial, antes de aplicar la transformación logística de la Ecuación~\ref{eq:logistica}, como indica la Ecuación~\ref{eq:car-predictor}.
+\noindent donde $\boldsymbol{\phi}$ es el vector de efectos espaciales, $\mathbf{W}$ la matriz de adyacencia ($w_{ij}=1$ si las unidades $i$ y $j$ son vecinas), $\mathbf{D}$ la matriz diagonal de grados, $\rho$ el parámetro de dependencia espacial y $\tau_s$ el parámetro de precisión espacial, que en una especificación CAR propia se estima junto con el resto de parámetros del modelo. La incorporación de efectos de área espacialmente correlacionados en SAE ha documentado reducciones tanto en la varianza como en el sesgo del predictor frente a su versión sin componente espacial \cite{PratesiSalvati_2008, PratesiSalvati_2019}. Estimar un efecto independiente por unidad territorial resulta, sin embargo, inviable cuando solo se dispone de un número reducido de dominios con respuesta observada para calibrar el modelo; en ese caso, una alternativa es representar el efecto espacial mediante una base de rango reducido, que proyecta $\boldsymbol{\phi}$ sobre un número pequeño de patrones espaciales de mayor escala, obtenidos de los primeros autovectores de la matriz de vecindad normalizada, según la Ecuación~\ref{eq:rango-reducido}.
 
 \begin{equation}
-    \pi_{i,d} = \frac{1}{1 + \exp\!\left(-\left[\mathbf{z}'_{i,d}\boldsymbol{\beta} + \phi_i + \alpha_d\right]\right)}
-    \label{eq:car-predictor}
-\end{equation}
-
-La estimación de un efecto aleatorio independiente por municipio resulta inviable cuando solo se dispone de un número reducido de dominios observados para la calibración. Por ello el componente espacial se representa mediante una versión de rango reducido, que proyecta $\boldsymbol{\phi}$ sobre los primeros $K$ autovectores de la matriz de vecindad normalizada, según la Ecuación~\ref{eq:rango-reducido}.
-
-\begin{equation}
-    \boldsymbol{\phi} \approx \mathbf{U}_K \boldsymbol{\delta}, \qquad \boldsymbol{\delta} \in \mathbb{R}^{K}, \quad K \ll n
+    \boldsymbol{\phi} \approx \mathbf{B}_K \boldsymbol{\alpha}, \qquad \boldsymbol{\alpha} \in \mathbb{R}^{K}, \quad K \ll n
     \label{eq:rango-reducido}
 \end{equation}
 
-\noindent donde $\mathbf{U}_K$ contiene los $K$ autovectores asociados a los autovalores de mayor magnitud, que corresponden a los patrones espaciales de mayor escala. Esta reducción conserva la estructura territorial dominante al tiempo que limita el número de parámetros a estimar.
+\noindent donde $\boldsymbol{\alpha}$ es el vector de coeficientes del componente espacial, de dimensión reducida $K$, y $\mathbf{B}_K$ la base espacial, construida a partir de los autovectores $\mathbf{u}_1,\dots,\mathbf{u}_K$ asociados a los $K$ autovalores más grandes $\lambda_1,\dots,\lambda_K$ de la matriz de adyacencia normalizada $\mathbf{S}=\mathbf{D}^{-1/2}\mathbf{W}\mathbf{D}^{-1/2}$, reescalados por $\mathbf{D}^{-1/2}$ y multiplicados por la constante $\sqrt{n_a}$, con $n_a$ el número de municipios con al menos un vecino, para obtener una magnitud numéricamente estable; los autovalores más grandes corresponden a los patrones de autocorrelación positiva de mayor escala geográfica. Bajo esta representación, el efecto espacial puede incorporarse al modelo de dos maneras no equivalentes: como un efecto aleatorio propiamente probabilístico, con $\tau_s$ estimado como parámetro de precisión según la Ecuación~\ref{eq:car}; o como una penalización añadida a la función objetivo del modelo, con una estructura inspirada en CAR pero sin declarar una distribución conjunta completa para $\boldsymbol{\alpha}$ ni estimar $\tau_s$ como precisión libre.
 
-Por la misma limitación de identificabilidad, el parámetro $\rho$ no se estima libremente sino que se fija a priori, evaluando su efecto sobre una grilla de valores como análisis de sensibilidad. La agregación departamental y el procedimiento de benchmarking operan igual que en la formulación no lineal, según las Ecuaciones~\ref{eq:agregacion-nolineal} y~\ref{eq:benchmarking}.
+\paragraph{Particularización al trabajo.}
+La formulación efectivamente implementada en este estudio corresponde a la segunda alternativa: un modelo de desagregación no lineal acotada (Modelo 2) con un componente espacial de rango reducido, cuya magnitud se controla mediante una penalización de la función objetivo basada en la estructura CAR, y no mediante un efecto CAR probabilístico con precisión estimada libremente. Esta precisión conviene hacerla explícita porque el marco general de la Ecuación~\ref{eq:car} y la implementación final no son intercambiables: afectan la interpretación del modelo, la función objetivo, el tratamiento de la incertidumbre y la forma de reportar los parámetros espaciales.
 
-La construcción de la matriz $\mathbf{W}$ requiere una definición operativa de vecindad. El criterio de contigüidad tipo Reina considera vecinos a dos municipios que comparten al menos un punto o segmento fronterizo. La discontinuidad geográfica del territorio colombiano, con dominios insulares y municipios sin contigüidad terrestre, genera filas nulas en la matriz de adyacencia que producen matrices singulares en la Ecuación~\ref{eq:car}. Para resolverlo se adopta una regla de conexidad forzada basada en la distancia a los vecinos más cercanos, que garantiza que todo municipio cuente con al menos un vínculo en el grafo espacial.
-
-Esta condición tiene una implicación interpretativa que conviene explicitar. En las formulaciones sin componente espacial, la estimación de un dominio insular se deriva íntegramente de sus covariables locales. En la formulación CAR, al no existir contigüidad terrestre, el componente autorregresivo no transfiere suavizamiento espacial desde el resto del territorio, de modo que la estimación sobre esas unidades se fundamenta esencialmente en la componente sintética ajustada.
-
-%--------------------------------------------------------------------------------------
-\subsubsection{Métricas de desempeño}
-\label{subsec:metricas}
-
-La evaluación comparativa de las formulaciones se fundamenta en un esquema de métricas complementarias, siguiendo las recomendaciones habituales para la validación de modelos de estimación en áreas pequeñas \cite{RaoMolina_2015, moura2021}. Ningún indicador individual captura la totalidad de las dimensiones del error en dominios no observados, por lo que la literatura sugiere evaluar simultáneamente la magnitud absoluta de la desviación, la sensibilidad a valores atípicos y la preservación de la estructura ordinal de los dominios. Las tres métricas que se describen a continuación se calculan sobre las estimaciones producidas bajo el esquema de validación por exclusión de dominio de la Subsección~\ref{subsec:validacion}.
-
-La Raíz del Error Cuadrático Medio (RMSE, por sus siglas en inglés) evalúa la precisión global en la escala original del indicador, según la Ecuación~\ref{eq:rmse}.
+La base $\mathbf{B}_K$ se construye una única vez, a partir exclusivamente de la geometría del mapa municipal (contigüidad tipo Reina) y con rango fijo $K=6$; no se recalcula dentro de cada iteración LODO, porque no depende de la respuesta y por tanto su reutilización entre pliegues no introduce fuga de información. El predictor municipal combina la componente fija de covariables con el efecto espacial de rango reducido, antes de la transformación logística, según la Ecuación~\ref{eq:car-predictor}.
 
 \begin{equation}
-    RMSE = \sqrt{\frac{1}{D} \sum_{d=1}^{D} \left(\hat{y}_d - \hat{\theta}_d\right)^2}
+    \eta_{i,d} = \beta_0 + \mathbf{z}'_{i,d}\boldsymbol{\beta} + s_i,
+    \qquad \mathbf{s} = \mathbf{B}_K \boldsymbol{\alpha}
+    \label{eq:car-predictor}
+\end{equation}
+
+\noindent donde $s_i$ es el efecto espacial de rango reducido del municipio $i$, resultado de proyectar $\boldsymbol{\alpha}$ sobre la base $\mathbf{B}_K$ de la Ecuación~\ref{eq:rango-reducido}.
+
+La magnitud del componente espacial se controla, no mediante un parámetro de precisión estimado libremente, sino mediante una penalización fija añadida a la verosimilitud de los datos, según la Ecuación~\ref{eq:car-penalizado}.
+
+\begin{equation}
+    L_{\text{esp}} = L_{\text{datos}} + \frac{1}{2}\,\boldsymbol{\alpha}' \mathbf{Q}_K(\rho)\, \boldsymbol{\alpha}
+    \label{eq:car-penalizado}
+\end{equation}
+
+\noindent donde $L_{\text{esp}}$ es la función objetivo penalizada que se minimiza en el Modelo 3, $L_{\text{datos}}$ es la log-verosimilitud negativa del modelo sin componente espacial y $\mathbf{Q}_K(\rho)=\mathbf{I}_K-\rho\boldsymbol{\Lambda}_K$ la matriz de penalización de rango reducido, diagonal, con $\boldsymbol{\Lambda}_K=\text{diag}(\lambda_1,\dots,\lambda_K)$. Cada coeficiente espacial se penaliza entonces con peso $q_k=1-\rho\lambda_k$, lo que equivale a asignarle una distribución $\alpha_k\sim N(0,\,1/q_k)$ con precisión espacial fijada en $\tau_s=1$, y estimar $\boldsymbol{\beta}$, $\boldsymbol{\alpha}$ y $\tau^2$ conjuntamente minimizando $L_{\text{esp}}$, sin integrar $\boldsymbol{\alpha}$ fuera de la verosimilitud. En este trabajo la escala base de la penalización se fija en 1, es decir, no existe un parámetro adicional de intensidad de la penalización distinto de $\rho$; esta decisión se adopta para evitar estimar una varianza espacial adicional que estaría débilmente identificada con solo 33 dominios observados, de modo que la magnitud espacial efectiva queda determinada por los coeficientes $\boldsymbol{\alpha}$; $\rho$ no se estima libremente sino que se fija en un valor de referencia $\rho=0.50$, evaluando adicionalmente su efecto sobre una grilla de valores $\{0.25,\ 0.50,\ 0.75,\ 0.90\}$ como análisis de sensibilidad, cuyos resultados se reportan en la Sección~\ref{sec:resultados}; y el rango reducido se fija a priori en $K=6$, como compromiso entre capturar los patrones espaciales de mayor escala y limitar el número de parámetros frente a 33 dominios; su efecto se evalúa mediante un análisis de sensibilidad con $K\in\{3,4,6,8,10\}$, reportado en la Sección~\ref{sec:resultados}. Con esta especificación, el Modelo 3 estima $1+p+K+1$ parámetros libres, donde $p$ es el número de covariables del escenario: 15 en el escenario E1 ($p=7$) y 12 en los escenarios E2 y E3 ($p=4$), frente a 33 dominios con respuesta observada. El parámetro $\tau^2$ de la Ecuación~\ref{eq:m2-nivel-dep} se mantiene en esta formulación con la misma interpretación que en el Modelo 2, es decir, como variabilidad departamental adicional al error de muestreo, y no debe confundirse con una precisión espacial. La agregación departamental y el benchmarking del Modelo 3 operan de manera idéntica a las Ecuaciones~\ref{eq:agregacion-nolineal} y~\ref{eq:benchmarking} del Modelo 2.
+
+La construcción de la matriz $\mathbf{W}$ requiere una definición operativa de vecindad. El criterio de contigüidad tipo Reina considera vecinos a dos municipios que comparten al menos un punto o segmento fronterizo. La discontinuidad geográfica del territorio colombiano, con dominios insulares y municipios sin contigüidad terrestre, genera unidades con grado cero en la matriz de adyacencia. En este trabajo esas unidades no se conectan de manera forzada mediante un criterio de distancia: permanecen con grado cero en la red espacial y su efecto espacial $s_i$ se fija en cero, de modo que su predicción final depende únicamente de la componente no espacial del modelo y, cuando corresponde, del desplazamiento de benchmarking del departamento al que pertenecen. Esta es la única regla aplicada a unidades sin vecindad terrestre en el presente trabajo.
+
+%--------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------
+\subsection{Diagnóstico espacial}
+\label{subsec:moran}
+
+\paragraph{Fundamento general.}
+El estadístico global de Moran \cite{Moran_1950, Anselin_1988} cuantifica el grado de autocorrelación espacial de una variable distribuida sobre un conjunto de unidades territoriales, según la Ecuación~\ref{eq:i-moran}.
+
+\begin{equation}
+    I = \frac{D}{S_0} \cdot \frac{\sum_i \sum_j w_{ij}(e_i - \bar{e})(e_j - \bar{e})}{\sum_i (e_i - \bar{e})^2}
+    \label{eq:i-moran}
+\end{equation}
+
+\noindent donde $I$ es el estadístico, $D$ el número de unidades evaluadas, $w_{ij}$ el peso espacial entre las unidades $i$ y $j$, $e_i$ y $e_j$ los residuos del modelo en esas unidades, $\bar{e}$ su promedio y $S_0=\sum_i\sum_j w_{ij}$ la suma total de los pesos espaciales. El estadístico se encuentra acotado aproximadamente en $[-1,1]$; un valor significativamente positivo indica que unidades geográficamente próximas presentan perturbaciones similares. Para evitar que la conclusión dependa de una definición discrecional del entorno geográfico, la inferencia se realiza mediante pruebas de permutación, evaluando la consistencia del estadístico bajo distintos esquemas de vecindad.
+
+\paragraph{Particularización al trabajo.}
+En este estudio el índice de Moran se utiliza en dos momentos distintos, que no deben confundirse. Primero, en la etapa exploratoria descrita en la Sección~\ref{sec:metodologia}, se calcula sobre los residuos del ajuste OLS departamental, bajo esquemas de vecindad de $k=3$, 4 y 5 vecinos más cercanos definidos sobre las coordenadas de los departamentos y con inferencia por 9{,}999 permutaciones, con el fin de motivar si existe estructura territorial no capturada por las covariables antes de formular el Modelo 3. Este cálculo exploratorio opera a escala departamental y no debe presentarse como una demostración de que existe una estructura CAR municipal: constituye evidencia de estructura espacial residual a una escala agregada, no una prueba directa sobre la escala a la que opera el Modelo 3. Segundo, después de ajustar los Modelos 2 y 3, se calcula el índice de Moran sobre sus residuos respectivos, bajo un esquema de vecindad comparable, con el fin de establecer si el componente espacial del Modelo 3 reduce efectivamente la autocorrelación residual frente al Modelo 2; únicamente esta segunda comparación permite afirmar si el Modelo 3 corrige, total o parcialmente, la dependencia espacial detectada en la etapa exploratoria. El índice de Moran calculado sobre el propio efecto espacial estimado $\hat{\mathbf{s}}$ describe la estructura de ese componente, pero no constituye evidencia de que la autocorrelación residual haya disminuido. Los resultados de ambos cálculos se reportan de forma diferenciada en la Sección~\ref{sec:resultados}.
+
+%--------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------
+\subsection{Métricas de desempeño}
+\label{subsec:metricas}
+
+\paragraph{Fundamento general.}
+La evaluación comparativa de formulaciones en SAE se fundamenta en un esquema de métricas complementarias, siguiendo las recomendaciones habituales para la validación de modelos de estimación en áreas pequeñas \cite{RaoMolina_2015}. Ningún indicador individual captura la totalidad de las dimensiones del error en dominios no observados, por lo que conviene evaluar simultáneamente la magnitud absoluta de la desviación, la sensibilidad a valores atípicos y la preservación del orden relativo entre dominios.
+
+La Raíz del Error Cuadrático Medio (RMSE, por sus siglas en inglés) evalúa la precisión global en la escala original del indicador, según la Ecuación~\ref{eq:rmse}, penalizando con mayor severidad los errores de gran magnitud.
+
+\begin{equation}
+    RMSE = \sqrt{\frac{1}{D} \sum_{d=1}^{D} \left(\hat{Y}_d^{dir} - \hat{\theta}_d\right)^2}
     \label{eq:rmse}
 \end{equation}
 
-Debido a la elevación al cuadrado del residuo, el RMSE penaliza con mayor severidad los errores de gran magnitud. En el contexto de la política social, un RMSE elevado advierte sobre la presencia de dominios donde el modelo sintético falla de manera acentuada, aspecto crítico al evaluar el riesgo de subestimación de la pobreza en áreas extremas.
+\noindent donde $D$ es el número de dominios evaluados, $\hat{Y}_d^{dir}$ la estimación directa del dominio $d$ y $\hat{\theta}_d$ la estimación del modelo para ese mismo dominio bajo el esquema LODO.
 
-El Error Absoluto Medio (MAE, por sus siglas en inglés) mide la magnitud promedio del error sin ponderación cuadrática, según la Ecuación~\ref{eq:mae}.
+El Error Absoluto Medio (MAE, por sus siglas en inglés) mide la magnitud promedio del error sin ponderación cuadrática, según la Ecuación~\ref{eq:mae}, y resulta menos sensible a valores atípicos.
 
 \begin{equation}
-    MAE = \frac{1}{D} \sum_{d=1}^{D} \left| \hat{y}_d - \hat{\theta}_d \right|
+    MAE = \frac{1}{D} \sum_{d=1}^{D} \left| \hat{Y}_d^{dir} - \hat{\theta}_d \right|
     \label{eq:mae}
 \end{equation}
 
-Al ponderar todos los residuos de forma lineal, el MAE ofrece una medida de la exactitud típica del modelo, menos sensible a valores atípicos o a variaciones en las colas de la distribución.
+\noindent donde $D$, $\hat{Y}_d^{dir}$ y $\hat{\theta}_d$ se definen como en la Ecuación~\ref{eq:rmse}.
 
-El coeficiente de correlación de Pearson evalúa el grado de asociación lineal y la preservación del ordenamiento relativo entre la estimación directa y la del modelo, según la Ecuación~\ref{eq:correlacion}.
+El coeficiente de correlación de Pearson, según la Ecuación~\ref{eq:correlacion}, evalúa el grado de asociación lineal entre la estimación directa y la del modelo.
 
 \begin{equation}
-    r = \frac{\sum_{d=1}^{D} \left(\hat{y}_d - \bar{y}\right)\left(\hat{\theta}_d - \bar{\theta}\right)}
-    {\sqrt{\sum_{d=1}^{D} \left(\hat{y}_d - \bar{y}\right)^2} \; \sqrt{\sum_{d=1}^{D} \left(\hat{\theta}_d - \bar{\theta}\right)^2}}
+    r = \frac{\sum_{d=1}^{D} \left(\hat{Y}_d^{dir} - \bar{Y}^{dir}\right)\left(\hat{\theta}_d - \bar{\theta}\right)}
+    {\sqrt{\sum_{d=1}^{D} \left(\hat{Y}_d^{dir} - \bar{Y}^{dir}\right)^2} \; \sqrt{\sum_{d=1}^{D} \left(\hat{\theta}_d - \bar{\theta}\right)^2}}
     \label{eq:correlacion}
 \end{equation}
 
-En ejercicios de focalización territorial esta métrica adquiere relevancia estratégica: un modelo con un MAE aceptable pero con baja correlación alteraría la priorización de los dominios, lo que conduciría a decisiones subóptimas en la asignación de recursos públicos.
+\noindent donde $r$ es el coeficiente de correlación de Pearson, y $\bar{Y}^{dir}$ y $\bar{\theta}$ son, respectivamente, el promedio de las estimaciones directas y el promedio de las estimaciones del modelo sobre los $D$ dominios.
 
-La adopción conjunta de las tres métricas permite un diagnóstico diferencial que ninguna de ellas ofrece por separado. La discrepancia entre un MAE bajo y un RMSE alto identifica escenarios de buen ajuste generalizado con fallas puntuales concentradas en dominios específicos. La combinación de alta correlación con métricas de error controladas confirma que la formulación no solo aproxima la magnitud del indicador, sino que además conserva la jerarquía territorial de las necesidades.
+El coeficiente de Pearson mide asociación lineal, no preservación del orden entre dominios; cuando el objetivo sustantivo es la priorización territorial de recursos, conviene complementarlo con un coeficiente de correlación de rangos, como Spearman o Kendall, que evalúa directamente si el ordenamiento de los dominios según la estimación coincide con su ordenamiento según la estimación directa.
 
-Para la comparación entre especificaciones ajustadas sobre el mismo conjunto de dominios se emplean adicionalmente los criterios de información de Akaike y Bayesiano, definidos en las Ecuaciones~\ref{eq:aic} y~\ref{eq:bic}, que penalizan la verosimilitud alcanzada en función del número de parámetros estimados y favorecen especificaciones con mejor balance entre ajuste y parsimonia.
+Para comparar especificaciones ajustadas sobre el mismo conjunto de dominios se emplean además los criterios de información de Akaike y Bayesiano, Ecuaciones~\ref{eq:aic} y~\ref{eq:bic}, que penalizan la verosimilitud alcanzada en función del número de parámetros.
 
 \begin{equation}
     AIC = -2\log L + 2p
@@ -411,47 +479,66 @@ Para la comparación entre especificaciones ajustadas sobre el mismo conjunto de
 
 \noindent donde $L$ es la verosimilitud del modelo ajustado, $p$ el número de parámetros y $D$ el número de dominios.
 
-Finalmente, la medida de precisión del estimador de área corresponde a su error cuadrático medio. A diferencia de la varianza de muestreo del estimador directo, que se conoce por diseño, el error cuadrático medio del EBLUP no admite una expresión cerrada exacta, ya que debe incorporar la incertidumbre adicional que introduce la estimación de la varianza entre áreas. La aproximación estándar descompone esta cantidad en tres términos: la contribución del predictor con parámetros conocidos, la derivada de la estimación de los coeficientes fijos y la asociada a la estimación de la varianza del efecto aleatorio \cite{PrasadRao_1990}. A partir de esa aproximación, el error estándar reportado se obtiene según la Ecuación~\ref{eq:se}.
+Las métricas anteriores tratan a todos los dominios por igual, aunque sus estimaciones directas tengan precisiones distintas. Una medida complementaria es el RMSE estandarizado de la Ecuación~\ref{eq:rmse-std}, que divide cada error por el error estándar de la estimación directa correspondiente y, por tanto, otorga menos peso a las discrepancias en dominios cuya estimación directa es imprecisa.
 
 \begin{equation}
-    SE_{FH,d} = \sqrt{MSE_d}
+    RMSE_{est} = \sqrt{\frac{1}{D} \sum_{d=1}^{D} \frac{\left(\hat{Y}_d^{dir} - \hat{\theta}_d\right)^2}{v_d}}
+    \label{eq:rmse-std}
+\end{equation}
+
+\noindent donde $v_d$ es la varianza directa de la Ecuación~\ref{eq:varianza-directa}. Para resumir la sensibilidad de una formulación $m$ frente al conjunto de covariables se utiliza la amplitud del RMSE entre escenarios, según la Ecuación~\ref{eq:amplitud}.
+
+\begin{equation}
+    A_m = \max_{s}\, RMSE_{m,s} - \min_{s}\, RMSE_{m,s}
+    \label{eq:amplitud}
+\end{equation}
+
+\noindent donde $RMSE_{m,s}$ es el RMSE de la formulación $m$ en el escenario $s$. Finalmente, cuando dos formulaciones $a$ y $b$ producen estimaciones para las mismas $n$ unidades sin un valor observado de referencia, su discrepancia se resume mediante la diferencia absoluta media de la Ecuación~\ref{eq:dam}, que mide concordancia entre modelos y no precisión.
+
+\begin{equation}
+    DAM_{ab} = \frac{1}{n}\sum_{i=1}^{n}\left|\hat{\theta}_i^{(a)} - \hat{\theta}_i^{(b)}\right|
+    \label{eq:dam}
+\end{equation}
+
+\noindent donde $\hat{\theta}_i^{(a)}$ y $\hat{\theta}_i^{(b)}$ son las estimaciones de la unidad $i$ según las formulaciones $a$ y $b$.
+
+\paragraph{Particularización al trabajo.}
+En este estudio, RMSE, MAE y correlación de Pearson se calculan sobre las predicciones producidas bajo el esquema de validación LODO de la Subsección~\ref{subsec:validacion}, para cada combinación de modelo (M1, M2, M3) y escenario de covariables (E1, E2, E3), y constituyen el criterio principal de comparación entre formulaciones. Dado que uno de los objetivos del estudio es apoyar la focalización territorial, se complementa la correlación de Pearson con un coeficiente de correlación de rangos cuando se interpreta el ordenamiento de los dominios. Los criterios AIC y BIC se reportan solo con fines descriptivos y no se emplean para seleccionar escenarios ni para ordenar las formulaciones: en el Modelo 1 se obtienen a partir de un ajuste por REML, cuya verosimilitud restringida no es comparable entre especificaciones con componentes fijos distintos, como ocurre entre los escenarios E1, E2 y E3, y M1, M2 y M3 pertenecen a familias de modelos con estructuras probabilísticas diferentes. El criterio de comparación entre formulaciones y escenarios es, por tanto, el desempeño bajo LODO.
+
+%--------------------------------------------------------------------------------------
+%--------------------------------------------------------------------------------------
+\subsection{Incertidumbre}
+\label{subsec:incertidumbre}
+
+\paragraph{Fundamento general.}
+En un ejercicio de SAE, la incertidumbre de una estimación de área se resume habitualmente en su error cuadrático medio. A diferencia de la varianza de muestreo del estimador directo, conocida por diseño, el error cuadrático medio del EBLUP no admite una expresión cerrada exacta, ya que debe incorporar la incertidumbre adicional que introduce la estimación de la varianza entre áreas. La aproximación estándar descompone esta cantidad en tres términos: la contribución del predictor con parámetros conocidos, la derivada de la estimación de los coeficientes fijos y la asociada a la estimación de la varianza del efecto aleatorio \cite{PrasadRao_1990}, de donde se obtiene el error estándar reportado según la Ecuación~\ref{eq:se}.
+
+\begin{equation}
+    SE_{FH,d} = \sqrt{\widehat{MSE}_d}
     \label{eq:se}
 \end{equation}
 
-%--------------------------------------------------------------------------------------
-\subsubsection{Índice de Moran}
-\label{subsec:moran}
+\noindent donde $\widehat{MSE}_d$ es la aproximación de Prasad-Rao al error cuadrático medio del EBLUP del dominio $d$, descrita en el párrafo anterior, y $SE_{FH,d}$ el error estándar reportado para ese dominio.
 
-El estadístico global de Moran \cite{Moran_1950, Anselin_1988} cuantifica el grado de autocorrelación espacial de una variable distribuida sobre un conjunto de unidades territoriales. En este trabajo se aplica sobre los residuos de las especificaciones exploratorias sin componente espacial, durante la etapa de análisis exploratorio descrita en la Sección~\ref{sec:metodologia}, con el fin de determinar si existe estructura territorial no capturada por las covariables. Su formulación corresponde a la Ecuación~\ref{eq:i-moran}.
+Para formulaciones estimadas por optimización numérica, como las de desagregación no lineal, una aproximación habitual es el método delta: si $\hat{\boldsymbol{\psi}}$ es el vector de parámetros estimados y $\boldsymbol{\Sigma}_{\psi}$ su matriz de covarianza, aproximada por la inversa de la matriz Hessiana de la función objetivo en la solución, la varianza de una función suave $g(\hat{\boldsymbol{\psi}})$ se aproxima según la Ecuación~\ref{eq:delta-var}.
 
 \begin{equation}
-    I = \frac{D}{S_0} \cdot \frac{\sum_i \sum_j w_{ij}(e_i - \bar{e})(e_j - \bar{e})}{\sum_i (e_i - \bar{e})^2}
-    \label{eq:i-moran}
+    \widehat{\operatorname{Var}}\!\left[g(\hat{\boldsymbol{\psi}})\right] \approx \nabla g(\hat{\boldsymbol{\psi}})'\, \boldsymbol{\Sigma}_{\psi}\, \nabla g(\hat{\boldsymbol{\psi}})
+    \label{eq:delta-var}
 \end{equation}
 
-\noindent donde:
+\noindent donde $\nabla g(\hat{\boldsymbol{\psi}})$ es el gradiente de $g$ respecto a los parámetros, evaluado en la estimación. La aproximación es local y su validez requiere que la matriz Hessiana sea definida positiva en la solución.
 
-\begin{itemize}
-    \item $I$: estadístico global de Moran.
-    \item $D$: número de dominios evaluados.
-    \item $w_{ij}$: peso espacial entre los dominios $i$ y $j$.
-    \item $e_i$ y $e_j$: residuos del modelo en los dominios $i$ y $j$.
-    \item $\bar{e}$: promedio de los residuos.
-    \item $S_0$: suma total de los pesos espaciales, $S_0 = \sum_i \sum_j w_{ij}$.
-\end{itemize}
-
-El estadístico se encuentra acotado aproximadamente en el intervalo $[-1, 1]$. Un valor significativamente positivo indica que dominios geográficamente próximos presentan perturbaciones similares, lo que revela una estructura de dependencia territorial no capturada por el conjunto de covariables fijas.
-
-Para evitar que la conclusión dependa de una definición discrecional del entorno geográfico, la inferencia se realiza mediante pruebas de permutación condicional, evaluando la consistencia del estadístico bajo distintos esquemas de vecindad. La detección de autocorrelación espacial significativa en esta etapa constituye la justificación empírica para formular el modelo espacial descrito en la Subsección~\ref{subsec:car}, que incorpora dicha estructura de manera explícita en la matriz de covarianza de los efectos aleatorios.
+\paragraph{Particularización al trabajo.}
+En este estudio, la incertidumbre validada mediante el esquema LODO de la Subsección~\ref{subsec:validacion} corresponde exclusivamente a la escala departamental: el RMSE, el MAE y la correlación de la Subsección~\ref{subsec:metricas} resumen el desempeño sobre los 33 departamentos, para los cuales sí existe una estimación directa observada contra la cual comparar. Para las 1{,}121 estimaciones municipales no se dispone de una estimación directa observada en 2024, por lo que su precisión individual no puede validarse con el mismo nivel de evidencia. Su incertidumbre se aproxima en este trabajo con la Ecuación~\ref{eq:delta-var}, tomando como $g$ el predictor municipal posterior al benchmarking, $\eta_{i,d}+\delta_d$. El vector $\boldsymbol{\psi}$ reúne los coeficientes fijos, los coeficientes espaciales en el Modelo 3 y $\log\tau$, y el gradiente incorpora la dependencia de $\delta_d$ respecto de esos parámetros, que se deriva de la condición de la Ecuación~\ref{eq:benchmarking}. A esa varianza se suma la contribución de la incertidumbre del benchmark departamental, a través de $v_d$. El resultado es una medida aproximada, condicional a los valores fijados de $K$ y $\rho$ y a la especificación de cada modelo; no sustituye una validación municipal directa. Esta distinción se mantiene de forma explícita en la Sección~\ref{sec:resultados} y en la Sección~\ref{sec:discusion}: el buen desempeño LODO a escala departamental es evidencia de la capacidad predictiva agregada del modelo, pero no constituye, por sí mismo, una medida de la incertidumbre de cada estimación municipal individual.
 
 %--------------------------------------------------------------------------------------
-\subsubsection{Supuestos distribucionales y diagnósticos de validez}
+%--------------------------------------------------------------------------------------
+\subsection{Supuestos distribucionales y diagnósticos de validez}
 \label{subsec:diagnosticos}
 
-La validez de las estimaciones depende del cumplimiento razonable de los supuestos distribucionales de cada formulación. Los diagnósticos que se enumeran a continuación se aplican en la Sección~\ref{sec:metodologia} y sus resultados se reportan en la Sección~\ref{sec:resultados}.
+\paragraph{Fundamento general.}
+La validez de las estimaciones depende del cumplimiento razonable de los supuestos distribucionales de cada formulación. La normalidad de los residuos estandarizados se evalúa mediante la prueba de Shapiro-Wilk, cuya hipótesis nula establece que la muestra proviene de una distribución normal; no rechazar esta hipótesis no equivale a confirmar la normalidad, sino a no encontrar evidencia suficiente en contra de ella. La homocedasticidad se examina mediante la prueba de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante del error frente a la alternativa de que esta dependa de las covariables. La adecuación de la forma funcional lineal se verifica mediante la prueba RESET, que evalúa si potencias del predictor ajustado aportan capacidad explicativa adicional \cite{Greene_2018}.
 
-La normalidad de los residuos estandarizados se evalúa mediante la prueba de Shapiro-Wilk, cuya hipótesis nula establece que la muestra proviene de una distribución normal. La homocedasticidad se examina mediante la prueba de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante del error frente a la alternativa de que esta dependa de las covariables. La adecuación de la forma funcional lineal se verifica mediante la prueba RESET, que evalúa si potencias del predictor ajustado aportan capacidad explicativa adicional, lo que señalaría una especificación funcional incompleta \cite{Greene_2018}.
-
-En las formulaciones estimadas por optimización numérica se verifica adicionalmente la identificación local del modelo, comprobando que la matriz Hessiana evaluada en la solución sea definida positiva, y la estabilidad de la solución frente a múltiples arranques del algoritmo.
-
-Estos diagnósticos se interpretan como elementos que documentan el comportamiento del ajuste y delimitan el alcance de las conclusiones, y no como reglas mecánicas de descarte. Una advertencia en alguno de ellos identifica una condición que debe considerarse al interpretar los resultados, sin que ello invalide por sí misma una formulación cuyo sustento metodológico es reconocido en la literatura del área.
+\paragraph{Particularización al trabajo.}
+En las formulaciones estimadas por optimización numérica de este estudio (Modelos 2 y 3) se verifica adicionalmente la identificación local del modelo, comprobando que la matriz Hessiana evaluada en la solución sea definida positiva, y la estabilidad de la solución frente a múltiples arranques del algoritmo. En el Modelo 1, la prueba de Shapiro-Wilk se aplica sobre los residuos respecto al componente fijo, estandarizados por la varianza total, $(\hat{Y}_d^{dir}-\bar{\mathbf{X}}'_d\hat{\boldsymbol{\beta}})/\sqrt{\hat{\sigma}^2_u+v_d}$; en los Modelos 2 y 3, sobre los residuos departamentales estandarizados previos al benchmarking. Las pruebas de Breusch-Pagan y RESET, el VIF y la distancia de Cook (con umbral $4/D$) se calculan sobre el ajuste OLS departamental con las mismas covariables de cada escenario. La prueba de Breusch-Pagan se aplica sobre esos residuos OLS, dado que el Modelo 1 ya incorpora heterogeneidad conocida mediante $v_d$; su resultado se interpreta como diagnóstico de la etapa exploratoria y no como una prueba sobre la varianza total $v_d+\sigma_u^2$ del modelo de área. Estos diagnósticos documentan el comportamiento del ajuste y delimitan el alcance de las conclusiones; una advertencia en alguno de ellos identifica una condición a considerar al interpretar los resultados, y se reporta como tal en la Sección~\ref{sec:resultados}, sin que ello invalide por sí misma una formulación cuyo sustento metodológico es reconocido en la literatura del área.

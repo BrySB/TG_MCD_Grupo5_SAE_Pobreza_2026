@@ -1,0 +1,4 @@
+"escenario","modelo","RMSE","MAE","correlacion","fuera_rango","n_validos","criterio"
+"E1_Completa","M1_FayHerriot",7.7047,5.2993,0.8316,1,33,"Menor RMSE LODO dentro de la familia"
+"E1_Completa","M2_NoLineal",5.0971,3.7048,0.9301,0,33,"Menor RMSE LODO dentro de la familia"
+"E2_Parsimoniosa","M3_CAR_Reducido",4.7197,3.6731,0.941,0,33,"Menor RMSE LODO dentro de la familia"

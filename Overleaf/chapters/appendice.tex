@@ -1,12 +1,11 @@
-
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
 \section{Disponibilidad de datos}
-\label{sec:datos-apendice} 
+\label{sec:datos-apendice}
 
-
-
+Los insumos utilizados en la estimación son tres archivos: la fuente consolidada de covariables municipales de 2018 y 2024 (\texttt{\detokenize{Covariables_18&24.csv}}), con las variables y fuentes descritas en la Tabla~\ref{tab:matriz-auxiliar-ipm}; la estimación directa departamental del IPM 2024 con su varianza de muestreo (\texttt{\detokenize{IPM_Depto_2024.xlsx}}), descrita en la Sección~\ref{sec:datos}; y la cartografía municipal del Marco Geoestadístico Nacional del DANE (\texttt{\detokenize{MGN_ADM_MPIO_GRAFICO.shp}}), utilizada para construir la matriz de vecindad del Modelo 3. Las fuentes primarias de las covariables son de acceso público.
+% La disponibilidad de archivos de entrada y restricciones de redistribucion se declarara en el apartado de repositorio de A.3.
 
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
@@ -14,51 +13,425 @@
 \section{Notación de variables codificadas}
 \label{sec:tabla-variables-codificadas}
 
-\begin{table}[!htbp]
-\centering
+
+% Diccionario de variables - Apéndice A.2
+\begingroup
 \small
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+
+\begin{longtable}{p{5cm} p{7cm}}
+
 \caption{Correspondencia entre los nombres de variables utilizados en el procesamiento de datos y su descripción}
-\label{tab:diccionario-variables}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{p{5cm} p{7cm}}
+\label{tab:diccionario-variables}\\
+
 \hline
 \textbf{Nombre en código} & \textbf{Nombre descriptivo} \\
 \hline
+\endfirsthead
+
+\multicolumn{2}{c}{\small\textit{Tabla \thetable\ -- continuación}}\\
+\hline
+\textbf{Nombre en código} & \textbf{Nombre descriptivo} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{2}{r}{\small\textit{Continúa en la siguiente página}}\\
+\endfoot
+
+\hline
+\endlastfoot
+
 \texttt{\detokenize{cod_depto}} & Código del departamento \\
 \texttt{\detokenize{cod_mpio}} & Código del municipio \\
 \texttt{depto} & Nombre del departamento \\
 \texttt{mpio} & Nombre del municipio \\
+
 \texttt{\detokenize{pct_subsidiado_2024}} & Porcentaje de afiliados al régimen subsidiado (2024) \\
 \texttt{\detokenize{pct_cont_2024}} & Porcentaje de afiliados al régimen contributivo (2024) \\
-\texttt{\detokenize{aseguramiento_capado_2024}} & Aseguramiento en salud ajustado o capado (2024) \\
+\texttt{\detokenize{aseguramiento_capado}} & Aseguramiento en salud truncado en 1 (2024) \\
 \texttt{\detokenize{ratio_subs_cont_2024}} & Razón subsidiado/contributivo (2024) \\
 \texttt{\detokenize{log_total_afiliados_2024}} & Logaritmo del total de afiliados en salud (2024) \\
 \texttt{\detokenize{mortalidad_infantil}} & Tasa de mortalidad infantil \\
 \texttt{\detokenize{log_mortalidad_infantil}} & Transformación logarítmica de la mortalidad infantil \\
+
 \texttt{\detokenize{tasa_matriculacion_5_16}} & Tasa de matriculación de 5 a 16 años \\
 \texttt{\detokenize{cobertura_neta}} & Cobertura neta educativa total \\
 \texttt{\detokenize{cobertura_neta_media}} & Cobertura neta en educación media \\
 \texttt{desercion} & Tasa de deserción escolar \\
 \texttt{repitencia} & Tasa de repitencia escolar \\
 \texttt{reprobacion} & Tasa de reprobación escolar \\
+
 \texttt{\detokenize{Cobertura_acueducto}} & Cobertura de acueducto \\
 \texttt{\detokenize{Cobertura_alcantarillado}} & Cobertura de alcantarillado \\
 \texttt{\detokenize{Cobertura_aseo}} & Cobertura de aseo \\
 \texttt{\detokenize{infraestructura_basica}} & Índice de infraestructura básica \\
-\texttt{\detokenize{Cobertura_energia_rural}} & Cobertura de energía rural \\
-\texttt{\detokenize{luces_viirs_2024}} & Luminosidad nocturna (VIIRS) \\
-\texttt{\detokenize{log_viirs_2024}} & Transformación logarítmica de la luminosidad nocturna \\
+\texttt{\detokenize{ICEE_rural}}, \texttt{\detokenize{cobertura_energia_rural}} & Cobertura de energía eléctrica rural \\
+
+\texttt{\detokenize{viirs_rad}} & Luminosidad nocturna (radiancia VIIRS) \\
+\texttt{\detokenize{log_viirs}} & Logaritmo de uno más la radiancia nocturna \\
+
+\texttt{poblacion} & Población municipal 2024 \\
+\texttt{\detokenize{poblacion_5_a_16}} & Población municipal de 5 a 16 años \\
+\texttt{\detokenize{nacidos_vivos}} & Nacidos vivos \\
+\texttt{\detokenize{pob_asegurada}} & Población afiliada al sistema de salud \\
+
 \texttt{\detokenize{Recaudo_ICA}} & Recaudo total del impuesto de industria y comercio \\
 \texttt{\detokenize{Rec_ICA_PC}} & Recaudo del impuesto de industria y comercio per cápita \\
 \texttt{\detokenize{log_rec_ica_pc}} & Transformación logarítmica del recaudo per cápita \\
+
 \texttt{\detokenize{ipm_directo}} & IPM directo departamental \\
 \texttt{vardir} & Varianza directa de muestreo \\
-\hline
-\end{tabular}
-\end{table}
+
+\end{longtable}
+\endgroup
+
 
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
+% Asegurar que la tabla de A.2 se coloque antes de iniciar A.3.
+\clearpage
+
 \section{Disponibilidad de códigos y reproducibilidad}
-\label{sec:parte1}\label{sec:datos-reprocucibilidad}  
+\label{sec:parte1}\label{sec:datos-reprocucibilidad}
+
+Los resultados de esta investigación se obtuvieron mediante un programa principal desarrollado en R, denominado \texttt{modelamiento\_SAE\_IPM\_2024\_\allowbreak FINAL\_UNICO.R}, en el cual se integran de manera secuencial las etapas de preparación de datos, estimación de los modelos, validación, análisis de sensibilidad, robustez y exportación de resultados. Esta organización permite ejecutar los procedimientos metodológicos desde un único archivo, conservando los objetos y parámetros necesarios para cada etapa.
+
+El programa comprende los siguientes componentes:
+
+\begin{itemize}
+
+    \item \textbf{Preparación y control de calidad de datos:} lectura e integración de las fuentes auxiliares municipales y de las estimaciones directas departamentales del IPM 2024; verificación de identificadores territoriales, normalización de unidades, controles de integridad, tratamiento de registros incompletos y construcción de las bases analíticas.
+
+    \item \textbf{Estimación de los modelos M1, M2 y M3:} ajuste del modelo Fay--Herriot departamental mediante REML (M1), estimación de la formulación de desagregación municipal no lineal acotada (M2) y estimación del modelo con componente espacial de rango reducido y penalización inspirada en CAR (M3).
+
+    \item \textbf{Validación y comparación de modelos:} ejecución de las pruebas de validez y estabilidad numérica, validación por exclusión de dominio (LODO) para los 33 departamentos, cálculo de RMSE, MAE y correlaciones, y comparación de las formulaciones bajo los escenarios de covariables E1, E2 y E3.
+
+    \item \textbf{Benchmarking departamental:} aplicación de desplazamientos en escala logit para garantizar la coherencia de las estimaciones municipales agregadas con las estimaciones directas departamentales, así como evaluación de su magnitud y efectos.
+
+    \item \textbf{Análisis y diagnósticos espaciales:} construcción de la matriz de vecindad municipal por contigüidad Reina, obtención de la base espacial de rango reducido, evaluación de la autocorrelación espacial y análisis de sensibilidad del Modelo 3 frente a diferentes valores de los parámetros espaciales.
+
+    \item \textbf{Análisis de sensibilidad y robustez:} evaluación LODO de M3 para los valores de $\rho\in\{0.25,0.50,0.75,0.90\}$; identificación de departamentos potencialmente influyentes mediante diagnósticos OLS; exclusión individual de San Andrés y Providencia, Vichada y Vaupés; reestimación de M1, M2 y M3 bajo el escenario E2; y comparación de los coeficientes y métricas predictivas.
+
+    \item \textbf{Generación y exportación de resultados:} consolidación de estimaciones municipales, indicadores de ajuste, métricas de validación, tablas comparativas, diagnósticos de robustez, archivos CSV, libros Excel y productos cartográficos utilizados en el documento.
+
+\end{itemize}
+
+Los análisis complementarios se ejecutan dentro del mismo programa y utilizan los objetos generados previamente, sin sustituir las estimaciones definitivas de los tres modelos. La reproducción completa requiere disponer de las fuentes de información descritas en la Sección~\ref{sec:datos-apendice} y configurar las rutas de entrada y salida del programa de acuerdo con el entorno de ejecución.
+
+
+La ejecución documentada utilizó R 4.3.3 con los paquetes sae 1.3, spdep 1.3.1, spatialreg 1.3.1, sf 1.0.15, Matrix 1.6.5, RSpectra 0.16.1, dplyr 1.1.4, readxl 1.4.3, openxlsx 4.2.5.2, car 3.1.2, lmtest 0.9.40, numDeriv 2016.8.1.1 y ggplot2 3.4.4. Los parámetros de ejecución fueron los siguientes:
+
+\begin{itemize}
+    \item Semilla global 2026. M2: 12 arranques en el ajuste completo y 5 por pliegue LODO, con semilla 5000 más el índice del departamento excluido. M3: 8 arranques en el ajuste completo y 3 por pliegue, con semilla 12000 más 100 veces el índice del escenario más el índice del departamento excluido. Los análisis de sensibilidad utilizan semillas fijas documentadas en el programa unificado.
+    \item Optimización de M2 y M3 con Nelder--Mead seguido de BFGS; tolerancia relativa de $10^{-10}$ y 15{,}000 iteraciones máximas en la primera etapa de M2, y de $10^{-9}$ con 12{,}000 y 5{,}000 iteraciones en M3. Se considera que dos arranques alcanzan el mismo mínimo cuando sus funciones objetivo difieren en menos de $10^{-4}$.
+    \item Benchmarking por búsqueda de raíz en $[-25,25]$ de la escala logit, con tolerancia de $10^{-12}$. M1 se ajusta por REML mediante la función \texttt{eblupFH} del paquete sae.
+    \item Vecindad por contigüidad Reina sobre cartografía del Marco Geoestadístico Nacional, con tolerancia de unión de 0.001, matriz binaria y normalización simétrica $\mathbf{S}=\mathbf{D}^{-1/2}\mathbf{W}\mathbf{D}^{-1/2}$; autovectores obtenidos con RSpectra. Se emplean $K=6$ y $\rho=0.50$ como referencia, con grillas $K\in\{3,4,6,8,10\}$ y $\rho\in\{0.25,0.50,0.75,0.90\}$.
+    \item Índice de Moran departamental con 9{,}999 permutaciones y municipal con 999.
+    \item En el análisis adicional de robustez E2, M2 utiliza 12 arranques en cada ajuste de 32 departamentos y 5 por pliegue de 31; M3 utiliza 8 y 3 arranques, respectivamente, con $K=6$ y $\rho=0.50$ fijos. Las semillas se fijan explícitamente en el programa unificado.
+\end{itemize}
+
+\paragraph{Salidas del análisis de robustez departamental.}
+
+El bloque de análisis de robustez departamental, integrado en el programa principal \texttt{modelamiento\_SAE\_IPM\_2024\_\allowbreak FINAL\_UNICO.R}, genera los siguientes archivos en la carpeta relativa \texttt{salidas\_departamentos\_influyentes/\allowbreak robustez\_E2/}:
+
+\begin{itemize}
+    \item \texttt{01\_diagnosticos\_formales\_\allowbreak OLS\_E2.csv}: diagnósticos OLS de los 33 departamentos (Cook, apalancamiento, residuo estandarizado, máximo DFBETAS absoluto e indicadores de señal). Sustenta la Sección~\ref{sec:res-ols}.
+    \item \texttt{02\_robustez\_metricas\_\allowbreak LODO\_E2.csv}: métricas RMSE, MAE y Pearson originales y reestimadas para cada exclusión y modelo, junto con los cambios de RMSE y MAE.
+    \item \texttt{03\_robustez\_\allowbreak coeficientes\_E2.csv}: coeficientes originales y reestimados de M1, M2 y M3, diferencia y variación relativa porcentual. Las covariables de M2 y M3 se comparan en una escala común; los coeficientes espaciales se identifican separadamente.
+    \item \texttt{04\_robustez\_\allowbreak predicciones\_E2.csv}: IPM directo, predicciones LODO originales y predicciones LODO reestimadas por modelo y departamento de evaluación.
+\end{itemize}
+
+Los tres departamentos seleccionados fueron San Andrés y Providencia, Vichada y Vaupés. Los cuatro archivos permiten reconstruir las comparaciones de influencia y sensibilidad presentadas en la Sección~\ref{sec:res-comparacion}, sin confundir la exclusión de una observación del cálculo del error con la reestimación efectiva de los modelos. Las métricas basales y reestimadas se calculan sobre los mismos 32 departamentos de evaluación, aunque las primeras proceden de pliegues entrenados con 32 dominios y las segundas con 31.
+
+En un equipo de dos núcleos, la etapa de modelamiento principal registró un tiempo aproximado de 22 minutos y el análisis complementario de sensibilidad a $K$ cerca de 32 minutos. Estos tiempos corresponden a ejecuciones documentadas de las etapas respectivas y no representan el tiempo total de ejecución del programa unificado, que incluye análisis adicionales de sensibilidad y robustez.
+
+\paragraph{Repositorio de reproducibilidad y acceso a materiales.}
+
+El código y las salidas analíticas se organizarán en una carpeta digital de respaldo para facilitar la trazabilidad y la reproducción de los resultados de este trabajo. La ubicación definitiva del repositorio se incorporará en el siguiente campo antes de la entrega final:
+
+\begin{quote}
+\noindent\textbf{Enlace del repositorio:} \texttt{\detokenize{[https://github.com/BrySB/TG_MCD_Grupo5_SAE_Pobreza_2026]}}
+\end{quote}
+
+% AL PUBLICAR EL REPOSITORIO: sustituir la línea anterior por
+% \noindent\textbf{Enlace del repositorio:} \url{https://enlace-real-del-repositorio}
+% Confirmar antes de entregar: acceso de lectura, archivos efectivamente incluidos y permisos de redistribucion.
+
+El material previsto comprende el programa unificado
+\texttt{modelamiento\_SAE\_IPM\_2024\_\allowbreak FINAL\_UNICO.R}, los archivos de resultados consolidados y los cuatro archivos CSV de robustez identificados anteriormente. Los insumos de entrada y la cartografía se describen en la Sección~\ref{sec:datos-apendice}; su disponibilidad para descarga dependerá de las condiciones de acceso y redistribución correspondientes. Cuando un archivo no pueda compartirse, el repositorio deberá indicar la fuente oficial y las instrucciones para obtenerlo.
+
+Para reproducir el procedimiento se requiere configurar las rutas de los datos, disponer de las dependencias y versiones de software señaladas en esta sección y ejecutar el programa unificado en el orden en que están definidos sus bloques. La publicación del repositorio y la verificación de su contenido quedan pendientes hasta asignar el enlace definitivo.
+
+%--------------------------------------------------------------------------------------
+\section{Errores LODO por departamento}
+\label{sec:apendice-errores}
+
+La Tabla~\ref{tab:errores-lodo-dep} presenta el error LODO de cada departamento en las nueve combinaciones de modelo y escenario, calculado como la estimación LODO menos la estimación directa; la columna IPM corresponde a la estimación directa. Valores positivos indican sobreestimación.
+
+\setlength{\tabcolsep}{2pt}
+\footnotesize
+\begin{longtable}{l c c c c c c c c c c}
+\caption{Error LODO por departamento, en puntos del IPM.}
+\label{tab:errores-lodo-dep}\\
+\hline
+ & & \multicolumn{3}{c}{E1} & \multicolumn{3}{c}{E2} & \multicolumn{3}{c}{E3} \\
+Departamento & IPM & M1 & M2 & M3 & M1 & M2 & M3 & M1 & M2 & M3 \\
+\hline
+\endfirsthead
+\hline
+Departamento & IPM & M1 & M2 & M3 & M1 & M2 & M3 & M1 & M2 & M3 \\
+\hline
+\endhead
+\hline
+\endfoot
+Antioquia & 10.90 & 0.72 & $-1.22$ & 4.89 & 0.92 & $-1.11$ & 3.49 & 1.91 & 0.05 & 3.70 \\
+Atlántico & 9.50 & $-9.20$ & $-4.84$ & $-5.86$ & $-9.01$ & $-4.68$ & $-5.38$ & $-7.45$ & $-3.43$ & $-5.39$ \\
+Bogotá D.C. & 5.40 & $-6.56$ & $-2.61$ & $-3.62$ & $-5.55$ & $-1.66$ & $-3.59$ & $-0.39$ & 1.25 & $-2.66$ \\
+Bolívar & 15.60 & 1.79 & $-0.06$ & 1.37 & $-1.31$ & $-1.62$ & 2.29 & $-1.67$ & $-1.69$ & 0.63 \\
+Boyacá & 6.90 & 1.34 & 2.85 & 1.92 & 2.23 & 3.37 & 1.71 & 1.09 & 2.71 & 4.36 \\
+Caldas & 9.20 & $-1.27$ & $-1.26$ & $-0.19$ & 2.71 & 1.35 & 3.23 & 3.84 & 2.85 & 4.73 \\
+Caquetá & 13.90 & 4.58 & 5.16 & 4.02 & 6.84 & 6.47 & 1.44 & 6.45 & 6.19 & 0.67 \\
+Cauca & 14.00 & 0.62 & 0.22 & $-0.94$ & 3.35 & 2.74 & $-0.96$ & 1.11 & $-0.02$ & $-5.49$ \\
+Cesar & 13.40 & $-0.19$ & $-3.06$ & $-1.63$ & 0.32 & $-1.17$ & 2.62 & 7.41 & 5.80 & 8.17 \\
+Córdoba & 25.70 & $-7.34$ & $-10.70$ & $-6.99$ & $-8.04$ & $-10.36$ & $-4.45$ & $-6.61$ & $-8.61$ & $-0.30$ \\
+Cundinamarca & 7.40 & 11.90 & 5.74 & 2.29 & 10.21 & 3.95 & 0.66 & 9.48 & 3.85 & 1.55 \\
+Chocó & 33.90 & $-1.88$ & 1.68 & 13.37 & $-10.61$ & $-12.54$ & $-7.46$ & $-12.10$ & $-15.86$ & $-11.98$ \\
+Huila & 10.90 & $-3.93$ & $-0.65$ & $-2.96$ & $-2.79$ & $-0.77$ & $-4.42$ & $-3.34$ & $-0.85$ & $-4.54$ \\
+La Guajira & 39.30 & $-2.89$ & $-7.37$ & $-10.48$ & $-12.91$ & $-15.65$ & $-13.33$ & $-11.54$ & $-14.44$ & $-11.46$ \\
+Magdalena & 19.20 & 5.04 & 4.91 & 12.36 & 2.17 & 1.72 & 12.15 & 0.24 & $-0.51$ & 4.83 \\
+Meta & 10.40 & 6.11 & 5.24 & 1.87 & 4.72 & 3.49 & $-0.43$ & 3.49 & 2.80 & 1.95 \\
+Nariño & 18.10 & $-3.86$ & $-3.08$ & $-4.76$ & 0.80 & 0.90 & $-6.55$ & $-0.80$ & $-1.20$ & $-12.39$ \\
+N. de Santander & 15.20 & $-6.15$ & $-5.01$ & $-2.11$ & $-5.14$ & $-4.39$ & $-2.42$ & $-5.72$ & $-4.93$ & $-5.32$ \\
+Quindío & 7.40 & $-2.21$ & $-0.76$ & $-2.10$ & $-2.69$ & $-1.13$ & $-1.96$ & 1.10 & 1.79 & $-0.89$ \\
+Risaralda & 9.50 & 1.30 & $-0.32$ & $-0.61$ & $-1.19$ & $-1.14$ & $-0.84$ & $-1.58$ & $-0.70$ & $-1.86$ \\
+Santander & 6.80 & 1.55 & 2.39 & 4.56 & 1.30 & 1.84 & 2.89 & 0.97 & 1.74 & 2.98 \\
+Sucre & 21.80 & $-2.58$ & $-5.10$ & 0.66 & $-4.19$ & $-5.58$ & 1.26 & $-3.44$ & $-4.90$ & 1.17 \\
+Tolima & 12.60 & $-0.71$ & $-0.43$ & $-3.35$ & $-3.55$ & $-2.28$ & $-3.79$ & $-3.48$ & $-2.56$ & $-3.68$ \\
+Valle del Cauca & 6.20 & $-0.10$ & 0.71 & 0.59 & 4.71 & 3.87 & 2.74 & 6.16 & 5.56 & 2.59 \\
+Arauca & 17.70 & $-2.27$ & $-1.84$ & $-2.94$ & $-2.94$ & $-2.42$ & $-4.09$ & $-4.61$ & $-4.14$ & $-2.31$ \\
+Casanare & 11.30 & $-1.58$ & $-0.35$ & $-3.26$ & $-2.51$ & $-0.73$ & $-3.77$ & $-2.28$ & $-0.71$ & $-0.56$ \\
+Putumayo & 11.80 & 4.31 & 2.79 & $-1.03$ & 6.87 & 7.51 & 0.71 & 7.72 & 6.81 & $-4.57$ \\
+San Andrés & 6.00 & 18.11 & 10.82 & 7.36 & 19.34 & 13.54 & 6.04 & 2.00 & 1.87 & $-2.01$ \\
+Amazonas & 15.60 & 17.67 & 15.96 & 12.12 & 15.82 & 13.20 & 7.12 & 19.86 & 22.17 & 18.65 \\
+Guainía & 49.00 & $-10.79$ & $-4.66$ & $-7.11$ & $-8.69$ & 2.18 & $-1.12$ & $-15.18$ & $-15.76$ & $-17.31$ \\
+Guaviare & 21.30 & $-2.56$ & 1.54 & $-0.78$ & 4.90 & 6.64 & 1.37 & 1.68 & 1.37 & $-0.94$ \\
+Vaupés & 37.40 & 10.23 & $-2.37$ & 3.28 & 13.85 & 9.85 & 4.15 & 17.89 & 19.33 & 33.31 \\
+Vichada & 70.20 & $-23.54$ & $-6.53$ & $-15.86$ & $-15.80$ & $-9.87$ & $-2.79$ & $-17.37$ & $-19.83$ & $-32.70$ \\
+\end{longtable}
+\normalsize
+\setlength{\tabcolsep}{6pt}
+
+%--------------------------------------------------------------------------------------
+\section{Desplazamientos de benchmarking por departamento}
+\label{sec:apendice-benchmarking}
+
+La Tabla~\ref{tab:delta-dep} presenta el desplazamiento $\hat{\delta}_d$ de la Ecuación~\ref{eq:benchmarking}, en la escala logit, para cada departamento, modelo y escenario.
+
+\footnotesize
+\begin{longtable}{l c c c c c c}
+\caption{Desplazamiento de benchmarking $\hat{\delta}_d$ por departamento, en escala logit.}
+\label{tab:delta-dep}\\
+\hline
+ & \multicolumn{2}{c}{E1} & \multicolumn{2}{c}{E2} & \multicolumn{2}{c}{E3} \\
+Departamento & M2 & M3 & M2 & M3 & M2 & M3 \\
+\hline
+\endfirsthead
+\hline
+Departamento & M2 & M3 & M2 & M3 & M2 & M3 \\
+\hline
+\endhead
+\hline
+\endfoot
+Antioquia & 0.13 & $-0.28$ & 0.12 & $-0.24$ & $-0.00$ & $-0.24$ \\
+Atlántico & 0.77 & 0.79 & 0.70 & 0.77 & 0.46 & 0.73 \\
+Bogotá D.C. & 0.60 & 0.94 & 0.34 & 0.99 & $-0.18$ & 0.58 \\
+Bolívar & 0.00 & $-0.09$ & 0.13 & $-0.16$ & 0.13 & $-0.05$ \\
+Boyacá & $-0.38$ & $-0.22$ & $-0.43$ & $-0.20$ & $-0.36$ & $-0.46$ \\
+Caldas & 0.16 & 0.02 & $-0.15$ & $-0.29$ & $-0.29$ & $-0.40$ \\
+Caquetá & $-0.34$ & $-0.22$ & $-0.43$ & $-0.10$ & $-0.40$ & $-0.05$ \\
+Cauca & $-0.02$ & 0.07 & $-0.22$ & 0.07 & 0.00 & 0.51 \\
+Cesar & 0.23 & 0.10 & 0.10 & $-0.18$ & $-0.35$ & $-0.45$ \\
+Córdoba & 0.64 & 0.21 & 0.63 & 0.15 & 0.50 & 0.01 \\
+Cundinamarca & $-0.54$ & $-0.20$ & $-0.41$ & $-0.07$ & $-0.38$ & $-0.15$ \\
+Chocó & $-0.01$ & $-0.03$ & 0.57 & 0.13 & 0.67 & 0.22 \\
+Huila & 0.07 & 0.30 & 0.08 & 0.53 & 0.09 & 0.53 \\
+La Guajira & 0.15 & 0.20 & 0.69 & 0.36 & 0.41 & 0.27 \\
+Magdalena & $-0.24$ & $-0.37$ & $-0.10$ & $-0.43$ & 0.03 & $-0.20$ \\
+Meta & $-0.52$ & $-0.17$ & $-0.33$ & 0.04 & $-0.27$ & $-0.16$ \\
+Nariño & 0.23 & 0.19 & $-0.07$ & 0.33 & 0.09 & 0.64 \\
+N. de Santander & 0.46 & 0.08 & 0.40 & 0.09 & 0.43 & 0.22 \\
+Quindío & 0.12 & 0.33 & 0.17 & 0.29 & $-0.23$ & 0.12 \\
+Risaralda & 0.04 & 0.06 & 0.14 & 0.08 & 0.08 & 0.21 \\
+Santander & $-0.32$ & $-0.47$ & $-0.26$ & $-0.34$ & $-0.24$ & $-0.34$ \\
+Sucre & 0.33 & $-0.03$ & 0.38 & $-0.06$ & 0.31 & $-0.05$ \\
+Tolima & 0.04 & 0.26 & 0.22 & 0.35 & 0.24 & 0.33 \\
+Valle del Cauca & $-0.11$ & $-0.08$ & $-0.53$ & $-0.36$ & $-0.69$ & $-0.35$ \\
+Arauca & 0.12 & 0.14 & 0.16 & 0.20 & 0.29 & 0.10 \\
+Casanare & 0.04 & 0.34 & 0.08 & 0.41 & 0.07 & 0.05 \\
+Putumayo & $-0.15$ & 0.05 & $-0.49$ & $-0.04$ & $-0.41$ & 0.30 \\
+San Andrés & $-0.50$ & $-0.18$ & $-0.68$ & $-0.20$ & $-0.23$ & 0.22 \\
+Amazonas & $-0.63$ & $-0.39$ & $-0.66$ & $-0.37$ & $-1.17$ & $-0.76$ \\
+Guainía & 0.07 & 0.09 & $-0.04$ & 0.02 & 0.48 & 0.44 \\
+Guaviare & $-0.07$ & 0.03 & $-0.29$ & $-0.06$ & $-0.07$ & 0.05 \\
+Vaupés & 0.05 & $-0.02$ & $-0.27$ & $-0.12$ & $-0.47$ & $-0.48$ \\
+Vichada & 0.04 & 0.03 & 0.16 & 0.04 & 0.22 & 0.21 \\
+\end{longtable}
+\normalsize
+
+%--------------------------------------------------------------------------------------
+\section{Coeficientes del Modelo 3 según el rango de la base espacial}
+\label{sec:apendice-coef-K}
+
+La Tabla~\ref{tab:coef-K} presenta los coeficientes del Modelo 3, sobre covariables estandarizadas, estimados con los 33 dominios para cada valor de $K$ y $\rho=0.50$.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Coeficientes estimados del Modelo 3 según el rango $K$ de la base espacial, con $\rho=0.50$.}
+\label{tab:coef-K}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{l l c c c c c}
+\hline
+Escenario & Coeficiente & $K=3$ & $K=4$ & $K=6$ & $K=8$ & $K=10$ \\
+\hline
+E1 & Intercepto & $-2.23$ & $-2.17$ & $-2.45$ & $-2.40$ & $-2.57$ \\
+E1 & Repitencia escolar & 0.84 & 0.88 & 1.01 & 1.05 & 1.10 \\
+E1 & Tasa de matriculación & 0.30 & 0.29 & 0.40 & 0.38 & 0.45 \\
+E1 & Infraestructura básica & $-0.27$ & $-0.28$ & $-0.29$ & $-0.29$ & $-0.24$ \\
+E1 & Cobertura de energía rural & 0.16 & 0.14 & 0.13 & 0.12 & 0.14 \\
+E1 & Mortalidad infantil & 0.18 & 0.09 & 0.07 & 0.07 & 0.08 \\
+E1 & Aseguramiento en salud & $-0.25$ & $-0.23$ & $-0.19$ & $-0.14$ & $-0.11$ \\
+E1 & Luminosidad nocturna & $-0.21$ & $-0.23$ & $-0.20$ & $-0.22$ & $-0.20$ \\
+E2 & Intercepto & $-1.96$ & $-1.98$ & $-2.17$ & $-2.10$ & $-2.14$ \\
+E2 & Repitencia escolar & 0.73 & 0.80 & 0.87 & 0.96 & 0.95 \\
+E2 & Infraestructura básica & $-0.29$ & $-0.32$ & $-0.35$ & $-0.33$ & $-0.32$ \\
+E2 & Aseguramiento en salud & $-0.23$ & $-0.17$ & $-0.13$ & $-0.04$ & $-0.03$ \\
+E2 & Luminosidad nocturna & $-0.20$ & $-0.22$ & $-0.18$ & $-0.22$ & $-0.21$ \\
+E3 & Intercepto & $-1.69$ & $-1.72$ & $-1.75$ & $-1.78$ & $-1.96$ \\
+E3 & Repitencia escolar & 0.72 & 0.76 & 0.80 & 1.07 & 1.23 \\
+E3 & Cobertura de energía rural & 0.05 & 0.01 & $-0.01$ & $-0.03$ & $-0.04$ \\
+E3 & Aseguramiento en salud & $-0.21$ & $-0.13$ & $-0.07$ & 0.21 & 0.35 \\
+E3 & Luminosidad nocturna & $-0.26$ & $-0.27$ & $-0.26$ & $-0.36$ & $-0.31$ \\
+\hline
+\end{tabular}
+\end{table}
+
+% Vaciar las tablas flotantes pendientes (en particular la Tabla A.4)
+% antes de comenzar la sección A.7 y su longtable (Tabla A.5).
+\clearpage
+
+%--------------------------------------------------------------------------------------
+
+\section{Sensibilidad de los parámetros ante la exclusión de departamentos influyentes}
+\label{sec:apendice-influencia-parametros}
+
+La Tabla~\ref{tab:robustez-parametros-completa} presenta los 69 registros de comparación paramétrica correspondientes a las exclusiones individuales de San Andrés y Providencia, Vichada y Vaupés bajo el escenario E2. Se reportan los parámetros originales estimados con 33 departamentos, sus reestimaciones con 32 departamentos, las diferencias calculadas como el valor reestimado menos el original y los cambios relativos porcentuales.
+
+\begingroup
+\scriptsize
+\setlength{\tabcolsep}{2.8pt}
+\renewcommand{\arraystretch}{1.06}
+
+\begin{longtable}{l c l r r r r}
+
+\caption{Sensibilidad completa de los parámetros de M1, M2 y M3 en E2 ante exclusiones individuales.}
+\label{tab:robustez-parametros-completa}\\
+
+\hline
+Depto. excluido & Modelo & Parámetro & Original & Reest. & Dif. & Cambio relativo (\%) \\
+\hline
+\endfirsthead
+
+\multicolumn{7}{l}{\textit{Tabla \thetable\ (continuación)}} \\
+\hline
+Depto. excluido & Modelo & Parámetro & Original & Reest. & Dif. & Cambio relativo (\%) \\
+\hline
+\endhead
+
+\hline
+\endfoot
+
+San Andrés y Prov. & M1 & Intercepto & \num{20.6235} & \num{13.5003} & \num{-7.1232} & \num{-34.5393} \\
+ & M1 & Repitencia & \num{380.8131} & \num{428.5059} & \num{47.6928} & \num{12.5240} \\
+ & M1 & Infraestructura & \num{-13.1363} & \num{-23.6841} & \num{-10.5478} & \num{-80.2955} \\
+ & M1 & Aseguramiento & \num{-32.2045} & \num{-24.2060} & \num{7.9985} & \num{24.8366} \\
+ & M1 & Luminosidad & \num{-1.6777} & \num{1.4543} & \num{3.1320} & \num{186.6843} \\
+ & M2 & Intercepto & \num{-2.1209} & \num{-2.7798} & \num{-0.6589} & \num{-31.0689} \\
+ & M2 & Repitencia & \num{23.3537} & \num{26.2002} & \num{2.8464} & \num{12.1884} \\
+ & M2 & Infraestructura & \num{-1.1984} & \num{-1.4126} & \num{-0.2142} & \num{-17.8776} \\
+ & M2 & Aseguramiento & \num{-0.9293} & \num{-0.5573} & \num{0.3720} & \num{40.0283} \\
+ & M2 & Luminosidad & \num{-0.3175} & \num{-0.0370} & \num{0.2805} & \num{88.3411} \\
+ & M3 & Intercepto & \num{-2.7631} & \num{-2.5441} & \num{0.2190} & \num{7.9275} \\
+ & M3 & Repitencia & \num{28.3035} & \num{29.0006} & \num{0.6971} & \num{2.4629} \\
+ & M3 & Infraestructura & \num{-1.4022} & \num{-1.4560} & \num{-0.0538} & \num{-3.8378} \\
+ & M3 & Aseguramiento & \num{-0.9457} & \num{-0.8881} & \num{0.0576} & \num{6.0863} \\
+ & M3 & Luminosidad & \num{-0.4015} & \num{-0.3117} & \num{0.0898} & \num{22.3649} \\
+ & M3 & $\alpha_{1}$ & \num{0.8800} & \num{0.0000} & \num{-0.8800} & \num{-99.9948} \\
+ & M3 & $\alpha_{2}$ & \num{0.6230} & \num{0.6061} & \num{-0.0170} & \num{-2.7242} \\
+ & M3 & $\alpha_{3}$ & \num{0.0632} & \num{0.0416} & \num{-0.0216} & \num{-34.1672} \\
+ & M3 & $\alpha_{4}$ & \num{-0.3246} & \num{-0.3187} & \num{0.0059} & \num{1.8034} \\
+ & M3 & $\alpha_{5}$ & \num{-0.3315} & \num{-0.3445} & \num{-0.0130} & \num{-3.9214} \\
+ & M3 & $\alpha_{6}$ & \num{0.0784} & \num{0.0842} & \num{0.0058} & \num{7.4158} \\
+ & M2 & $\tau$ & \num{4.5708} & \num{4.4099} & \num{-0.1610} & \num{-3.5215} \\
+ & M3 & $\tau$ & \num{2.5584} & \num{2.5869} & \num{0.0285} & \num{1.1151} \\
+
+\hline
+
+Vichada & M1 & Intercepto & \num{20.6235} & \num{2.6850} & \num{-17.9385} & \num{-86.9808} \\
+ & M1 & Repitencia & \num{380.8131} & \num{353.6243} & \num{-27.1888} & \num{-7.1397} \\
+ & M1 & Infraestructura & \num{-13.1363} & \num{-11.4702} & \num{1.6660} & \num{12.6826} \\
+ & M1 & Aseguramiento & \num{-32.2045} & \num{-11.0026} & \num{21.2019} & \num{65.8352} \\
+ & M1 & Luminosidad & \num{-1.6777} & \num{-2.2869} & \num{-0.6092} & \num{-36.3128} \\
+ & M2 & Intercepto & \num{-2.1209} & \num{-2.9795} & \num{-0.8586} & \num{-40.4830} \\
+ & M2 & Repitencia & \num{23.3537} & \num{22.6070} & \num{-0.7467} & \num{-3.1973} \\
+ & M2 & Infraestructura & \num{-1.1984} & \num{-1.0860} & \num{0.1124} & \num{9.3799} \\
+ & M2 & Aseguramiento & \num{-0.9293} & \num{0.0369} & \num{0.9662} & \num{103.9681} \\
+ & M2 & Luminosidad & \num{-0.3175} & \num{-0.3505} & \num{-0.0330} & \num{-10.3835} \\
+ & M3 & Intercepto & \num{-2.7631} & \num{-3.0190} & \num{-0.2558} & \num{-9.2589} \\
+ & M3 & Repitencia & \num{28.3035} & \num{27.9581} & \num{-0.3454} & \num{-1.2205} \\
+ & M3 & Infraestructura & \num{-1.4022} & \num{-1.3636} & \num{0.0386} & \num{2.7506} \\
+ & M3 & Aseguramiento & \num{-0.9457} & \num{-0.6193} & \num{0.3264} & \num{34.5160} \\
+ & M3 & Luminosidad & \num{-0.4015} & \num{-0.4203} & \num{-0.0188} & \num{-4.6710} \\
+ & M3 & $\alpha_{1}$ & \num{0.8800} & \num{0.8326} & \num{-0.0475} & \num{-5.3921} \\
+ & M3 & $\alpha_{2}$ & \num{0.6230} & \num{0.6036} & \num{-0.0195} & \num{-3.1263} \\
+ & M3 & $\alpha_{3}$ & \num{0.0632} & \num{0.0440} & \num{-0.0192} & \num{-30.3592} \\
+ & M3 & $\alpha_{4}$ & \num{-0.3246} & \num{-0.3364} & \num{-0.0118} & \num{-3.6470} \\
+ & M3 & $\alpha_{5}$ & \num{-0.3315} & \num{-0.3303} & \num{0.0012} & \num{0.3621} \\
+ & M3 & $\alpha_{6}$ & \num{0.0784} & \num{0.0638} & \num{-0.0146} & \num{-18.5861} \\
+ & M2 & $\tau$ & \num{4.5708} & \num{4.5556} & \num{-0.0152} & \num{-0.3335} \\
+ & M3 & $\tau$ & \num{2.5584} & \num{2.5921} & \num{0.0337} & \num{1.3184} \\
+
+\hline
+
+Vaupés & M1 & Intercepto & \num{20.6235} & \num{14.8384} & \num{-5.7851} & \num{-28.0509} \\
+ & M1 & Repitencia & \num{380.8131} & \num{423.7658} & \num{42.9528} & \num{11.2792} \\
+ & M1 & Infraestructura & \num{-13.1363} & \num{-9.1819} & \num{3.9543} & \num{30.1024} \\
+ & M1 & Aseguramiento & \num{-32.2045} & \num{-33.1503} & \num{-0.9458} & \num{-2.9369} \\
+ & M1 & Luminosidad & \num{-1.6777} & \num{-1.5053} & \num{0.1724} & \num{10.2771} \\
+ & M2 & Intercepto & \num{-2.1209} & \num{-2.4228} & \num{-0.3020} & \num{-14.2372} \\
+ & M2 & Repitencia & \num{23.3537} & \num{25.1107} & \num{1.7570} & \num{7.5233} \\
+ & M2 & Infraestructura & \num{-1.1984} & \num{-0.9369} & \num{0.2614} & \num{21.8168} \\
+ & M2 & Aseguramiento & \num{-0.9293} & \num{-0.9788} & \num{-0.0494} & \num{-5.3161} \\
+ & M2 & Luminosidad & \num{-0.3175} & \num{-0.2879} & \num{0.0296} & \num{9.3323} \\
+ & M3 & Intercepto & \num{-2.7631} & \num{-2.8196} & \num{-0.0564} & \num{-2.0423} \\
+ & M3 & Repitencia & \num{28.3035} & \num{28.7743} & \num{0.4707} & \num{1.6632} \\
+ & M3 & Infraestructura & \num{-1.4022} & \num{-1.2756} & \num{0.1266} & \num{9.0262} \\
+ & M3 & Aseguramiento & \num{-0.9457} & \num{-0.9793} & \num{-0.0336} & \num{-3.5535} \\
+ & M3 & Luminosidad & \num{-0.4015} & \num{-0.3987} & \num{0.0028} & \num{0.7089} \\
+ & M3 & $\alpha_{1}$ & \num{0.8800} & \num{0.7913} & \num{-0.0887} & \num{-10.0754} \\
+ & M3 & $\alpha_{2}$ & \num{0.6230} & \num{0.6111} & \num{-0.0119} & \num{-1.9100} \\
+ & M3 & $\alpha_{3}$ & \num{0.0632} & \num{0.0651} & \num{0.0018} & \num{2.8600} \\
+ & M3 & $\alpha_{4}$ & \num{-0.3246} & \num{-0.3070} & \num{0.0176} & \num{5.4108} \\
+ & M3 & $\alpha_{5}$ & \num{-0.3315} & \num{-0.3178} & \num{0.0137} & \num{4.1447} \\
+ & M3 & $\alpha_{6}$ & \num{0.0784} & \num{0.0757} & \num{-0.0027} & \num{-3.4337} \\
+ & M2 & $\tau$ & \num{4.5708} & \num{4.4799} & \num{-0.0909} & \num{-1.9894} \\
+ & M3 & $\tau$ & \num{2.5584} & \num{2.5564} & \num{-0.0019} & \num{-0.0745} \\
+
+\hline
+\end{longtable}
+\endgroup
+
+\noindent\textit{Nota:} Los coeficientes fijos de M2 y M3 se expresan en una escala común para facilitar la comparación entre ajustes. Los parámetros $\alpha_k$ son coeficientes de la base espacial de rango reducido, no efectos municipales individuales. El cambio relativo procede del archivo de resultados; cuando el valor original es pequeño o cercano a cero, su interpretación porcentual resulta inestable y debe priorizarse la diferencia absoluta. Los cambios de signo se observan en luminosidad nocturna de M1 al excluir San Andrés y Providencia y aseguramiento en salud de M2 al excluir Vichada.

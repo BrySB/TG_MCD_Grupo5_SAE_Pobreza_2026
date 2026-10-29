@@ -1,36 +1,48 @@
-
 \label{sec:conclusion}
 
-El trabajo permitió alcanzar el objetivo general de desarrollar y comparar formulaciones de modelos de estimación en áreas pequeñas (SAE) que incluyan componentes espaciales para estimar el Índice de Pobreza Multidimensional (IPM) a nivel municipal de Colombia, utilizando fuentes oficiales de información. Para lograrlo, se implementaron y compararon tres formulaciones: M1, que corresponde al modelo Fay–Herriot; M2, la formulación no lineal limitada para la estimación municipal; y M3, que incluye explícitamente una estructura de dependencia espacial entre municipios. Cada uno de ellos se probó con diferentes conjuntos de covariables y, a partir de ahí, se analizó su desempeño, estabilidad, capacidad de desagregación territorial y sensibilidad ante diferentes especificaciones.
+El presente trabajo permitió desarrollar y comparar tres formulaciones de Estimación en Áreas Pequeñas (SAE) para aproximar la incidencia municipal del Índice de Pobreza Multidimensional (IPM) en Colombia durante 2024: M1, basado en Fay--Herriot departamental con proyección sintética municipal; M2, de desagregación municipal no lineal acotada; y M3, una extensión de M2 con componente espacial de rango reducido y penalización inspirada en CAR. La evaluación de las tres formulaciones bajo escenarios comunes de covariables permitió establecer sus diferencias de desempeño, estabilidad y comportamiento territorial.
 
-\begin{itemize}
-    \item Objetivo 1: El primer objetivo específico, se alcanzó mediante la estimación, comparación y validación de los modelos M1, M2 y M3. De esta forma, se obtuvieron diferencias en el desempeño de las formulaciones y de los escenarios específicos seleccionados para la comparación. 
-    
-    En esta comparación, la versión M3–E2 mostró ser la mejor en general en cuanto a desempeño, con un RMSE de 4,7197, un MAE de 3,6731 y una correlación de 0,9410 entre las estimaciones y los valores observados a nivel departamental.
-    
-    Esto indicó que la incorporación de una estructura espacial puede mejorar la capacidad predictiva cuando se combina con una especificación adecuada y parsimoniosa de covariables. Sin embargo, esta ventaja no se presentó de manera uniforme en todos los escenarios, por lo cual los resultados no permiten afirmar que un modelo espacial sea necesariamente superior bajo cualquier especificación. 
-    
-    Adicionalmente, M1 presentó mayor estabilidad frente a cambios en las covariables, confirmando la utilidad del modelo Fay–Herriot como formulación de referencia dentro del ejercicio.
- 
-    \item Objetivo 2: El segundo objetivo específico, se alcanzó mediante la exploración y seleccionando las diferentes covariables auxiliares que se utilizaron en la especificación de los modelos. Como resultado, se pudo identificar que la repitencia escolar, por ejemplo, mostraba una relación positiva y constante entre sus valores y los de la pobreza multidimensional, y que algunas variables relacionadas con la infraestructura básica, el aseguramiento y la luminosidad nocturna servían para completar el conjunto de informaciones que podían utilizarse para explicar las diferencias en los niveles de pobreza multidimensional observados entre los municipios colombianos.
-    
-    La comparación entre los escenarios E1, E2 y E3 permitió además establecer que la incorporación de un mayor número de variables no necesariamente produce un mejor desempeño. El escenario E2, caracterizado por una especificación más parsimoniosa, presentó un balance favorable entre capacidad explicativa, estabilidad y desempeño predictivo. Esto marcó la importancia de elegir variables auxiliares no solo por el valor estadístico que aportan, sino también por la posibilidad de que se utilicen para representar de manera eficiente diferentes dimensiones del fenómeno que se intenta estimar, teniendo en cuenta la posible co linealidad y su capacidad para representar distintas dimensiones relacionadas con la pobreza multidimensional.
+La Tabla~\ref{tab:conclusiones-objetivos} resume la correspondencia entre los objetivos específicos y los principales hallazgos de la investigación.
 
-    \item Objetivo 3: El tercer objetivo específico, se logró mediante el desarrollo, análisis y visualización en mapas de las estimaciones municipales obtenidas con los modelos M1, M2 y M3. Las estimaciones permitieron analizar las diferencias municipales y destacar su heterogeneidad. Es decir, se logró caracterizar la distribución de esta forma de pobreza a nivel municipal en Colombia, y se identificó que, en la mayoría de los casos, las estimaciones municipales presentan heterogeneidad respecto de las medias departamentales, lo que implica que, para caracterizarla, sería necesario recurrir a estimaciones municipales.
-    
-    Los resultados obtenidos mediante M2 y M3 presentaron además una elevada concordancia, con una correlación municipal de 0,9901 y una diferencia absoluta media aproximada de 1,69 puntos porcentuales. Esta similitud indica que ambas formulaciones identifican patrones territoriales comparables de pobreza multidimensional. Al mismo tiempo, M3 incluyó explícitamente un término que representaba la información proveniente de las relaciones vecinas, lo que le permitió visualizar estructuras que podrían haberse perdido si el análisis se realizara únicamente con estimaciones departamentales.
-    
-    Así, fue posible observar la estructura espacial de la pobreza multidimensional municipal en Colombia y verificar que, aunque el comportamiento general del fenómeno seguía siendo el mismo a nivel departamental, las estimaciones municipales mostraban bastante variabilidad, incluso dentro de un mismo departamento.
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Correspondencia entre los objetivos específicos y las principales conclusiones de la investigación.}
+\label{tab:conclusiones-objetivos}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{4pt}
 
+\begin{tabular}{p{1.3cm} p{5.6cm} p{5.2cm}}
+\hline
+Objetivo & Resultados principales & Conclusión \\
+\hline
 
-En conjunto, el cumplimiento de los tres objetivos específicos permitió responder al objetivo general del estudio. La comparación de las formulaciones permitió evaluar el comportamiento de modelos con diferentes estructuras; la selección de variables auxiliares permitió identificar información territorial relevante para explicar las diferencias en pobreza multidimensional; y la generación de estimaciones indirectas municipales permitió caracterizar la distribución territorial del IPM y explorar su dependencia espacial. Por tanto, el trabajo no se limitó a producir una única estimación municipal, sino que desarrolló un ejercicio comparativo que permitió examinar las ventajas, limitaciones y condiciones de aplicación de diferentes formulaciones SAE.
+OE1. Evaluar el desempeño de los modelos SAE y el aporte espacial &
+Entre las nueve combinaciones principales, M3--E2 obtuvo el menor RMSE (4.7197), MAE (3.6731) y la mayor correlación de Pearson (0.9410). Frente a M2--E2, redujo el RMSE en 1.73 puntos y la autocorrelación residual departamental. Su ventaja predictiva se mantuvo ante las variaciones examinadas de $\rho$ y las exclusiones individuales de tres departamentos influyentes. &
+El componente espacial puede mejorar el desempeño predictivo, pero su contribución depende del escenario de covariables. M3 no superó a M2 en E1 ni E3. La validación LODO respalda únicamente la precisión predictiva departamental y no demuestra superioridad municipal. \\
 
-La comparación conjunta de los modelos muestra también que no existe una formulación que domine necesariamente en todos los criterios analizados. M1 conserva ventajas en términos de estabilidad, interpretación y correspondencia con el enfoque clásico de estimación en áreas pequeñas; M2 permite realizar la desagregación municipal mediante una formulación no lineal acotada; y M3 amplía esta aproximación incorporando explícitamente la dependencia geográfica entre municipios. Dentro de las configuraciones evaluadas, M3–E2 presentó el desempeño predictivo más favorable en la validación LODO, por lo que constituye la configuración con mejores resultados globales dentro del ejercicio desarrollado, sin que ello implique una superioridad generalizable de los modelos espaciales frente a las demás formulaciones SAE.
+\hline
 
-Es importante precisar que la validación LODO se realizó utilizando como referencia las estimaciones directas departamentales del IPM para 2024. En consecuencia, este procedimiento evalúa la capacidad de los modelos para reconstruir el comportamiento de departamentos excluidos durante el proceso de estimación, pero no representa una validación directa de las predicciones municipales. Para 2024 no se dispone de estimaciones directas oficiales del IPM para cada municipio que permitan calcular el error de predicción municipal frente a un valor observado. Por esta razón, la elevada concordancia encontrada entre M2 y M3 debe interpretarse como consistencia entre dos procedimientos de estimación indirecta y no como evidencia de que las estimaciones municipales coincidan con un valor verdadero observado.
+OE2. Identificar las covariables con mayor aporte predictivo &
+La repitencia escolar presentó la mayor contribución predictiva condicional en la ablación de E1: su exclusión incrementó el RMSE en 3.55 puntos para M1, 6.72 para M2 y 10.26 para M3. La infraestructura básica también presentó aportes relevantes, mientras que el desempeño de las demás variables dependió de la formulación. &
+La selección de covariables debe combinar pertinencia conceptual, calidad de información y contribución predictiva. Una mayor cantidad de predictores no garantiza mejores resultados. Las asociaciones identificadas no constituyen evidencia causal. \\
 
-Asimismo, los procedimientos de acotamiento y benchmarking aplicados en los modelos municipales permitieron mantener las estimaciones dentro del rango válido del IPM y preservar su coherencia con las estimaciones departamentales utilizadas como referencia. Esta propiedad es particularmente importante en ejercicios de estimación para áreas pequeñas, ya que permite aumentar el nivel de desagregación territorial sin perder consistencia con la información oficial disponible a un nivel geográfico superior.
+\hline
 
-En síntesis, los resultados muestran que los modelos SAE ofrecen una alternativa metodológica para generar información en escalas territoriales donde las encuestas de hogares no cuentan con representatividad suficiente para producir estimaciones directas confiables. La integración de estimaciones departamentales, covariables auxiliares de carácter municipal y estructuras de dependencia espacial permitió avanzar hacia una representación más detallada de la pobreza multidimensional en Colombia. El estudio evidencia, además, que la utilidad de los componentes espaciales depende de su adecuada articulación con la selección de variables y la especificación del modelo, por lo que su incorporación debe sustentarse en criterios estadísticos, conceptuales y territoriales. En este sentido, las estimaciones obtenidas constituyen una aproximación metodológica para analizar la heterogeneidad municipal del IPM y aportan elementos para continuar fortaleciendo el uso de técnicas de estimación en áreas pequeñas en la producción y análisis de información social territorial.
-                    
-\end{itemize}
+OE3. Caracterizar la distribución y dependencia espacial del IPM municipal &
+Se generaron estimaciones para 1{,}121 municipios. En E2, M2 y M3 presentaron una correlación municipal cercana a 0.99 y una diferencia absoluta media de 1.69 puntos. La cartografía mostró heterogeneidad territorial y los diagnósticos de Moran identificaron patrones espaciales y cambios asociados al benchmarking. &
+Las estimaciones permiten caracterizar diferencias territoriales y patrones de agrupamiento espacial, pero su concordancia entre modelos y su representación cartográfica no sustituyen una validación municipal independiente. \\
+
+\hline
+\end{tabular}
+\end{table}
+
+\subsection*{Conclusión general y alcance de los resultados}
+
+Los resultados confirman que ninguna formulación presenta un desempeño superior en todos los escenarios. M1 constituye una referencia metodológica relativamente estable frente a cambios de covariables, aunque su proyección lineal municipal puede producir valores fuera del intervalo admisible del IPM. M2 garantiza estimaciones acotadas mediante la transformación logística, mientras que M3 incorpora una estructura espacial penalizada cuya contribución predictiva fue favorable principalmente en E2.
+
+El benchmarking aseguró la coherencia de las estimaciones municipales de M2 y M3 con los valores departamentales de referencia, con discrepancias numéricas del orden de $10^{-12}$. Sin embargo, esta consistencia agregada no garantiza mayor precisión municipal. Del mismo modo, los análisis de sensibilidad y robustez respaldan la estabilidad de la ventaja predictiva de M3--E2 dentro de las condiciones evaluadas, pero no permiten generalizarla a otros escenarios, parámetros espaciales o dominios no examinados.
+
+La principal limitación inferencial radica en que la validación LODO se realizó sobre 33 departamentos con estimaciones directas disponibles, mientras que no existen observaciones directas municipales comparables para 2024. Por tanto, M3--E2 constituye la configuración con mejor desempeño predictivo departamental entre las alternativas principales evaluadas, sin que pueda afirmarse que produzca necesariamente las estimaciones más precisas para cada municipio.
+
+En conjunto, la investigación aporta una estrategia metodológica reproducible para ampliar la caracterización territorial de la pobreza multidimensional y generar información complementaria para la planeación social. Su aplicación en ejercicios de priorización territorial requiere incorporar la incertidumbre de las estimaciones, información socioeconómica adicional y procedimientos de validación municipal independiente, sin sustituir las estadísticas oficiales.

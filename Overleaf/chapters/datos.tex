@@ -1,43 +1,42 @@
 
-\label{sec:datos} 
+\label{sec:datos}
 
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Falta cita de la ECV 2024 (ficha técnica/metodológica del DANE). No existe aún en refs.bib.
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-Para el desarrollo del ejercicio de Estimación para Áreas Pequeñas (SAE) se integraron dos tipos de información: la primera, las estimaciones directas del Índice de Pobreza Multidimensional (IPM) al año 2024 y, por otra, un conjunto de covariables auxiliares provenientes de registros administrativos y fuentes oficiales con disponibilidad territorial a escala municipal.
+Para el desarrollo del ejercicio de Estimación en Áreas Pequeñas (SAE) se integraron dos tipos de información: las estimaciones directas departamentales de la incidencia del Índice de Pobreza Multidimensional (IPM) correspondientes a 2024 \cite{dane2024ecv} y un conjunto de covariables auxiliares provenientes de registros administrativos, información satelital y fuentes oficiales con disponibilidad territorial a escala municipal.
 
-El IPM 2024 a nivel departamental, a partir de la Encuesta Nacional de Calidad de Vida 2024 del Departamento Administrativo Nacional de Estadística y representa la estimación directa de referencia del ejercicio. Para cada dominio departamental se obtuvo la estimación del índice y su error estándar correspondiente. Con ese dicho valor, se determinó la varianza de muestreo al elevar al cuadrado el error estándar, dato necesario para la especificación de los modelos SAE de área. La muestra incluye 33 dominios territoriales, equivalentes a los 32 departamentos y Bogotá D.C. Idea de Negocio Datos.
+Las estimaciones directas departamentales del IPM 2024 y sus respectivos errores estándar se obtuvieron de las estadísticas oficiales de la Encuesta Nacional de Calidad de Vida (ECV) 2024, publicadas por el Departamento Administrativo Nacional de Estadística (DANE). El procesamiento realizado por el equipo consistió en extraer, depurar y consolidar estos valores, calculando las varianzas de muestreo como el cuadrado de los errores estándar reportados. La información comprende 33 dominios territoriales, correspondientes a los 32 departamentos y Bogotá D.C., y constituye la referencia empírica para la calibración y validación de los modelos.
 
-Asimismo, se consolidó una matriz de covariables auxiliares a escala municipal a partir de registros administrativos y fuentes oficiales complementarias, agrupadas en salud, educación, infraestructura básica y actividad económica. La estructura, el detalle y la fuente de estos predictores se describen en la Tabla~\ref{tab:matriz-auxiliar-ipm}.
+Asimismo, se consolidó una matriz de covariables auxiliares a escala municipal, agrupadas en salud, educación, infraestructura básica y actividad económica. La Tabla~\ref{tab:matriz-auxiliar-ipm} presenta las variables identificadas durante la integración de fuentes, incluyendo indicadores utilizados en los escenarios finales, variables consideradas en la exploración y campos auxiliares necesarios para la construcción, ponderación y validación de la información. La selección definitiva de predictores y sus transformaciones se desarrolla en la Sección~\ref{sec:metodologia}.
 
+\begingroup
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.15}
 \footnotesize
+\setlength{\LTleft}{0pt}  % Evita sangrías automáticas a la izquierda en longtable
+
 \begin{longtable}{
->{\raggedright\arraybackslash}p{2.9cm}
->{\raggedright\arraybackslash}p{1.7cm}
->{\raggedright\arraybackslash}p{4.2cm}
->{\raggedright\arraybackslash}p{5.0cm}
+>{\raggedright\arraybackslash}p{2.5cm}
+>{\raggedright\arraybackslash}p{1.5cm}
+>{\raggedright\arraybackslash}p{3.8cm}
+>{\raggedright\arraybackslash}p{4.4cm}
 }
 
-\caption{Variables identificadoras y covariables auxiliares de la matriz municipal para la estimación del IPM 2024}
+\caption{Variables identificadoras y covariables auxiliares de la matriz municipal para la estimación del IPM 2024.}
 \label{tab:matriz-auxiliar-ipm}\\
 
 \hline
-\textbf{Variable} & 
-\textbf{Bloque} & 
-\textbf{Descripción} & 
+\textbf{Variable} &
+\textbf{Bloque} &
+\textbf{Descripción} &
 \textbf{Fuente} \\
 \hline
 \endfirsthead
 
-\multicolumn{4}{c}%
-{\tablename\ \thetable\ -- continuación} \\
+\multicolumn{4}{c}{\tablename\ \thetable\ -- continuación}\\
 
 \hline
-\textbf{Variable} & 
-\textbf{Bloque} & 
-\textbf{Descripción} & 
+\textbf{Variable} &
+\textbf{Bloque} &
+\textbf{Descripción} &
 \textbf{Fuente} \\
 \hline
 \endhead
@@ -49,124 +48,124 @@ Asimismo, se consolidó una matriz de covariables auxiliares a escala municipal 
 \hline
 \endlastfoot
 
-Porcentaje de afiliados al régimen subsidiado (2024) 
-& Salud 
-& Proporción de la población municipal afiliada al régimen subsidiado de salud. 
+Porcentaje de afiliados al régimen subsidiado (2024)
+& Salud
+& Proporción de la población municipal afiliada al régimen subsidiado de salud.
 & ADRES. Reporte de afiliados activos por departamento y municipio. \\
 
-Porcentaje de afiliados al régimen contributivo (2024) 
-& Salud 
-& Proporción de la población municipal afiliada al régimen contributivo de salud. 
+Porcentaje de afiliados al régimen contributivo (2024)
+& Salud
+& Proporción de la población municipal afiliada al régimen contributivo de salud.
 & ADRES. Reporte de afiliados activos por departamento y municipio. \\
 
 Población asegurada en salud (2024)
 & Salud
-& Población afiliada a los regímenes subsidiado, contributivo y de excepción respecto al total de la población municipal.
+& Población afiliada a los regímenes subsidiado, contributivo y de excepción respecto a la población municipal total.
 & ADRES. Reporte de afiliados activos por departamento y municipio; población municipal DANE. \\
 
-Aseguramiento en salud ajustado o capado (2024) 
-& Salud 
-& Cobertura total de aseguramiento en salud construida a partir de la población afiliada a los regímenes subsidiado, contributivo y de excepción, ajustada mediante truncamiento superior al 100\,\%. 
-& Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio, y población municipal DANE. \\
+Aseguramiento en salud ajustado o capado (2024)
+& Salud
+& Cobertura total de aseguramiento construida a partir de la población afiliada, ajustada mediante truncamiento superior al 100\,\%.
+& Elaboración propia a partir de ADRES y las proyecciones de población municipal del DANE. \\
 
-Razón subsidiado/contributivo (2024) 
-& Salud 
-& Razón entre la población afiliada al régimen subsidiado y la afiliada al régimen contributivo. 
+Razón subsidiado/contributivo (2024)
+& Salud
+& Razón entre la población afiliada al régimen subsidiado y la afiliada al régimen contributivo.
 & Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio. \\
 
-Logaritmo del total de afiliados en salud (2024) 
-& Salud 
-& Logaritmo natural del total de personas afiliadas al sistema de salud en el municipio. 
+Logaritmo del total de afiliados en salud (2024)
+& Salud
+& Logaritmo natural del total de personas afiliadas al sistema de salud en el municipio.
 & Elaboración propia a partir de ADRES. Reporte de afiliados activos por departamento y municipio. \\
 
-Tasa de mortalidad infantil 
-& Salud 
-& Tasa de defunciones de menores de un año respecto al número de nacidos vivos. 
+Tasa de mortalidad infantil
+& Salud
+& Tasa de defunciones de menores de un año respecto al número de nacidos vivos.
 & DANE. Estadísticas Vitales: nacimientos y defunciones. \\
 
-Transformación logarítmica de la mortalidad infantil 
-& Salud 
-& Logaritmo de uno más la tasa de mortalidad infantil, utilizado para reducir la asimetría de la distribución. 
+Transformación logarítmica de la mortalidad infantil
+& Salud
+& Logaritmo de uno más la tasa de mortalidad infantil, utilizado para reducir la asimetría de su distribución.
 & Elaboración propia a partir de DANE, Estadísticas Vitales. \\
 
-Tasa de matriculación de 5 a 16 años 
-& Educación 
-& Proporción de la población entre 5 y 16 años vinculada al sistema educativo. 
+Tasa de matriculación de 5 a 16 años
+& Educación
+& Proporción de la población entre 5 y 16 años vinculada al sistema educativo.
 & Ministerio de Educación Nacional (MEN), registros de matrícula; población por edad DANE. \\
 
-Cobertura neta educativa total 
-& Educación 
-& Proporción de estudiantes matriculados en la edad teórica correspondiente al nivel educativo respecto a la población en edad escolar. 
+Cobertura neta educativa total
+& Educación
+& Proporción de estudiantes matriculados en la edad teórica correspondiente al nivel educativo respecto a la población en edad escolar.
 & Ministerio de Educación Nacional (MEN), registros e indicadores de matrícula. \\
 
-Cobertura neta en educación media 
-& Educación 
-& Cobertura neta correspondiente al nivel de educación media. 
+Cobertura neta en educación media
+& Educación
+& Cobertura neta correspondiente al nivel de educación media.
 & Ministerio de Educación Nacional (MEN), registros e indicadores de matrícula. \\
 
-Tasa de deserción escolar 
-& Educación 
-& Proporción de estudiantes que abandonan el sistema educativo durante el periodo de referencia. 
+Tasa de deserción escolar
+& Educación
+& Proporción de estudiantes que abandonan el sistema educativo durante el periodo de referencia.
 & Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
 
-Tasa de repitencia escolar 
-& Educación 
-& Proporción de estudiantes que cursan nuevamente el mismo grado escolar. 
+Tasa de repitencia escolar
+& Educación
+& Proporción de estudiantes que cursan nuevamente el mismo grado escolar.
 & Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
 
-Tasa de reprobación escolar 
-& Educación 
-& Proporción de estudiantes que no aprueban el grado cursado durante el periodo de referencia. 
+Tasa de reprobación escolar
+& Educación
+& Proporción de estudiantes que no aprueban el grado cursado durante el periodo de referencia.
 & Ministerio de Educación Nacional (MEN), registros e indicadores educativos. \\
 
-Cobertura de acueducto 
-& Infraestructura básica 
-& Cobertura municipal del servicio público de acueducto. 
+Cobertura de acueducto
+& Infra-estructura básica
+& Cobertura municipal del servicio público de acueducto.
 & Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
 
-Cobertura de alcantarillado 
-& Infraestructura básica 
-& Cobertura municipal del servicio público de alcantarillado. 
-& Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
+Cobertura de alcantarillado
+& Infra-estructura básica
+& Cobertura municipal del servicio público de alcantarillado.
+& Superintendencia de Servicios Públicos Domiciliarios (SSPD), REC-SUI. \\
 
-Cobertura de aseo 
-& Infraestructura básica 
-& Cobertura municipal del servicio público de aseo. 
-& Superintendencia de Servicios Públicos Domiciliarios (SSPD), Registro de Estratificación y Coberturas del Sistema Único de Información (REC-SUI). \\
+Cobertura de aseo
+& Infra-estructura básica
+& Cobertura municipal del servicio público de aseo.
+& Superintendencia de Servicios Públicos Domiciliarios (SSPD), REC-SUI. \\
 
-Índice de infraestructura básica 
-& Infraestructura básica 
-& Indicador sintético calculado como el promedio simple de las coberturas municipales de acueducto, alcantarillado y aseo. 
+Índice de infraestructura básica
+& Infra-estructura básica
+& Indicador sintético calculado como el promedio simple de las coberturas municipales de acueducto, alcantarillado y aseo.
 & Elaboración propia a partir de información de cobertura de la SSPD--REC-SUI. \\
 
-Cobertura de energía eléctrica rural 
-& Infraestructura básica 
-& Índice de Cobertura de Energía Eléctrica correspondiente a la zona rural del municipio. 
+Cobertura de energía eléctrica rural
+& Infra-estructura básica
+& Índice de Cobertura de Energía Eléctrica correspondiente a la zona rural del municipio.
 & Unidad de Planeación Minero Energética (UPME), Índice de Cobertura de Energía Eléctrica (ICEE). \\
 
-Luminosidad nocturna (VIIRS) 
-& Actividad económica 
-& Radiancia nocturna promedio observada mediante el sensor VIIRS-DNB, agregada al territorio municipal y utilizada como proxy de intensidad de la actividad económica. 
+Luminosidad nocturna (VIIRS)
+& Actividad económica
+& Radiancia nocturna promedio observada mediante el sensor VIIRS-DNB, agregada al territorio municipal y utilizada como aproximación de la intensidad de la actividad económica.
 & Earth Observation Group (EOG), Payne Institute for Public Policy, Colorado School of Mines. Producto Annual VIIRS Nighttime Lights V2, 2024. \\
 
-Transformación logarítmica de la luminosidad nocturna 
-& Actividad económica 
-& Logaritmo de uno más la radiancia nocturna municipal derivada de VIIRS, empleado para reducir la asimetría de la variable. 
+Transformación logarítmica de la luminosidad nocturna
+& Actividad económica
+& Logaritmo de uno más la radiancia nocturna municipal derivada de VIIRS, empleado para reducir la asimetría de la variable.
 & Elaboración propia a partir del producto Annual VIIRS Nighttime Lights V2 del EOG. \\
 
-Recaudo del impuesto de industria y comercio per cápita 
-& Actividad económica 
-& Recaudo municipal del impuesto de industria y comercio dividido por la población municipal, utilizado como aproximación a la actividad económica local. 
+Recaudo del impuesto de industria y comercio per cápita
+& Actividad económica
+& Recaudo municipal del impuesto de industria y comercio dividido por la población municipal, considerado como aproximación a la actividad económica local.
 & Información fiscal municipal sobre recaudo del impuesto de industria y comercio y población municipal DANE. \\
 
-Transformación logarítmica del recaudo per cápita 
-& Actividad económica 
-& Logaritmo de uno más el recaudo municipal del impuesto de industria y comercio per cápita. 
+Transformación logarítmica del recaudo per cápita
+& Actividad económica
+& Logaritmo de uno más el recaudo municipal del impuesto de industria y comercio per cápita.
 & Elaboración propia a partir del recaudo del impuesto de industria y comercio y población municipal DANE. \\
 
 Población municipal 2024
 & Variable auxiliar
-& Proyección de población utilizada como denominador para la construcción de indicadores y como ponderador en la agregación departamental de determinadas covariables.
+& Proyección de población utilizada como denominador para construir indicadores y como ponderador en la agregación departamental de determinadas covariables.
 & DANE. Proyecciones de población municipal. \\
 
 Población de 5 a 16 años
@@ -180,10 +179,95 @@ Nacidos vivos
 & DANE. Estadísticas Vitales -- nacimientos. \\
 
 \end{longtable}
+\endgroup
 
 \begin{flushleft}
 \footnotesize
-\textit{Nota:} Las variables de identificación territorial, población municipal, población de 5 a 16 años y nacidos vivos cumplen principalmente funciones de integración, construcción de indicadores, ponderación y validación, y no necesariamente operan como predictores directos en las especificaciones finales. Algunas de las covariables presentadas fueron consideradas durante las etapas exploratorias y de comparación de especificaciones, aunque no todas fueron retenidas en el conjunto parsimonioso final.
+\textit{Nota:} La tabla presenta las variables integradas o consideradas durante la preparación de la matriz auxiliar, no exclusivamente los predictores finales. La población municipal, la población de 5 a 16 años y los nacidos vivos cumplen funciones de denominación, ponderación y validación. Los escenarios definitivos se construyeron a partir de siete covariables candidatas, cuyas combinaciones y criterios de selección se describen en el capítulo metodológico.
 \end{flushleft}
 
-Ahora bien, es importante mencionar, que durante la fase de exploración y validación de fuentes de información, se examinaron microdatos de la Gran Encuesta Integrada de Hogares (GEIH) y del Censo Nacional de Población y Vivienda 2018. Aunque estas fuentes no formarán parte del procesamiento final para la estimación del IPM municipal, su revisión aportó el marco de referencia técnico para entender las dinámicas muestrales territoriales y guiaron la selección mostrada de registros administrativos y variables con mayor consistencia y cobertura.
+Durante la exploración inicial también se examinaron microdatos de la Gran Encuesta Integrada de Hogares (GEIH) y del Censo Nacional de Población y Vivienda 2018. Estas fuentes contribuyeron a la revisión conceptual y metodológica, pero no se utilizaron como respuesta directa en los modelos definitivos para 2024.
+
+De igual manera, se analizaron variables de recaudo tributario municipal como posibles aproximaciones a la actividad económica local. No obstante, se descartaron de los escenarios finales debido a inconsistencias identificadas en los registros administrativos y a las dificultades para garantizar su comparabilidad territorial. Estas decisiones permitieron delimitar el conjunto final de covariables utilizadas en la modelación.
+
+La integración y depuración de la información incluyó controles de unicidad territorial, validación de códigos DIVIPOLA, revisión de unidades originales, identificación de valores extremos y comprobación de la disponibilidad de denominadores poblacionales. La Tabla~\ref{tab:trazabilidad-limpieza} resume los principales controles y decisiones aplicados.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Trazabilidad del proceso de limpieza y calidad de datos de la matriz municipal.}
+\label{tab:trazabilidad-limpieza}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{4pt}
+
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{3.2cm} p{3.1cm} c p{6.0cm}}
+\toprule
+\textbf{Regla / Control} &
+\textbf{Variable / Fuente} &
+\textbf{Cantidad} &
+\textbf{Acción y justificación} \\
+\midrule
+\sloppy
+
+Duplicados territoriales &
+Registros DIVIPOLA &
+0 &
+Verificación de unicidad de los códigos municipales para evitar registros repetidos durante la integración de fuentes. \\
+
+\addlinespace
+
+Códigos territoriales inválidos &
+Identificadores municipales &
+0 &
+Validación de correspondencia con la codificación territorial utilizada para los 1{,}122 municipios del universo inicial. \\
+
+\addlinespace
+
+Conversión de escala &
+Variables de cobertura &
+8 &
+Homogeneización de indicadores originalmente expresados en porcentajes, mediante conversión de 0--100 a 0--1 según los metadatos de cada fuente. \\
+
+\addlinespace
+
+Valores superiores al 100\,\% &
+Aseguramiento en salud &
+336 &
+Identificación de municipios con cobertura original superior a la unidad y aplicación de truncamiento superior a 1 (100\,\%) en la variable utilizada para la modelación. \\
+
+\addlinespace
+
+Datos faltantes &
+Denominadores poblacionales &
+1 &
+Identificación de Belén de Bajirá (27086, Chocó), con ausencia de población total, población de 5 a 16 años y nacidos vivos, requeridas para construir y ponderar indicadores. \\
+
+\addlinespace
+
+Registros excluidos &
+Muestra analítica final &
+1 &
+Exclusión del único registro incompleto y conservación de 1{,}121 municipios bajo un criterio de casos completos, común a los tres modelos. \\
+
+\addlinespace
+
+Variables exploratorias descartadas &
+Recaudo tributario municipal &
+3 &
+Exclusión de las variables exploratorias de recaudo de los escenarios finales por inconsistencias en sus registros y limitaciones de comparabilidad. \\
+
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+La base territorial inicial contempló 1{,}122 municipios. Después de aplicar los controles de limpieza y completitud se identificó un único registro con información auxiliar insuficiente: Belén de Bajirá (código DIVIPOLA 27086), perteneciente al departamento del Chocó. Las ausencias correspondieron a la población municipal total, la población entre 5 y 16 años y el número de nacidos vivos, requeridos como denominadores o ponderadores para la construcción de algunas covariables. Por esta razón, se excluyó el municipio de la muestra analítica, sin aplicar procedimientos de imputación.
+
+La muestra final quedó conformada por 1{,}121 municipios distribuidos en 33 dominios departamentales, equivalentes al 99.91\,\% del universo inicial. La exclusión de un solo municipio representó una pérdida de cobertura del 0.089\,\%, considerada limitada para efectos de la comparabilidad entre los tres modelos. Asimismo, la matriz espacial utilizada posteriormente se construyó sobre el mismo conjunto de municipios incluidos en la modelación, evitando diferencias entre la muestra de covariables y la estructura geográfica.
+
+En cuanto al aseguramiento en salud, la revisión de la variable original identificó valores superiores al 100\,\%, asociados potencialmente a diferencias entre los registros administrativos de afiliación y los denominadores poblacionales utilizados. Para mantener el soporte de la variable, se aplicó un truncamiento superior al 100\,\%, conservando el mismo procedimiento en los escenarios donde se incluyó este predictor. La evaluación de sensibilidad con y sin truncamiento, así como sus efectos sobre el desempeño de los modelos, se presenta en los capítulos de metodología y resultados.
+
+Finalmente, las verificaciones realizadas permitieron establecer una matriz de información auxiliar común para las tres formulaciones. La construcción de los indicadores, las transformaciones, los criterios de selección y los análisis de sensibilidad se desarrollan en el capítulo metodológico, mientras que sus resultados se presentan en el capítulo siguiente.
+

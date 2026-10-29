@@ -1,801 +1,1126 @@
-
-
 \label{sec:resultados}
 
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Este párrafo tiene información repetida. Se debe
-% decir al iniciar esta sección que por cada etpata de la 
-% Metdología se presentarán los resultados para dar cumplimiento a
-%los objetivos y ahí pueden referenciar la tabla de la metodología
-% que conecta cada etapa de la metodología y objetivos.
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Deben revisar el tema de las siglas, pues hay muchas repeticiones
-% de explkicación de siglas y otras faltan por definición.
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-% En esta sección se presentan los resultados preliminares del proceso de modelamiento para la estimación del Índice de Pobreza Multidimensional (IPM) 2024 mediante un enfoque de estimación para áreas pequeñas. El ejercicio desarrollado tuvo como propósito construir y evaluar una primera aproximación metodológica que permitiera combinar la estimación directa del IPM a nivel departamental, proveniente de la Encuesta Nacional de Calidad de Vida (ECV) 2024, con un conjunto de covariables auxiliares disponibles a nivel municipal.
-
-
-
-
-
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Este párrafo corresponde a metodología
-% Es mejor hablar de estimación del IPM en lugar de predición del IPM
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-% El proceso analítico se estructuró en cuatro momentos principales:
-% \begin{enumerate}
-%     \item Se construyó una base analítica departamental a partir de la agregación de covariables municipales.
-%     \item Se ajustaron distintos modelos lineales exploratorios con diferentes combinaciones de variables.
-%     \item Se estimaron dos variantes del modelo Fay–Herriot.
-%     \item Se aplicaron los coeficientes obtenidos para generar una predicción sintética municipal del IPM 2024, acompañada de ejercicios preliminares de validación y diagnóstico espacial.
-% \end{enumerate}
-
-
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-% Se deben crear secciones o etapas con el mismo nombre de la
-% metodología para que no se bpierdan los jurados.
-%-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
-
+Los resultados se presentan siguiendo el mismo orden y los mismos nombres de las etapas definidas en la Sección~\ref{sec:metodologia}; la relación de cada etapa con los objetivos específicos se resume en la Tabla~\ref{tab:etapas-objetivos}. Salvo indicación contraria, las cantidades del IPM se expresan en la escala de 0 a 100 y los errores en puntos porcentuales. Las cifras se reportan con un máximo de dos decimales, con punto como separador decimal y coma como separador de miles; los valores $p$ inferiores a 0.01 se reportan como $<0.01$.
 
 %--------------------------------------------------------------------------------------
-\section{Limpieza, filtrado y reglas explícitas}
 
-La normalización a escala 0-1 de las variables de proporción y cobertura, descrita en la Sección~\ref{sec:metodologia}, se verificó sobre la fuente única de covariables. La depuración permitió consolidar una base municipal 2024 con códigos municipales únicos y variables cuantitativas en formatos homogéneos. Las variables de cobertura y proporción quedaron expresadas en escala 0–1. Los controles de consistencia permitieron identificar una advertencia en las variables de recaudo, sin incidencia sobre los escenarios finalmente modelados.
+\section{Limpieza, integración y trazabilidad de la información}
+\label{sec:res-limpieza}
 
-La verificación de alineación por llave municipal identificó una advertencia en las variables de recaudo: la coherencia entre el recaudo total del impuesto de industria y comercio y su valor per cápita arrojó una correlación de 0.5322, por debajo del umbral esperado bajo un cruce correcto. Esta advertencia no tuvo incidencia sobre las especificaciones finalmente modeladas, dado que estas variables no integraron ninguno de los tres escenarios finalmente evaluados, la inconsistencia identificada no afectó la estimación de M1, M2 o M3. La verificación de plausibilidad de los municipios más poblados (Bogotá D.C., Medellín y Santiago de Cali) no arrojó anomalías. La base departamental quedó conformada, como se esperaba, por 33 dominios.
+La Tabla~\ref{tab:trazabilidad} resume los resultados de los controles de calidad aplicados a la matriz auxiliar municipal. No se identificaron registros duplicados ni códigos territoriales inválidos. La depuración permitió conservar los 33 dominios departamentales y conformar una muestra analítica de 1.121 municipios, equivalente al 99,91\,\% del universo inicial. El único registro excluido fue Belén de Bajirá (27086, Chocó), debido a la ausencia de información sobre población total, población de 5 a 16 años y nacidos vivos, requerida para la construcción y agregación de las covariables.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Trazabilidad de los procedimientos de limpieza y control de calidad de la matriz auxiliar municipal. Los conteos corresponden a 2024, salvo indicación contraria; la conversión de unidades se expresa en número de variables y las demás cantidades en municipios.}
+\label{tab:trazabilidad}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{p{2.7cm} p{3.0cm} c p{2.3cm} p{2.7cm}}
+\hline
+Regla & Variable o fuente & Cantidad & Acción & Justificación \\
+\hline
+Duplicados & Código municipal y periodo, 2018 y 2024 & 0 & Ninguna & Llave única verificada \\
+Códigos inválidos & Código municipal y correspondencia departamental & 0 & Ninguna & Codificación territorial verificada \\
+Conversión de porcentaje a proporción & Variables de cobertura y educación & 10 & División entre 100 & Homogeneización de unidades \\
+Proporción superior a 1 & Tasa de matriculación & 95 & Se conserva & Tasa bruta; máximo 1,79 \\
+Aseguramiento superior a 100\,\% & Asegurados frente a población & 336 & Truncamiento en 1 & Diferencias entre registros y proyecciones \\
+Faltantes & Población total, población de 5 a 16 años y nacidos vivos & 1 & Exclusión & Belén de Bajirá (27086), Chocó \\
+Registros excluidos & Base analítica & 1 & Exclusión común a los tres modelos & Análisis de casos completos \\
+Inconsistencias de recaudo & Recaudo per cápita frente a total sobre población & 19 & Variables descartadas & Discrepancia superior al 5\,\% \\
+\hline
+\end{tabular}
+\end{table}
+
+La auditoría de escalas examinó catorce variables de cobertura, educación y aseguramiento: diez requirieron conversión de porcentaje a proporción y cuatro conservaron su unidad original. Se identificaron 95 municipios con tasas de matriculación superiores a uno, con un máximo de 1,785 (178,5\,\%), que se conservaron por ser compatibles con la definición del indicador. También se observaron máximos de 177,43\,\% en cobertura neta educativa y 143,71\,\% en cobertura neta de educación media. Estas últimas variables quedaron fuera de los escenarios finales y sus valores extremos no afectaron directamente la modelación.
+
+En aseguramiento en salud, 336 municipios presentaron cocientes originales superiores al 100\,\%, asociados a diferencias entre registros de afiliación y proyecciones poblacionales. Para la especificación principal se aplicó el truncamiento superior en uno, conforme a la Ecuación~\ref{eq:aseguramiento-capado}, verificándose que la variable resultante permaneciera dentro del intervalo permitido. La sensibilidad de los resultados frente a este tratamiento se examina en la Sección~\ref{sec:res-muestra}.
+
+Finalmente, la auditoría del recaudo del impuesto de industria y comercio identificó 19 municipios con discrepancias relativas superiores al 5\,\% entre el recaudo per cápita reportado y el calculado. El cociente entre ambas medidas osciló entre 0,01 y 9,06, y su correlación fue de 0,5322, lo que evidenció inconsistencias de correspondencia entre las series. Por esta razón, las variables de recaudo se excluyeron de los escenarios E1, E2 y E3 y no intervinieron en la estimación de M1, M2 o M3.
 
 %--------------------------------------------------------------------------------------
+
+
 \section{Construcción de la variable respuesta}
+\label{sec:res-respuesta}
 
-La estimación directa del IPM 2024 presentó valores entre 5.4 en Bogotá D.C. Y 70.2 en Vichada, con una media de 17.68 para los 33 dominios considerados. La varianza de muestreo asociada a estas estimaciones osciló entre 0.49 y 5.29, evidenciando diferencias en el nivel de precisión de las estimaciones directas entre departamentos.
+La consolidación de las estimaciones directas del IPM 2024 permitió establecer una base de calibración de 33 dominios departamentales, cada uno con su correspondiente varianza de muestreo. La Tabla~\ref{tab:resumen_variable_respuesta} resume las características de la variable respuesta y sus medidas de precisión.
 
-Esta heterogeneidad en la varianza de muestreo resulta relevante para las formulaciones evaluadas, dado que la incertidumbre asociada a cada estimación departamental se incorpora explícitamente durante el proceso de ajuste. De esta manera, los departamentos no aportan información con el mismo nivel de precisión a la calibración de los modelos. 
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Estadísticas descriptivas de las estimaciones directas departamentales del IPM y sus medidas de precisión, 2024.}
+\label{tab:resumen_variable_respuesta}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{p{5.2cm} c c}
+\hline
+Estadístico & Valor & Unidad \\
+\hline
+Dominios departamentales & 33 & Dominios \\
+IPM directo mínimo (Bogotá D.C.) & 5.40 & \% \\
+IPM directo máximo (Vichada) & 70.20 & \% \\
+IPM directo medio & 17.68 & \% \\
+Mediana del IPM directo & 13.40 & \% \\
+Coeficiente de asimetría & 2.01 & Adimensional \\
+Error estándar mínimo & 0.70 & Puntos porcentuales \\
+Error estándar máximo & 2.30 & Puntos porcentuales \\
+Varianza directa mínima & 0.49 & Puntos porcentuales al cuadrado \\
+Varianza directa máxima & 5.29 & Puntos porcentuales al cuadrado \\
+Mediana de la varianza directa & 1.21 & Puntos porcentuales al cuadrado \\
+\hline
+\end{tabular}
 
-Las 33 estimaciones directas departamentales constituyeron la variable observada de referencia para la calibración de las tres formulaciones. Asimismo, durante la validación por exclusión de dominio (\textit{Leave-One-Domain-Out}, LODO), la estimación directa correspondiente al departamento excluido se utilizó exclusivamente como valor observado de referencia para evaluar la predicción generada sin la participación de dicho dominio en el ajuste. Esta separación permitió evaluar posteriormente la capacidad predictiva fuera de dominio mediante las métricas definidas en la metodología.
+\vspace{2mm}
+\begin{minipage}{0.92\textwidth}
+\footnotesize
+\textit{Nota:} Las varianzas directas corresponden a puntos porcentuales al cuadrado y se utilizan en la calibración de las tres formulaciones SAE.
+\end{minipage}
+\end{table}
+
+La incidencia departamental presentó un mínimo de 5.40\,\% en Bogotá D.C. y un máximo de 70.20\,\% en Vichada. La media (17.68\,\%) superó la mediana (13.40\,\%), en concordancia con la asimetría positiva observada (2.01), lo que evidencia la influencia de un grupo reducido de departamentos con incidencias elevadas.
+
+Los errores estándar oscilaron entre 0.70 y 2.30 puntos porcentuales, mientras que las varianzas directas se situaron entre 0.49 y 5.29 puntos porcentuales al cuadrado. Esta heterogeneidad refleja diferencias de precisión muestral entre departamentos, incorporadas explícitamente mediante $v_d$ en la calibración de M1, M2 y M3.
+
 %--------------------------------------------------------------------------------------
-\section{Construcción de variables predictoras y escenarios covariables}
 
-La agregación departamental ponderada, descrita en la Sección~\ref{sec:metodologia}, se aplicó sobre la muestra analítica común a las tres formulaciones, generando los 33 promedios departamentales empleados en la calibración. El número de municipios agregados por departamento fue marcadamente heterogéneo, entre 1 y 125, lo que confirma la pertinencia del esquema de ponderación. Un promedio aritmético simple asignaría la misma contribución a municipios con poblaciones de referencia sustancialmente diferentes, mientras que el promedio ponderado preserva la importancia relativa de cada unidad de acuerdo con la población expuesta al indicador correspondiente.
+\section{Construcción de variables predictoras y diccionario de unidades}
+\label{sec:res-predictoras}
 
-Los promedios departamentales resultantes conservaron variación sustantiva entre dominios en las siete covariables del escenario Completo, como se muestra en la Tabla~\ref{tab:rangos-covariables-depto}.
+La preparación de la matriz auxiliar permitió disponer de las siete covariables del escenario E1 para los 1.121 municipios de la muestra analítica. Para el Modelo 1, estas variables se agregaron mediante ponderadores poblacionales a los 33 dominios departamentales, cuyo número de municipios osciló entre uno en Bogotá D.C. y 125 en Antioquia. Para los Modelos 2 y 3 se conservaron los registros municipales.
+
+La Tabla~\ref{tab:resultados_predictoras} resume los principales resultados de la construcción y verificación de los predictores.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Resultados de la construcción, normalización y agregación de las variables predictoras, 2024.}
+\label{tab:resultados_predictoras}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{p{7.2cm} c}
+\hline
+Indicador & Resultado \\
+\hline
+Covariables del escenario completo E1 & 7 \\
+Municipios de la muestra analítica & 1.121 \\
+Dominios departamentales con covariables agregadas & 33 \\
+Mínimo de municipios por dominio & 1 \\
+Máximo de municipios por dominio & 125 \\
+Variables examinadas en la auditoría de unidades & 14 \\
+Variables convertidas de porcentaje a proporción & 10 \\
+Variables conservadas en su escala original & 4 \\
+Máximo municipal de matriculación en 2024 & 1.785 \\
+Coeficiente OLS de matriculación en E1 & 40.7485 \\
+Valor p del coeficiente de matriculación & 0.0168 \\
+\hline
+\end{tabular}
+
+\vspace{2mm}
+\begin{minipage}{0.92\textwidth}
+\footnotesize
+\textit{Nota:} El coeficiente de matriculación procede del diagnóstico OLS del escenario E1 y se expresa por unidad de proporción.
+\end{minipage}
+\end{table}
+
+La auditoría confirmó que la tasa de matriculación ya se encontraba expresada como razón y no requería una conversión adicional. Su máximo municipal fue de 1.785, compatible con la definición de una tasa bruta que puede superar la unidad.
+
+En el diagnóstico exploratorio OLS de E1, el coeficiente de matriculación fue de 40.7485 ($p=0.0168$), equivalente a una asociación de aproximadamente 0.4075 puntos del IPM por cada incremento de un punto porcentual en la tasa, manteniendo constantes las demás covariables. Se trata de una asociación condicional, no causal. La corrección de unidades permitió interpretar el coeficiente en su escala original sin modificar su significado estadístico.
+
+Las distribuciones y asociaciones de los predictores se analizan en la Sección~\ref{sec:res-descriptivo}.
+
+%--------------------------------------------------------------------------------------
+
+\section{Datos faltantes, valores atípicos y muestra analítica}
+\label{sec:res-muestra}
+
+La aplicación del criterio de casos completos permitió conservar 1.121 de los 1.122 municipios iniciales (99.91\,\%). El único excluido fue Belén de Bajirá (27086, Chocó), por ausencia de población total, población de 5 a 16 años y nacidos vivos. No se utilizaron procedimientos de imputación. La muestra resultante fue común a los tres modelos y escenarios, incluida la construcción de la red espacial de M3.
+
+La revisión de valores extremos identificó 336 municipios (29.97\,\%) con cocientes originales de aseguramiento en salud superiores al 100\,\%, con un máximo de 1.84 en Puerto Santander (Norte de Santander), mediana de 1.08 y percentil 95 de 1.35 entre los municipios afectados. En estos casos se aplicó el truncamiento superior en uno para la especificación principal. Por otra parte, 95 municipios presentaron tasas de matriculación superiores a la unidad, que se conservaron por ser compatibles con la definición de tasa bruta.
+
+En mortalidad infantil se identificaron 433 municipios con tasas iguales a cero y cinco con valores superiores a 100 por cada mil nacidos vivos, alcanzando un máximo de 232.88. Estos valores se conservaron por la variabilidad que puede presentarse en poblaciones con pocos nacimientos, sin aplicar truncamientos automáticos.
+
+La Tabla~\ref{tab:sensibilidad-capado} presenta la sensibilidad de las nueve combinaciones de modelo y escenario frente al truncamiento del aseguramiento en salud, utilizando las métricas LODO de RMSE y MAE.
 
 \begin{table}[!htbp]
 \centering
 \small
-\caption{Rango de las covariables agregadas a escala departamental, escenario Completo (33 dominios).}
-\label{tab:rangos-covariables-depto}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{l c c}
+\caption{Sensibilidad del desempeño LODO al truncamiento del aseguramiento en salud. Con: aseguramiento truncado en 1, especificación final; sin: aseguramiento sin truncar.}
+\label{tab:sensibilidad-capado}
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{l l c c c c}
 \hline
-\textbf{Covariable} & \textbf{Mínimo} & \textbf{Máximo} \\
+ & & \multicolumn{2}{c}{RMSE} & \multicolumn{2}{c}{MAE} \\
+Escenario & Modelo & Con & Sin & Con & Sin \\
 \hline
-Repitencia escolar (\%)                     & 6.66  & 18.50 \\
-Tasa de matriculación 5-16 años (\%)        & 53.79 & 100.00 \\
-Índice de infraestructura básica (\%)       & 20.79 & 100.00 \\
-Cobertura de energía rural (\%)             & 21.89 & 100.00 \\
-Mortalidad infantil (por mil nacidos vivos) & 6.70  & 30.39 \\
-Aseguramiento en salud capado (\%)          & 59.42 & 100.00 \\
-Luminosidad nocturna (log)                  & 0.22  & 2.78 \\
-\hline
-\end{tabular}
-\end{table}
-
-%--------------------------------------------------------------------------------------
-\section{Identificación de datos faltantes, ventanas temporales y estrategia de validación}
-
-La aplicación del criterio común de completitud, descrito en la Sección~\ref{sec:metodologia}, condujo a una muestra analítica de 1{,}121 municipios de los 1{,}122 que conforman el universo municipal del país, con un único municipio excluido por información incompleta en alguna de las covariables del escenario Completo o en los denominadores poblacionales de ponderación. Esta misma muestra fue empleada de manera común por las tres formulaciones.
-
-Tanto la variable respuesta como las covariables auxiliares correspondieron exclusivamente al año 2024, sin combinar información de otros periodos en la calibración de los modelos. La validación por exclusión de dominio (LODO) se aplicó de manera independiente a las tres formulaciones bajo los tres escenarios de covariables, cuyos resultados se presentan en las Secciones~\ref{sec:res-fh} en adelante.
-
-%--------------------------------------------------------------------------------------
-\section{Análisis exploratorio y diagnóstico espacial}
-\label{sec:analisis-exploratorio}
-
-Las asociaciones bivariadas entre la estimación directa del IPM y las covariables agregadas a escala departamental mostraron, en general, direcciones consistentes con su interpretación conceptual. La repitencia escolar se asoció positivamente con el IPM directo, mientras que la infraestructura básica y el aseguramiento en salud mostraron asociaciones negativas.
-
-Como diagnóstico espacial previo a la incorporación de un componente CAR, se evaluó el índice global de Moran sobre los residuos obtenidos bajo los tres escenarios exploratorios. Para examinar la sensibilidad del resultado a la definición de vecindad, se utilizaron matrices construidas mediante $k$ vecinos más cercanos, con $k=3$, $k=4$ y $k=5$. Los resultados se presentan en la Tabla~\ref{tab:moran-exploratorio}.
-
-El escenario Completo no presentó evidencia estadísticamente significativa de autocorrelación espacial residual bajo ninguno de los tres esquemas evaluados. Este resultado es compatible con una menor estructura espacial remanente después de considerar el conjunto de covariables incluido en esta especificación, aunque no permite atribuir dicha ausencia exclusivamente a las variables incorporadas.
-
-En contraste, el escenario Parsimonioso presentó autocorrelación espacial positiva y estadísticamente significativa para $k=4$ ($I=0.191$, $p=0.019$) y $k=5$ ($I=0.150$, $p=0.035$). El escenario Alternativo de vivienda presentó evidencia significativa únicamente para $k=4$ ($I=0.178$, $p=0.022$); para $k=3$ y $k=5$ los resultados no alcanzaron significancia estadística al 5\,\%.
-
-En conjunto, estos resultados muestran que la presencia de dependencia espacial residual varía según la especificación de covariables y la estructura de vecindad considerada. La evidencia observada, particularmente en los escenarios Parsimonioso y Alternativo de vivienda, sustentó la evaluación posterior de una formulación que incorporara explícitamente un componente espacial municipal mediante una estructura CAR de rango reducido.
-
-Este diagnóstico corresponde a una etapa exploratoria previa a la estimación de M3 y debe distinguirse del índice de Moran calculado posteriormente sobre el efecto espacial estimado del modelo CAR, el cual caracteriza la estructura del componente espacial incorporado y no constituye una medida de autocorrelación residual.
-
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Estadístico de Moran sobre los residuos de los escenarios exploratorios, bajo distintos esquemas de vecindad por $k$-vecinos más cercanos.}
-\label{tab:moran-exploratorio}
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{c l c c}
-\hline
-\textbf{Vecinos ($k$)} & \textbf{Escenario} & \textbf{Moran I} & \textbf{Valor p} \\
-\hline
-3 & Completo             & $-0.042$ & 0.514 \\
-3 & Parsimonioso         & $0.146$  & 0.076 \\
-3 & Alt. vivienda        & $0.141$  & 0.079 \\
-4 & Completo             & $0.065$  & 0.151 \\
-4 & Parsimonioso         & $0.191$  & 0.019 \\
-4 & Alt. vivienda        & $0.178$  & 0.022 \\
-5 & Completo             & $-0.008$ & 0.372 \\
-5 & Parsimonioso         & $0.150$  & 0.035 \\
-5 & Alt. vivienda        & $0.082$  & 0.109 \\
+E1 & M1 & 7.70 & 7.94 & 5.30 & 5.28 \\
+E1 & M2 & 5.10 & 5.54 & 3.70 & 3.95 \\
+E1 & M3 & 6.04 & 6.53 & 4.46 & 4.39 \\
+E2 & M1 & 7.76 & 8.16 & 6.00 & 5.91 \\
+E2 & M2 & 6.45 & 6.92 & 4.84 & 5.06 \\
+E2 & M3 & 4.72 & 5.26 & 3.67 & 4.18 \\
+E3 & M1 & 7.88 & 8.15 & 5.76 & 5.89 \\
+E3 & M2 & 8.41 & 8.09 & 5.65 & 5.49 \\
+E3 & M3 & 10.43 & 9.79 & 6.54 & 6.29 \\
 \hline
 \end{tabular}
 \end{table}
 
-%--------------------------------------------------------------------------------------
-\section{Preprocesamiento específico para la modelación}
+El truncamiento redujo el RMSE en siete de las nueve combinaciones, con excepción de M2 y M3 bajo E3. El MAE presentó un comportamiento menos uniforme, con mejoras en cuatro combinaciones. En particular, M3--E2 mantuvo el menor RMSE tanto con truncamiento (4.72) como sin él (5.26), mientras que su MAE disminuyó de 4.18 a 3.67 al aplicar el tratamiento.
 
-La construcción de la matriz de adyacencia municipal bajo el criterio de contigüidad tipo Reina, descrita en la Sección~\ref{sec:metodologia}, identificó dos unidades sin vecinos dentro de la red espacial: San Andrés y Providencia, pertenecientes al Archipiélago de San Andrés, Providencia y Santa Catalina. Esta condición responde a su carácter insular, dado que ninguna de estas unidades comparte un límite terrestre con otro municipio bajo el criterio de contigüidad empleado.
-
-La estructura de vecindad resultante presentó tres componentes conexos: un componente principal conformado por los municipios continentalmente conectados y dos componentes aislados correspondientes a San Andrés y Providencia. Las 1,121 unidades de la muestra analítica contaron con geometría disponible; sin embargo, las dos unidades insulares presentaron grado cero en la matriz de adyacencia. En consecuencia, la construcción de la base espacial de rango reducido se realizó sobre los municipios con al menos un vecino, mientras que las unidades aisladas conservaron su componente fijo de covariables, pero no recibieron contribución del efecto espacial CAR.
-
-La reducción de rango del efecto espacial, aplicada para hacer viable su estimación a partir de los 33 dominios departamentales utilizados en la calibración, conservó los seis componentes asociados a los mayores autovalores de la matriz de vecindad normalizada. Los autovalores correspondientes a los patrones espaciales retenidos se ubicaron entre 0.9847 y 1, indicando que la representación reducida conserva los patrones de autocorrelación espacial positiva de mayor escala presentes en la red municipal.
+Estos resultados respaldan el uso del aseguramiento truncado como especificación principal, aunque muestran que sus beneficios predictivos dependen del modelo y del escenario evaluado.
 
 %--------------------------------------------------------------------------------------
-\section{Implementación de modelos exploratorios mediante mínimos cuadrados ordinarios}
+\section{Definición de los escenarios de covariables}
+\label{sec:res-escenarios}
 
-El ajuste mediante mínimos cuadrados ordinarios (OLS) se utilizó como una etapa diagnóstica para caracterizar el comportamiento de los tres escenarios de covariables definidos previamente. Los resultados mostraron un ajuste global relativamente alto en los tres casos, aunque con diferencias en la complejidad de las especificaciones y en el nivel de colinealidad entre los predictores.
-
-El escenario Completo presentó el mayor coeficiente de determinación ajustado ($R^2_{\text{aj}}=0.8643$), seguido del escenario Parsimonioso ($R^2_{\text{aj}}=0.8178$) y del escenario Alternativo de vivienda ($R^2_{\text{aj}}=0.7904$). Sin embargo, el escenario Completo incorporó siete covariables además del intercepto, lo que produjo una razón de 4.12 dominios por parámetro, inferior a la referencia de cinco observaciones por parámetro utilizada como criterio diagnóstico. En contraste, los escenarios Parsimonioso y Alternativo de vivienda, ambos conformados por cuatro covariables, alcanzaron una razón de 6.60 dominios por parámetro.
-
-La Tabla~\ref{tab:ols-resultados} resume estas diferencias. El diagnóstico de colinealidad mostró que el escenario Completo presentó el mayor factor de inflación de varianza, con un VIF máximo de 5.005, ubicado en el límite utilizado como referencia para identificar posibles problemas de redundancia entre covariables. En los escenarios Parsimonioso y Alternativo de vivienda, los valores máximos fueron considerablemente menores, con 2.477 y 2.729, respectivamente, sin evidencia de colinealidad severa.
+Los tres escenarios conservaron la composición definida en la Tabla~\ref{tab:escenarios}. Como muestra la Figura~\ref{fig:vif}, la repitencia escolar presentó el mayor VIF en E1 (5.01), ligeramente superior al umbral de referencia de 5, mientras que los máximos de E2 y E3 fueron de 2.48 y 2.73, respectivamente. Esto evidencia una menor multicolinealidad en las especificaciones reducidas, que además presentan una relación más favorable entre dominios y parámetros en M1 y M2: 5.50 frente a 3.67 en E1. Estos indicadores se utilizan como diagnósticos de complejidad y estabilidad, sin constituir criterios automáticos de selección de escenarios.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/figures/diagnostico_VIF_escenarios.png}
-\caption{Factores de inflación de la varianza por covariable y escenario.}
-\label{fig:diag-VIF}
+\includegraphics[width=0.85\textwidth]{fig/figures/vif_escenarios.png}
+\caption{VIF por covariable y escenario en los ajustes OLS departamentales. La línea discontinua indica el umbral de referencia de 5.}
+\label{fig:vif}
 \end{figure}
 
-La revisión de los coeficientes mostró, en términos generales, una dirección consistente con la interpretación conceptual de las covariables. La tasa de repitencia escolar presentó signo positivo en los tres escenarios, indicando una asociación directa con el IPM departamental. Por su parte, el índice de infraestructura básica, la cobertura de energía rural, el aseguramiento en salud capado y la luminosidad nocturna presentaron coeficientes negativos en los escenarios en los que fueron incorporados. La mortalidad infantil, incluida exclusivamente en el escenario Completo, presentó la dirección positiva esperada respecto a la pobreza multidimensional.
+%--------------------------------------------------------------------------------------
+\section{Análisis descriptivo y de asociación}
+\label{sec:res-descriptivo}
 
-La principal excepción se observó en la tasa de matriculación de la población entre 5 y 16 años, incorporada en el escenario Completo, cuyo coeficiente fue positivo a pesar de que conceptualmente se esperaría una relación inversa con el IPM. Este comportamiento se mantuvo como una advertencia de interpretación y no se utilizó como criterio automático para eliminar la variable, en concordancia con el carácter exploratorio de esta etapa.
+Las Tablas~\ref{tab:eda-municipal} y
+\ref{tab:eda-departamental} presentan las estadísticas
+descriptivas de las siete covariables a escala municipal
+($n=1{,}121$) y departamental ($n=33$), respectivamente.
+A escala municipal, la mortalidad infantil y la luminosidad
+nocturna registraron las mayores asimetrías positivas
+(4.55 y 3.03), mientras que el aseguramiento en salud
+y la cobertura de energía rural se concentraron hacia
+sus valores máximos. La agregación departamental modificó
+la dispersión: la desviación estándar de infraestructura
+básica disminuyó de 0.25 a 0.18 y la de mortalidad infantil
+de 16.70 a 5.58, mientras que la de luminosidad nocturna
+aumentó de 0.45 a 0.70. Estos cambios reflejan diferencias
+entre la distribución municipal y los promedios
+departamentales ponderados.
 
-La Tabla~\ref{tab:ols-signos} sintetiza la dirección observada de los coeficientes en las tres especificaciones.
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\caption{Estadísticas descriptivas de las covariables municipales
+($n=1{,}121$). Proporciones en escala 0--1; mortalidad infantil
+por 1{,}000 nacidos vivos y luminosidad en escala logarítmica.
+DE: desviación estándar; As.: asimetría.}
+\label{tab:eda-municipal}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l c c c c c c c c}
+\hline
+Covariable & Media & Mediana & DE & Q1 & Q3 & Mín. & Máx. & As. \\
+\hline
+Repitencia escolar & 0.09 & 0.08 & 0.03 & 0.07 & 0.10 & 0.00 & 0.35 & 1.33 \\
+Tasa de matriculación & 0.81 & 0.80 & 0.16 & 0.72 & 0.90 & 0.00 & 1.78 & 0.14 \\
+Infraestructura básica & 0.55 & 0.53 & 0.25 & 0.37 & 0.74 & 0.00 & 1.00 & 0.13 \\
+Cobertura de energía rural & 0.79 & 0.86 & 0.25 & 0.68 & 1.00 & 0.00 & 1.00 & $-1.40$ \\
+Mortalidad infantil & 11.00 & 7.30 & 16.70 & 0.00 & 15.38 & 0.00 & 232.88 & 4.55 \\
+Aseguramiento en salud & 0.88 & 0.91 & 0.14 & 0.81 & 1.00 & 0.06 & 1.00 & $-1.53$ \\
+Luminosidad nocturna & 0.53 & 0.37 & 0.45 & 0.28 & 0.57 & 0.17 & 3.75 & 3.03 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\caption{Estadísticas descriptivas departamentales ($n=33$).
+IPM en porcentaje; varianza directa en puntos porcentuales
+al cuadrado; covariables agregadas mediante ponderación.
+Abreviaturas como en la Tabla~\ref{tab:eda-municipal}.}
+\label{tab:eda-departamental}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{l c c c c c c c c}
+\hline
+Variable & Media & Mediana & DE & Q1 & Q3 & Mín. & Máx. & As. \\
+\hline
+IPM directo & 17.68 & 13.40 & 14.07 & 9.50 & 19.20 & 5.40 & 70.20 & 2.01 \\
+Varianza directa & 1.67 & 1.21 & 1.17 & 1.00 & 1.96 & 0.49 & 5.29 & 1.60 \\
+Repitencia escolar & 0.10 & 0.09 & 0.03 & 0.08 & 0.10 & 0.07 & 0.18 & 1.78 \\
+Tasa de matriculación & 0.85 & 0.89 & 0.10 & 0.79 & 0.91 & 0.54 & 1.01 & $-1.16$ \\
+Infraestructura básica & 0.68 & 0.70 & 0.18 & 0.59 & 0.77 & 0.21 & 1.00 & $-0.43$ \\
+Cobertura de energía rural & 0.78 & 0.85 & 0.21 & 0.72 & 0.94 & 0.22 & 1.00 & $-1.13$ \\
+Mortalidad infantil & 12.08 & 10.54 & 5.58 & 8.98 & 11.85 & 6.70 & 30.39 & 1.67 \\
+Aseguramiento en salud & 0.92 & 0.94 & 0.08 & 0.90 & 0.96 & 0.59 & 1.00 & $-2.41$ \\
+Luminosidad nocturna & 0.92 & 0.72 & 0.70 & 0.41 & 1.09 & 0.22 & 2.78 & 1.19 \\
+\hline
+\end{tabular}
+\end{table}
+
+La Figura~\ref{fig:eda-histogramas} muestra las distribuciones
+municipales y la Figura~\ref{fig:eda-dispersion} las relaciones
+entre el IPM directo y las covariables agregadas. A escala
+departamental, las mayores correlaciones positivas del IPM
+correspondieron a repitencia escolar ($r=0.89$) y mortalidad
+infantil ($r=0.74$); las negativas más fuertes se observaron
+con aseguramiento en salud ($r=-0.70$), cobertura de energía
+rural ($r=-0.60$) y luminosidad nocturna ($r=-0.54$).
+La matriculación ($r=-0.49$) y la infraestructura básica
+($r=-0.21$) también presentaron asociaciones negativas.
+Estas relaciones son descriptivas y no implican causalidad.
+
+Entre predictores departamentales destacaron las correlaciones
+de repitencia con mortalidad infantil ($r=0.72$), matriculación
+($r=-0.70$) y aseguramiento ($r=-0.69$). A escala municipal,
+las correlaciones de Spearman entre predictores no superaron
+0.38 en valor absoluto. Las diferencias sugieren que las
+asociaciones dependen de la escala territorial, aunque las
+medidas de correlación empleadas no son directamente
+equivalentes. Finalmente, las varianzas directas se concentraron
+principalmente entre 1.00 y 1.96 puntos porcentuales al
+cuadrado (Tabla~\ref{tab:eda-departamental}), evidenciando
+distintos niveles de precisión departamental.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{fig/figures/eda_histogramas.png}
+\caption{Distribución municipal de las siete covariables
+utilizadas en los escenarios de modelación ($n=1{,}121$).}
+\label{fig:eda-histogramas}
+\end{figure}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.85\textwidth]
+{fig/figures/eda_dispersion.png}
+\caption{Relación entre el IPM directo departamental de
+2024 y las covariables agregadas ($n=33$).}
+\label{fig:eda-dispersion}
+\end{figure}
+%--------------------------------------------------------------------------------------
+\section{Estrategia de validación por exclusión de dominio}
+\label{sec:res-validacion}
+
+La validación por exclusión de dominio (LODO) produjo 33 predicciones válidas para cada una de las nueve combinaciones de modelo y escenario, completando 297 predicciones departamentales. Como muestra la Tabla~\ref{tab:ejecucion-lodo}, únicamente se registraron dos predicciones fuera del intervalo admisible del IPM, correspondientes al Modelo 1 en los escenarios E1 y E2. Los Modelos 2 y 3 no presentaron valores fuera de rango.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Cobertura y control de rango de las predicciones LODO para los tres modelos y escenarios.}
+\label{tab:ejecucion-lodo}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{l l c c}
+\hline
+Escenario & Modelo & Predicciones válidas & Fuera de rango \\
+\hline
+E1 & M1 & 33 & 1 \\
+E1 & M2 & 33 & 0 \\
+E1 & M3 & 33 & 0 \\
+E2 & M1 & 33 & 1 \\
+E2 & M2 & 33 & 0 \\
+E2 & M3 & 33 & 0 \\
+E3 & M1 & 33 & 0 \\
+E3 & M2 & 33 & 0 \\
+E3 & M3 & 33 & 0 \\
+\hline
+Total & & 297 & 2 \\
+\hline
+\end{tabular}
+\end{table}
+
+La cobertura de los 33 dominios en todas las combinaciones permite comparar las métricas RMSE, MAE y correlación sobre una misma base territorial. Sin embargo, la validación se realizó a escala departamental, dado que las estimaciones directas del IPM 2024 y sus varianzas de muestreo no están disponibles para la totalidad de los municipios. En consecuencia, las métricas LODO permiten evaluar la capacidad predictiva entre departamentos, pero no constituyen una validación directa de la precisión de las estimaciones municipales.
+
+%--------------------------------------------------------------------------------------
+
+
+\section{Modelos exploratorios OLS y diagnóstico espacial exploratorio}
+\label{sec:res-ols}
+
+Las Tablas~\ref{tab:ols-resultados} y~\ref{tab:ols-coeficientes} presentan los resultados de los ajustes OLS departamentales. E1 alcanzó el mayor $R^2$ ajustado (0.86), aunque con mayor complejidad y multicolinealidad (VIF máximo de 5.01). Los escenarios reducidos E2 y E3 presentaron valores de $R^2$ ajustado de 0.82 y 0.79, respectivamente, con menores VIF y una relación más favorable entre dominios y parámetros.
 
 \begin{table}[!htbp]
 \centering
 \small
-\caption{Dirección de los coeficientes OLS por escenario de covariables.}
-\label{tab:ols-signos}
-\renewcommand{\arraystretch}{1.20}
+\caption{Resumen del ajuste OLS departamental por escenario ($D=33$).}
+\label{tab:ols-resultados}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l c c c c}
+\hline
+Escenario & Covariables & $R^2$ ajustado & Dominios por parámetro & VIF máximo \\
+\hline
+E1 & 7 & 0.86 & 4.12 & 5.01 \\
+E2 & 4 & 0.82 & 6.60 & 2.48 \\
+E3 & 4 & 0.79 & 6.60 & 2.73 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Coeficientes OLS departamentales por escenario, con error estándar entre paréntesis. Covariables en las unidades finales de la Tabla~\ref{tab:diccionario}; IPM en escala 0--100. Un guion indica que la covariable no forma parte del escenario. Las asociaciones son diagnósticas y no causales.}
+\label{tab:ols-coeficientes}
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l c c c}
 \hline
-\textbf{Covariable} &
-\textbf{Completo} &
-\textbf{Parsimonioso} &
-\textbf{Alt. vivienda} \\
+Covariable & E1 & E2 & E3 \\
 \hline
-Repitencia escolar                    & $+$ & $+$ & $+$ \\
-Matriculación 5--16 años              & $+$ & *  & *  \\
-Infraestructura básica                & $-$ & $-$ & *  \\
-Cobertura de energía rural            & $-$ & *  & $-$ \\
-Mortalidad infantil                   & $+$ & *  & *  \\
-Aseguramiento en salud capado         & $-$ & $-$ & $-$ \\
-Luminosidad nocturna (log)            & $-$ & $-$ & $-$ \\
+Intercepto & $-16.69$ (25.48) & 22.56 (22.63) & 20.86 (24.86) \\
+Repitencia escolar & 401.55 (77.65) & 376.44 (63.28) & 349.29 (71.25) \\
+Tasa de matriculación & 40.75 (15.90) & -- & -- \\
+Infraestructura básica & $-11.20$ (5.32) & $-13.82$ (5.96) & -- \\
+Cobertura de energía rural & 0.94 (6.31) & -- & $-7.07$ (7.01) \\
+Mortalidad infantil & 0.40 (0.25) & -- & -- \\
+Aseguramiento en salud & $-38.15$ (17.11) & $-33.30$ (18.80) & $-33.04$ (20.17) \\
+Luminosidad nocturna & $-2.73$ (1.81) & $-1.70$ (1.81) & $-1.51$ (2.06) \\
+\hline
+\end{tabular}
+\end{table}
+
+La repitencia escolar mostró una asociación positiva con el IPM en los tres escenarios, mientras que infraestructura básica, aseguramiento y luminosidad nocturna presentaron coeficientes negativos. En E1, la matriculación registró un coeficiente positivo (40.75), contrario a su correlación bivariada negativa con el IPM ($r=-0.49$), y la cobertura de energía rural mostró una dirección similarmente discordante ($r=-0.60$). Estas diferencias, junto con la correlación entre repitencia y matriculación ($r=-0.70$), sugieren posibles efectos de colinealidad y no se interpretan como relaciones causales.
+
+\paragraph{Diagnósticos de influencia departamental.}
+
+La Tabla~\ref{tab:ols-influencia-e2} presenta los diez departamentos con señales exploratorias de influencia en el ajuste OLS de E2, identificadas mediante distancia de Cook, apalancamiento, residuos estandarizados y DFBETAS.
+
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\caption{Diagnósticos de influencia departamental del ajuste OLS exploratorio en el escenario E2 ($D=33$).}
+\label{tab:ols-influencia-e2}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{l r r r r}
+\hline
+Departamento & Cook & Leverage & Residuo est. & Máx. $|\mathrm{DFBETAS}|$ \\
+\hline
+San Andrés y Providencia & 1.1763 & 0.5494 & $-2.1965$ & 1.8914 \\
+Vichada & 0.8041 & 0.6032 & 1.6263 & 1.1629 \\
+Vaupés & 0.3708 & 0.3543 & $-1.8382$ & 0.7428 \\
+Amazonas & 0.2743 & 0.2084 & $-2.2822$ & 0.9221 \\
+Cundinamarca & 0.1733 & 0.2902 & $-1.4557$ & 0.8523 \\
+Guainía & 0.1334 & 0.3172 & 1.1982 & 0.5471 \\
+La Guajira & 0.1223 & 0.1294 & 2.0282 & 0.6644 \\
+Atlántico & 0.0895 & 0.2024 & 1.3280 & 0.4157 \\
+Chocó & 0.0795 & 0.1278 & 1.6476 & 0.4965 \\
+Bogotá D.C. & 0.0713 & 0.3681 & 0.7822 & 0.4580 \\
 \hline
 \end{tabular}
 
-\vspace{0.2cm}
-\begin{minipage}{0.90\textwidth}
-\footnotesize
-\textit{Nota:} Los signos indican la dirección del coeficiente estimado. El símbolo ``*'' señala que la covariable no forma parte del escenario correspondiente. Estas asociaciones se interpretan con fines diagnósticos y no como relaciones causales.
-\end{minipage}
+\vspace{2mm}
+\parbox{0.95\linewidth}{\footnotesize
+\textit{Nota:} Se utilizó el umbral exploratorio de Cook $4/33\approx0.1212$. DFBETAS representa la variación estandarizada de los coeficientes al excluir una observación. Las señales de influencia no implican eliminar los departamentos del ajuste principal.
+}
 \end{table}
 
-En conjunto, los resultados OLS evidenciaron un compromiso entre capacidad de ajuste y parsimonia. El escenario Completo explicó una mayor proporción de la variabilidad departamental observada, pero presentó una mayor carga paramétrica y una señal de colinealidad en el límite del criterio adoptado. Los escenarios Parsimonioso y Alternativo de vivienda redujeron la complejidad del ajuste y presentaron menores niveles de colinealidad, aunque con una reducción moderada del $R^2$ ajustado.
+San Andrés y Providencia, Vichada y Vaupés registraron las tres mayores distancias de Cook (1.1763, 0.8041 y 0.3708), por lo que se seleccionaron para los ejercicios de reestimación de M1, M2 y M3 en E2. Ninguno presentó residuos estandarizados superiores a tres en valor absoluto. Las observaciones se conservaron en los ajustes principales; los resultados de robustez se presentan en la Sección~\ref{sec:res-comparacion}.
 
-Estos resultados se utilizaron como evidencia diagnóstica sobre el comportamiento de las especificaciones y no como un procedimiento de selección automática de variables. La evaluación comparativa de las tres formulaciones se realizó posteriormente mediante la validación por exclusión de dominio y los criterios integrados definidos en la metodología.
+\paragraph{Diagnóstico exploratorio de autocorrelación espacial.}
+
+La Tabla~\ref{tab:moran-exploratorio} muestra que E1 no presentó autocorrelación espacial residual estadísticamente significativa. En E2 se identificó autocorrelación positiva para $k=4$ ($I=0.19$, $p=0.02$) y $k=5$ ($I=0.15$, $p=0.03$), mientras que E3 mostró significancia únicamente para $k=4$ ($I=0.18$, $p=0.02$). Estos resultados corresponden a residuos OLS departamentales y motivan la evaluación del componente espacial, sin demostrar dependencia municipal.
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Índice de Moran sobre los residuos OLS departamentales con vecindades de $k$ vecinos más cercanos (9{,}999 permutaciones).}
+\label{tab:moran-exploratorio}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{l c c c c c c}
+\hline
+ & \multicolumn{2}{c}{$k=3$} & \multicolumn{2}{c}{$k=4$} & \multicolumn{2}{c}{$k=5$} \\
+Escenario & $I$ & $p$ & $I$ & $p$ & $I$ & $p$ \\
+\hline
+E1 & $-0.04$ & 0.52 & 0.07 & 0.16 & $-0.01$ & 0.36 \\
+E2 & 0.15 & 0.08 & 0.19 & 0.02 & 0.15 & 0.03 \\
+E3 & 0.14 & 0.08 & 0.18 & 0.02 & 0.08 & 0.10 \\
+\hline
+\end{tabular}
+\end{table}
+
 %--------------------------------------------------------------------------------------
-\section{Implementación del Modelo 1: Fay-Herriot de área}
+
+
+% ============================================================
+% 6.9. MODELO 1
+% ============================================================
+
+\section{Modelo 1: Fay-Herriot departamental y proyección sintética municipal}
 \label{sec:res-fh}
 
-El modelo M1 corresponde a una formulación Fay--Herriot de área calibrada a partir de los 33 dominios departamentales. En consecuencia, los resultados del ajuste, los diagnósticos internos y la validación por exclusión de dominio se interpretan a escala departamental. La salida a escala municipal se obtuvo posteriormente mediante una proyección sintética que combina el componente fijo estimado con las covariables observadas en cada municipio y el efecto aleatorio estimado para el departamento al cual pertenece la unidad. Por tanto, las estimaciones municipales presentadas para M1 no corresponden a estimaciones Fay--Herriot ajustadas directamente a nivel municipal, sino a proyecciones sintéticas derivadas del modelo de área departamental.
-
-\subsection{Ajuste departamental y validez interna}
-
-Los tres escenarios del modelo Fay--Herriot (M1) convergieron satisfactoriamente mediante estimación por máxima verosimilitud restringida (REML) y cumplieron las condiciones estructurales definidas para continuar con la evaluación predictiva. En todos los casos, las varianzas de muestreo asociadas a las estimaciones directas fueron finitas y estrictamente positivas, la varianza estimada del efecto aleatorio de área, $\sigma_u^2$, fue no negativa, y tanto los coeficientes estimados como los EBLUP departamentales presentaron valores finitos.
-
-La Tabla~\ref{tab:fh-ajuste-departamental} resume los principales resultados del ajuste para los tres escenarios considerados. La varianza estimada entre áreas, $\sigma_u^2$, aumentó desde 24.3251 en el escenario Completo hasta 37.4995 en el escenario Alternativo de vivienda. Este comportamiento indica una mayor variabilidad residual entre departamentos en las especificaciones con menor número de covariables.
-
-Por su parte, el factor de contracción promedio, $\bar{\gamma}$, presentó valores elevados en los tres escenarios, entre 0.9373 y 0.9581. Dado que valores de $\gamma$ cercanos a uno implican una mayor ponderación de la estimación directa dentro del EBLUP departamental, los resultados muestran que el modelo Fay--Herriot generó una contracción relativamente moderada hacia la componente sintética. En consecuencia, las estimaciones ajustadas conservaron una participación importante de la información proveniente de las estimaciones directas.
+Los tres escenarios de M1 completaron el ajuste REML con coeficientes finitos y estimaciones EBLUP departamentales válidas. Según la Tabla~\ref{tab:fh-ajuste}, la varianza entre áreas aumentó de 24.33 en E1 a 37.50 en E3, mientras que el factor de contracción promedio se mantuvo entre 0.94 y 0.96. Esto indica que las estimaciones EBLUP permanecieron próximas a los valores directos, con una mayor variabilidad departamental no explicada en los escenarios reducidos.
 
 \begin{table}[!htbp]
 \centering
-\small
-\caption{Resultados del ajuste departamental del modelo Fay--Herriot por escenario.}
-\label{tab:fh-ajuste-departamental}
-\renewcommand{\arraystretch}{1.20}
+\footnotesize
+\caption{Resultados del ajuste REML del Modelo 1 por escenario.}
+\label{tab:fh-ajuste}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{7pt}
 \begin{tabular}{l c c c c}
 \hline
-\textbf{Escenario} &
-\textbf{$\sigma_u^2$} &
-\textbf{$\bar{\gamma}$} &
-\textbf{AIC} &
-\textbf{BIC} \\
+Escenario & $\hat{\sigma}^2_u$ & $\bar{\hat{\gamma}}$ & AIC & BIC \\
 \hline
-Completo          & 24.3251 & 0.9373 & 211.63 & 225.10 \\
-Parsimonioso      & 33.1444 & 0.9529 & 218.31 & 227.29 \\
-Alt. vivienda     & 37.4995 & 0.9581 & 222.51 & 231.49 \\
+E1 & 24.33 & 0.94 & 211.63 & 225.10 \\
+E2 & 33.14 & 0.95 & 218.31 & 227.29 \\
+E3 & 37.50 & 0.96 & 222.51 & 231.49 \\
 \hline
 \end{tabular}
 \end{table}
 
-Dentro de la familia M1, el escenario Completo presentó los menores valores de AIC y BIC, seguido por el escenario Parsimonioso y, posteriormente, por el Alternativo de vivienda. Estos criterios se utilizaron exclusivamente para comparar las especificaciones internas del modelo Fay--Herriot, dado que los modelos M2 y M3 presentan estructuras probabilísticas y procedimientos de estimación diferentes y, por tanto, sus criterios de información no son directamente comparables con los obtenidos en M1.
+Los diagnósticos de la Tabla~\ref{tab:fh-validez} permitieron clasificar los tres escenarios como aptos con advertencias. Shapiro--Wilk no rechazó la normalidad de los residuos estandarizados ($p>0.05$) y no se observaron residuos superiores a tres en valor absoluto. Sin embargo, los ajustes OLS de referencia presentaron una prueba RESET significativa en E1 y Breusch--Pagan en E3, además de seis o siete dominios con señales de influencia según el escenario. Estas advertencias corresponden a diagnósticos exploratorios y no invalidan automáticamente el ajuste Fay--Herriot.
 
-Además de las condiciones estructurales anteriores, se evaluó el comportamiento de los residuos y otros supuestos asociados al ajuste mediante diagnósticos gráficos. La Figura~\ref{fig:diag-M1} presenta de manera conjunta los principales gráficos utilizados para examinar la distribución de los residuos, posibles desviaciones de normalidad, patrones sistemáticos asociados con los valores ajustados y la presencia de observaciones potencialmente influyentes.
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Diagnósticos de validez del Modelo 1. RESET, Breusch-Pagan (BP) e influencia corresponden al ajuste OLS de referencia; Shapiro-Wilk a los residuos estandarizados del modelo de área.}
+\label{tab:fh-validez}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c c c}
+\hline
+Escenario & VIF máx. & RESET $p$ & BP $p$ & Shapiro $p$ & $|r|>3$ & Influyentes \\
+\hline
+E1 & 5.01 & $<0.01$ & 0.67 & 0.20 & 0 & 6 \\
+E2 & 2.48 & 0.09 & 0.08 & $>0.99$ & 0 & 7 \\
+E3 & 2.73 & 0.53 & 0.04 & 0.58 & 0 & 6 \\
+\hline
+\end{tabular}
+\end{table}
+
+La Figura~\ref{fig:m1-qq} complementa la prueba de normalidad mediante gráficos cuantil-cuantil de los residuos estandarizados.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/figures/Diagnósticos gráficos de residuos del modelo Fay–Herriot..png}
-\caption{Diagnósticos gráficos de residuos del modelo Fay--Herriot.}
-\label{fig:diag-M1}
+\includegraphics[width=0.78\textwidth]{fig/figures/m1_qq_residuos.png}
+\caption{Gráficos cuantil-cuantil de los residuos estandarizados del Modelo 1 por escenario.}
+\label{fig:m1-qq}
 \end{figure}
 
-La evaluación formal de la validez interna incorporó diagnósticos relacionados con colinealidad entre covariables, adecuación de la forma funcional, heterocedasticidad, normalidad aproximada de los residuos estandarizados y presencia de dominios potencialmente influyentes. Los resultados se presentan en la Tabla~\ref{tab:fh-validez-interna}.
+El desempeño predictivo LODO de M1 se presenta de manera consolidada en la Tabla~\ref{tab:comparacion-m123}, Sección~\ref{sec:res-comparacion}. El RMSE varió entre 7.70 y 7.88 puntos porcentuales, con el menor error en E1. No obstante, se obtuvo una predicción departamental fuera del intervalo de 0 a 100 en E1 y otra en E2, sin casos en E3, lo que evidencia la limitación del predictor lineal no acotado.
+
+Esta limitación fue más evidente en la proyección sintética municipal. Antes del acotamiento, la Tabla~\ref{tab:fh-proyeccion} muestra 199 estimaciones fuera de rango en E1, 92 en E2 y 116 en E3, principalmente negativas. Estos resultados no invalidan el ajuste departamental, pero restringen la interpretación de la extrapolación lineal a escala municipal.
 
 \begin{table}[!htbp]
 \centering
-\scriptsize
-\caption{Diagnósticos de validez interna del modelo Fay--Herriot.}
-\label{tab:fh-validez-interna}
-\renewcommand{\arraystretch}{1.20}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{l c c c c c c c}
-\hline
-\textbf{Escenario} &
-\textbf{VIF máx.} &
-\textbf{RESET $p$} &
-\textbf{BP $p$} &
-\textbf{Shapiro $p$} &
-\textbf{$|r^{*}|>3$} &
-\textbf{Dom. influyentes} &
-\textbf{Estado} \\
-\hline
-Completo
-& 5.005 & 0.0014 & 0.6672 & 0.1953 & 0 & 6
-& Apto con advertencias \\
-
-Parsimonioso
-& 2.477 & 0.0898 & 0.0804 & 0.9965 & 0 & 7
-& Apto con advertencias \\
-
-Alt. vivienda
-& 2.729 & 0.5292 & 0.0372 & 0.5821 & 0 & 6
-& Apto con advertencias \\
-\hline
-\end{tabular}
-}
-\vspace{0.15cm}
-
-\begin{minipage}{0.96\textwidth}
 \footnotesize
-\textit{Nota:} BP corresponde a la prueba de Breusch--Pagan y $r^{*}$ al residuo estandarizado. Los diagnósticos se interpretaron como señales de revisión y no como reglas automáticas de exclusión. La clasificación de aptitud estructural se basó en la validez de las varianzas directas, la no negatividad de $\sigma_u^2$, la finitud de los coeficientes estimados y la existencia de EBLUP finitos.
-\end{minipage}
-\end{table}
-
-El escenario Completo concentró las principales advertencias relacionadas con la especificación del componente fijo. Su VIF máximo fue de 5.005, valor superior al observado en los otros dos escenarios, mientras que la prueba RESET resultó estadísticamente significativa ($p=0.0014$). Este resultado proporciona evidencia de posibles limitaciones en la forma funcional especificada y, por tanto, requiere cautela en su interpretación.
-
-En contraste, los escenarios Parsimonioso y Alternativo de vivienda presentaron menores niveles de colinealidad, con VIF máximos de 2.477 y 2.729, respectivamente, y no mostraron evidencia estadísticamente significativa de problemas de especificación según la prueba RESET. En este sentido, ambos escenarios exhibieron un comportamiento más favorable respecto a la estructura del componente fijo.
-
-En cuanto a la distribución de los residuos, la prueba de Shapiro--Wilk no proporcionó evidencia suficiente para rechazar el supuesto de normalidad aproximada en ninguno de los tres escenarios. De manera consistente, tampoco se identificaron residuos estandarizados con valores absolutos superiores a tres, lo que indica ausencia de observaciones extremadamente atípicas bajo este criterio.
-
-La prueba de Breusch--Pagan tampoco mostró evidencia significativa de heterocedasticidad en los escenarios Completo y Parsimonioso. Sin embargo, en el escenario Alternativo de vivienda se obtuvo un valor $p=0.0372$, señalando posible heterocedasticidad. De acuerdo con los criterios establecidos en la metodología, este resultado se mantuvo como una advertencia diagnóstica y no constituyó por sí solo una condición automática de exclusión del escenario.
-
-Adicionalmente, se identificaron dominios potencialmente influyentes en las tres especificaciones: seis en el escenario Completo, siete en el Parsimonioso y seis en el Alternativo de vivienda. La presencia de estos dominios justificó mantener su seguimiento durante las etapas posteriores de validación, especialmente al analizar la estabilidad de las estimaciones y el desempeño predictivo fuera de dominio.
-
-En conjunto, los resultados de ajuste y diagnóstico muestran que los tres escenarios cumplieron las condiciones estructurales mínimas requeridas para el modelo Fay--Herriot y pudieron avanzar a la etapa de validación LODO. No obstante, ninguno se consideró completamente exento de advertencias. El escenario Completo presentó señales relacionadas principalmente con la forma funcional y la colinealidad, mientras que el escenario Alternativo de vivienda mostró evidencia de posible heterocedasticidad. Por esta razón, la selección y comparación posterior de las especificaciones no se sustentó exclusivamente en los criterios de ajuste interno, sino también en su capacidad predictiva fuera de dominio y en la coherencia global de las estimaciones.
-
-\subsection{Desempeño predictivo departamental mediante LODO}
-
-La capacidad predictiva fuera de dominio se evaluó excluyendo sucesivamente cada uno de los 33 departamentos y prediciéndolo a partir de los restantes. La Tabla~\ref{tab:fh-lodo} presenta las métricas obtenidas.
-
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Desempeño predictivo LODO 2024 del modelo Fay--Herriot.}
-\label{tab:fh-lodo}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l c c c c}
+\caption{Proyecciones municipales del Modelo 1 fuera del intervalo de 0 a 100 antes del acotamiento ($n=1{,}121$).}
+\label{tab:fh-proyeccion}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{l c c c}
 \hline
-\textbf{Escenario} &
-\textbf{RMSE} &
-\textbf{MAE} &
-\textbf{Correlación} &
-\textbf{$n$} \\
+Escenario & Menores que 0 & Mayores que 100 & Total \\
 \hline
-Completo          & 7.7047 & 5.2993 & 0.8316 & 33 \\
-Parsimonioso      & 7.7563 & 5.9992 & 0.8303 & 33 \\
-Alt. vivienda     & 7.8849 & 5.7569 & 0.8233 & 33 \\
+E1 & 197 & 2 & 199 \\
+E2 & 91 & 1 & 92 \\
+E3 & 115 & 1 & 116 \\
 \hline
 \end{tabular}
 \end{table}
 
-Las diferencias de desempeño entre los tres escenarios fueron reducidas. El menor RMSE correspondió al escenario Completo, con 7.7047, seguido del Parsimonioso con 7.7563 y del Alternativo de vivienda con 7.8849. La diferencia entre el valor máximo y mínimo del RMSE fue de aproximadamente 0.18 puntos, lo que evidencia una baja sensibilidad del desempeño predictivo de M1 frente a los cambios en la especificación de covariables.
+% ============================================================
+% 6.10. MODELO 2
+% ============================================================
 
-La misma estabilidad se observa en la correlación entre las estimaciones directas y las predicciones LODO, cuyos valores se ubicaron entre 0.8233 y 0.8316. Esta estabilidad no implica, sin embargo, que el modelo presente el menor error entre las tres familias evaluadas; la comparación entre M1, M2 y M3 se desarrolla posteriormente en la Sección~\ref{sec:res-comparacion}.
-
-Debe distinguirse también el soporte de las predicciones obtenidas durante LODO del comportamiento de la proyección municipal completa. En la validación departamental, una predicción quedó fuera del intervalo 0--100 en el escenario Completo, una en el Parsimonioso y ninguna en el Alternativo de vivienda. Esta situación es independiente del número de proyecciones municipales fuera de rango, que se analiza a continuación.
-
-\subsection{Proyección sintética municipal del IPM 2024}
-
-Una vez ajustado el modelo departamental, se construyó una proyección sintética para los 1,121 municipios de la muestra analítica. Para cada municipio se aplicaron los coeficientes del componente fijo a sus covariables y se incorporó el efecto aleatorio estimado del departamento correspondiente. Esta operación permite trasladar la estructura calibrada a escala departamental hacia el nivel municipal, pero no modifica la naturaleza del modelo: M1 continúa siendo un modelo Fay--Herriot de área estimado con información directa departamental.
-
-A diferencia de M2 y M3, la formulación lineal de M1 no incorpora una transformación que garantice por construcción que las proyecciones municipales permanezcan dentro del intervalo admisible del IPM. Esta limitación se hizo evidente en los tres escenarios, como se resume en la Tabla~\ref{tab:fh-proyeccion-municipal}.
-
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Comportamiento del soporte de la proyección sintética municipal de M1.}
-\label{tab:fh-proyeccion-municipal}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l c c c c}
-\hline
-\textbf{Escenario} &
-\textbf{$<0$} &
-\textbf{$>100$} &
-\textbf{Fuera de 0--100} &
-\textbf{Total municipios} \\
-\hline
-Completo          & 197 & 2 & 199 & 1,121 \\
-Parsimonioso      & 91  & 1 & 92  & 1,121 \\
-Alt. vivienda     & 115 & 1 & 116 & 1,121 \\
-\hline
-\end{tabular}
-\end{table}
-
-El escenario Completo presentó la mayor cantidad de proyecciones municipales fuera del soporte del indicador, con 199 unidades, de las cuales 197 correspondieron a valores negativos y dos a valores superiores a 100. El escenario Parsimonioso redujo considerablemente esta situación, con 92 unidades fuera de rango, mientras que el Alternativo de vivienda presentó 116.
-
-Estos valores no invalidan el ajuste Fay--Herriot a escala departamental, puesto que la estimación directa, la varianza de muestreo y los efectos aleatorios se definieron en ese nivel. No obstante, sí constituyen una limitación relevante de la utilización del predictor lineal como mecanismo de desagregación hacia municipios y justifican que el cumplimiento del soporte 0--100 sea evaluado explícitamente al comparar M1 con las formulaciones no lineales.
-
-Para la comparación municipal común entre los tres modelos se utilizó el escenario Parsimonioso. Las proyecciones originales de M1 se conservaron para los análisis cuantitativos y para documentar las observaciones fuera de rango; cualquier acotamiento aplicado en la representación cartográfica tuvo únicamente fines de visualización y no alteró los valores utilizados en la evaluación estadística.
-
-En síntesis, M1 mostró una elevada estabilidad predictiva frente a los cambios de escenario y cumplió las condiciones estructurales requeridas para el ajuste departamental. Sin embargo, la presencia de dominios influyentes y, especialmente, la existencia de proyecciones sintéticas municipales fuera del rango admisible muestran que la extrapolación del modelo de área hacia la escala municipal debe interpretarse con cautela. Estas propiedades se consideran conjuntamente con el desempeño de M2 y M3 en la comparación integrada presentada posteriormente.
-
-%--------------------------------------------------------------------------------------
-\section{Implementación del Modelo 2: desagregación municipal no lineal acotada}
+\section{Modelo 2: desagregación sintética municipal no lineal acotada}
 \label{sec:res-m2}
 
-El modelo M2 genera las predicciones a escala municipal mediante una transformación logística aplicada directamente sobre las covariables de cada municipio. Sin embargo, la calibración de sus parámetros se realiza utilizando como referencia las 33 estimaciones directas departamentales, obtenidas al agregar las predicciones municipales mediante los pesos poblacionales definidos en la metodología. En consecuencia, la información auxiliar entra al modelo a escala municipal, mientras que la función de verosimilitud y la validación predictiva se evalúan a escala departamental.
-
-Esta formulación se diferencia de M1 en dos aspectos principales. En primer lugar, la transformación logística garantiza por construcción que las estimaciones municipales permanezcan dentro del intervalo admisible del IPM. En segundo lugar, el procedimiento de \textit{benchmarking} permite que, en el ajuste final, el promedio ponderado de las estimaciones municipales reproduzca numéricamente la estimación directa de cada departamento.
-
-\subsection{Ajuste y validez interna}
-
-Los tres escenarios alcanzaron convergencia satisfactoria y presentaron parámetros finitos. La estimación se realizó a partir de 12 puntos iniciales para cada especificación; en los tres casos, los 12 arranques fueron válidos y convergieron hacia el mismo óptimo dentro de la tolerancia establecida. Asimismo, la matriz Hessiana resultó definida positiva en las tres especificaciones, lo que aporta evidencia favorable sobre la identificación local de las soluciones obtenidas.
-
-La desviación estándar adicional, $\tau$, presentó valores de 3.2095 en el escenario Completo, 4.5708 en el Parsimonioso y 5.3426 en el Alternativo de vivienda. Estos valores corresponden a la componente adicional de variabilidad incorporada en la función de verosimilitud, cuya varianza entra al modelo como $\tau^2$.
-
-La Tabla~\ref{tab:m2-validez-interna} resume los principales diagnósticos de validez interna.
+M2 convergió en los tres escenarios, con parámetros finitos, Hessianas definidas positivas y estabilidad en los doce arranques de optimización. La Tabla~\ref{tab:m2-validez} muestra que la desviación estándar adicional estimada ($\hat{\tau}$) aumentó de 3.21 en E1 a 5.34 en E3, mientras que Shapiro--Wilk no rechazó la normalidad de los residuos estandarizados ($p>0.05$). E2 cumplió los criterios examinados; E1 presentó una menor relación entre dominios y parámetros (3.67) y E3 un residuo estandarizado superior a tres en valor absoluto, por lo que ambos quedaron clasificados como aptos con advertencias.
 
 \begin{table}[!htbp]
 \centering
-\scriptsize
-\caption{Diagnósticos de validez interna del modelo no lineal acotado.}
-\label{tab:m2-validez-interna}
-\renewcommand{\arraystretch}{1.20}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{l c c c c c c c c}
-\hline
-\textbf{Escenario} &
-\textbf{$\tau$} &
-\textbf{Arranques válidos} &
-\textbf{Hessiano PD} &
-\textbf{Dom./par.} &
-\textbf{Shapiro $p$} &
-\textbf{$|r^{*}|>3$} &
-\textbf{Benchmarking} &
-\textbf{Estado} \\
-\hline
-Completo
-& 3.2095 & 12/12 & Sí & 3.67 & 0.2883 & 0
-& $3.45\times10^{-12}$
-& Apto con advertencias \\
-
-Parsimonioso
-& 4.5708 & 12/12 & Sí & 5.50 & 0.1437 & 0
-& $3.28\times10^{-12}$
-& Apto \\
-
-Alt. vivienda
-& 5.3426 & 12/12 & Sí & 5.50 & 0.0813 & 1
-& $5.04\times10^{-12}$
-& Apto con advertencias \\
-\hline
-\end{tabular}
-}
-
-\vspace{0.15cm}
-\begin{minipage}{0.96\textwidth}
 \footnotesize
-\textit{Nota:} PD indica que la matriz Hessiana fue definida positiva; Dom./par. corresponde a la razón entre dominios y parámetros estimados; $r^{*}$ representa el residuo departamental estandarizado previo al \textit{benchmarking}. El error de \textit{benchmarking} corresponde a la máxima diferencia absoluta entre el IPM directo departamental y el agregado ponderado de las estimaciones municipales ajustadas.
-\end{minipage}
-\end{table}
-
-El escenario Completo fue clasificado como apto con advertencias debido a que la razón entre dominios y parámetros fue de 3.67, inferior al umbral de cinco dominios por parámetro utilizado como criterio diagnóstico. Esta situación refleja la mayor carga paramétrica de E1 frente al número limitado de observaciones departamentales disponibles para la calibración.
-
-El escenario Parsimonioso no presentó advertencias internas. Los 12 arranques produjeron soluciones estables, la matriz Hessiana fue definida positiva, no se identificaron residuos estandarizados superiores a tres y la razón entre dominios y parámetros fue de 5.50.
-
-El escenario Alternativo de vivienda también cumplió las condiciones estructurales del ajuste, aunque se identificó un residuo departamental pre-\textit{benchmarking} con valor absoluto superior a tres. La prueba de Shapiro--Wilk aplicada al conjunto de residuos estandarizados no resultó significativa ($p=0.0813$), por lo que la advertencia se interpretó como un resultado localizado y no como evidencia suficiente para descartar la especificación.
-
-En las tres formulaciones, las covariables presentaron variación suficiente, los parámetros estimados fueron finitos y la transformación logística mantuvo todas las predicciones dentro del intervalo 0--100. Además, el error máximo de \textit{benchmarking} se ubicó en el orden de $10^{-12}$, lo que indica que la restricción de coherencia departamental se cumplió dentro de la precisión numérica del procedimiento.
-
-La Tabla~\ref{tab:m2-soporte} presenta el rango de las estimaciones municipales finales después del \textit{benchmarking}.
-
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Rango y coherencia de las estimaciones municipales finales de M2.}
-\label{tab:m2-soporte}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l c c c c}
+\caption{Diagnósticos de validez del Modelo 2. PD: Hessiana definida positiva; Dom./par.: dominios por parámetro; $|r|>3$: residuos departamentales estandarizados previos al benchmarking.}
+\label{tab:m2-validez}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c c c}
 \hline
-\textbf{Escenario} &
-\textbf{Mínimo} &
-\textbf{Máximo} &
-\textbf{Fuera de 0--100} &
-\textbf{Error de benchmarking} \\
+Escenario & $\hat{\tau}$ & Arranques & PD & Dom./par. & Shapiro $p$ & $|r|>3$ \\
 \hline
-Completo          & 0.120 & 99.081 & 0 & $3.45\times10^{-12}$ \\
-Parsimonioso      & 1.547 & 98.008 & 0 & $3.28\times10^{-12}$ \\
-Alt. vivienda     & 2.360 & 97.462 & 0 & $5.04\times10^{-12}$ \\
+E1 & 3.21 & 12/12 & Sí & 3.67 & 0.29 & 0 \\
+E2 & 4.57 & 12/12 & Sí & 5.50 & 0.14 & 0 \\
+E3 & 5.34 & 12/12 & Sí & 5.50 & 0.08 & 1 \\
 \hline
 \end{tabular}
 \end{table}
 
-Estos resultados muestran una diferencia estructural frente a M1: ninguna de las estimaciones municipales generadas por M2 requirió truncamiento posterior para respetar el soporte del IPM.
+Las estimaciones municipales finales permanecieron dentro de la escala de 0 a 100, con rangos de 0.12--99.08 en E1, 1.55--98.01 en E2 y 2.36--97.46 en E3. Las discrepancias de benchmarking fueron inferiores a $6\times10^{-12}$ en todos los escenarios, confirmando la coherencia numérica con los agregados departamentales.
 
-\subsection{Desempeño predictivo departamental mediante LODO}
+Las métricas LODO de M2 se presentan en la Tabla~\ref{tab:comparacion-m123}, Sección~\ref{sec:res-comparacion}. E1 registró el menor RMSE (5.10), MAE (3.70) y la mayor correlación de Pearson (0.93), mientras que E3 alcanzó un RMSE de 8.41. Esta variación evidencia una mayor sensibilidad a la selección de covariables que la observada en M1.
 
-La capacidad predictiva fuera de dominio se evaluó mediante la misma estrategia LODO aplicada a M1. En cada iteración se excluyó un departamento completo del ajuste, las covariables se estandarizaron nuevamente utilizando únicamente los municipios de entrenamiento y el dominio excluido no recibió \textit{benchmarking}. Esta última condición es fundamental, ya que aplicar el ajuste de coherencia al departamento de evaluación implicaría utilizar su propia estimación directa para construir la predicción.
+% ============================================================
+% 6.11. MODELO 3
+% ============================================================
 
-Los resultados se presentan en la Tabla~\ref{tab:m2-lodo}.
+\section{Modelo 3: componente espacial de rango reducido}
+\label{sec:res-car}
 
-\begin{table}[!htbp]
-\centering
-\small
-\caption{Desempeño predictivo LODO 2024 del modelo no lineal acotado.}
-\label{tab:m2-lodo}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l c c c c}
-\hline
-\textbf{Escenario} &
-\textbf{RMSE} &
-\textbf{MAE} &
-\textbf{Correlación} &
-\textbf{$n$} \\
-\hline
-Completo          & 5.0971 & 3.7048 & 0.9301 & 33 \\
-Parsimonioso      & 6.4540 & 4.8405 & 0.8855 & 33 \\
-Alt. vivienda     & 8.4065 & 5.6452 & 0.7964 & 33 \\
-\hline
-\end{tabular}
-\end{table}
+La red de contigüidad Reina, construida sobre 1{,}121 municipios, presentó tres componentes conexos y dos unidades sin vecinos: San Andrés (88001) y Providencia (88564), cuyos efectos espaciales se fijaron en cero. El número de vecinos osciló entre 0 y 20, con media de 5.86 y mediana de 6. La especificación de referencia utilizó $K=6$ componentes espaciales y $\rho=0.50$.
 
-Dentro de la familia M2, el escenario Completo presentó el menor error predictivo, con RMSE de 5.0971 y MAE de 3.7048, además de la mayor correlación entre estimaciones directas y predicciones LODO, con un valor de 0.9301. El escenario Parsimonioso presentó un desempeño intermedio, con RMSE de 6.4540, MAE de 4.8405 y correlación de 0.8855.
-
-El escenario Alternativo de vivienda presentó el mayor error dentro de M2, con RMSE de 8.4065 y MAE de 5.6452, acompañado por una correlación inferior, de 0.7964. La diferencia entre el mayor y el menor RMSE fue de aproximadamente 3.31 puntos, lo que evidencia una sensibilidad más alta a la selección de covariables que la observada en M1.
-
-Este resultado muestra que la mayor parsimonia no se tradujo automáticamente en un menor error predictivo dentro de M2. No obstante, la comparación entre familias de modelos se reserva para la Sección~\ref{sec:res-comparacion}, dado que el objetivo aquí es caracterizar el comportamiento interno de la formulación no lineal.
-
-\subsection{Estimación municipal del IPM 2024}
-
-Una vez completado el ajuste con los 33 dominios, se generaron estimaciones finales para los 1,121 municipios de la muestra analítica. A diferencia de M1, estas estimaciones se construyen directamente a partir del predictor municipal transformado mediante la función logística, por lo que el soporte del indicador se encuentra garantizado por la propia especificación funcional.
-
-Posteriormente se aplicó el procedimiento de \textit{benchmarking} mediante un desplazamiento departamental en la escala del predictor. Este ajuste permitió que el promedio ponderado de las estimaciones municipales coincidiera, dentro de la precisión numérica, con el IPM directo del departamento correspondiente sin alterar la propiedad de acotamiento.
-
-Por esta razón, el \textit{benchmarking} debe interpretarse como un procedimiento de coherencia estructural de la estimación final y no como evidencia de capacidad predictiva. La capacidad de generalización del modelo se evaluó de manera independiente mediante LODO, donde el departamento excluido no recibió este ajuste.
-
-Para la comparación municipal común con M1 y M3 se utilizó el escenario Parsimonioso. Bajo esta especificación, las estimaciones municipales de M2 se ubicaron entre 1.547 y 98.008 puntos del IPM y no se presentaron valores fuera del intervalo admisible.
-
-La comparación posterior con M3 bajo el mismo escenario mostró una correlación municipal de 0.9901 y una diferencia absoluta media de 1.69 puntos porcentuales. Estas medidas se interpretan como indicadores de concordancia entre formulaciones y no como métricas de precisión municipal, dado que no se dispone de una estimación directa municipal del IPM 2024 que pueda utilizarse como referencia observada.
-
-En síntesis, M2 presentó estabilidad numérica en los tres escenarios, cumplimiento exacto de las restricciones de soporte y coherencia departamental, y un desempeño predictivo que varió de manera apreciable según la especificación de covariables. El escenario Completo alcanzó el menor error LODO dentro de esta familia, mientras que el escenario Parsimonioso presentó la estructura interna más limpia al no registrar advertencias diagnósticas. Estas diferencias se incorporan posteriormente en la comparación integrada de las tres formulaciones.
-%--------------------------------------------------------------------------------------
-\section{Implementación del Modelo 3: desagregación espacial CAR}
-\label{sec:res-m3}
-
-El modelo M3 extiende la formulación no lineal acotada de M2 mediante la incorporación de un componente espacial municipal con estructura condicional autorregresiva (CAR) de rango reducido. Al igual que en M2, las covariables ingresan al modelo a escala municipal, las predicciones se transforman mediante una función logística y la calibración de los parámetros se realiza utilizando como referencia las 33 estimaciones directas departamentales.
-
-La principal diferencia respecto a M2 radica en la inclusión de un efecto espacial construido a partir de la estructura de vecindad municipal. Este componente se representó mediante seis patrones espaciales de rango reducido, obtenidos a partir de la matriz de contigüidad tipo Reina, con el propósito de incorporar dependencia territorial sin estimar un efecto independiente para cada uno de los 1,121 municipios.
-
-\subsection{Ajuste, validez interna y sensibilidad espacial}
-
-Durante las etapas preliminares de estimación del modelo espacial CAR de rango reducido (M3) se exploró la estimación libre del parámetro de dependencia espacial, $\rho$. Sin embargo, las soluciones obtenidas se concentraron repetidamente en los límites del intervalo de búsqueda: inicialmente alrededor de $-0.95$ y, posteriormente, cerca de $0.95$ bajo una parametrización alternativa. Este comportamiento sugirió una identificación limitada de $\rho$ cuando su estimación se sustenta únicamente en la información agregada de los 33 dominios departamentales utilizados para la calibración.
-
-En consecuencia, se optó por tratar $\rho$ como un parámetro de sensibilidad en lugar de estimarlo libremente dentro del modelo final. Para ello, se evaluaron cuatro valores predefinidos:
-
-\[
-\rho \in \{0.25,\;0.50,\;0.75,\;0.90\}.
-\]
-
-Se estableció $\rho=0.50$ como especificación de referencia para la comparación principal de M3, mientras que los demás valores se utilizaron para examinar la estabilidad de los parámetros estimados y de las predicciones municipales frente a distintos niveles de dependencia espacial impuesta.
-
-Bajo la especificación de referencia, los tres escenarios considerados alcanzaron convergencia satisfactoria. Para cada escenario se utilizaron ocho puntos iniciales y, en todos los casos, los ocho arranques fueron válidos y convergieron hacia el mismo óptimo dentro de la tolerancia establecida. Asimismo, la matriz Hessiana resultó definida positiva y la matriz de precisión asociada a la estructura CAR permaneció válida, proporcionando evidencia favorable sobre la estabilidad numérica de la estimación.
-
-La Tabla~\ref{tab:m3-validez-interna} resume los principales diagnósticos internos obtenidos para el modelo espacial con $\rho=0.50$.
+Los tres escenarios convergieron con parámetros finitos, ocho arranques válidos y Hessianas definidas positivas. Según la Tabla~\ref{tab:m3-validez}, $\hat{\tau}$ aumentó de 2.10 en E1 a 3.90 en E3, con valores inferiores a los de M2. Shapiro--Wilk no rechazó la normalidad de los residuos estandarizados y no se registraron residuos superiores a tres en valor absoluto. Las advertencias se relacionaron con la estructura desconectada de la red espacial.
 
 \begin{table}[!htbp]
 \centering
-\scriptsize
-\caption{Diagnósticos de validez interna del modelo espacial CAR de rango reducido con $\rho=0.50$.}
-\label{tab:m3-validez-interna}
-\renewcommand{\arraystretch}{1.20}
-\resizebox{\textwidth}{!}{
-\begin{tabular}{l c c c c c c c c}
-\hline
-\textbf{Escenario} &
-\textbf{$\tau$} &
-\textbf{DE efecto espacial} &
-\textbf{Moran $I$} &
-\textbf{$p$ Moran} &
-\textbf{Arranques válidos} &
-\textbf{Hessiano PD} &
-\textbf{$|r^{*}|>3$} &
-\textbf{Estado} \\
-\hline
-Completo
-& 2.0993 & 0.2501 & 0.9883 & 0.001
-& 8/8 & Sí & 0
-& Apto con advertencias \\
-
-Parsimonioso
-& 2.5584 & 0.3257 & 0.9935 & 0.001
-& 8/8 & Sí & 0
-& Apto con advertencias \\
-
-Alt. vivienda
-& 3.9040 & 0.3391 & 0.9966 & 0.001
-& 8/8 & Sí & 0
-& Apto con advertencias \\
-\hline
-\end{tabular}
-}
-
-\vspace{0.15cm}
-\begin{minipage}{0.96\textwidth}
 \footnotesize
-\textit{Nota:} PD indica que la matriz Hessiana fue definida positiva; DE corresponde a la desviación estándar del efecto espacial municipal; $r^{*}$ representa el residuo departamental estandarizado previo al \textit{benchmarking}. El estadístico global de Moran se calculó sobre el efecto espacial municipal estimado y no sobre los residuos finales del modelo.
-\end{minipage}
+\caption{Diagnósticos del Modelo 3 con $K=6$ y $\rho=0.50$. DE($\hat{s}$): desviación estándar del efecto espacial municipal; Moran($\hat{s}$): índice de Moran del efecto espacial estimado; PD: Hessiana definida positiva.}
+\label{tab:m3-validez}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c c c}
+\hline
+Escenario & $\hat{\tau}$ & DE($\hat{s}$) & Moran($\hat{s}$) & Arranques & PD & Shapiro $p$ \\
+\hline
+E1 & 2.10 & 0.25 & 0.988 & 8/8 & Sí & 0.689 \\
+E2 & 2.56 & 0.33 & 0.993 & 8/8 & Sí & 0.884 \\
+E3 & 3.90 & 0.34 & 0.997 & 8/8 & Sí & 0.535 \\
+\hline
+\end{tabular}
 \end{table}
 
-La desviación estándar departamental adicional, $\tau$, fue de 2.0993 en el escenario Completo, 2.5584 en el escenario Parsimonioso y 3.9040 en el escenario Alternativo de vivienda. Este incremento indica que, bajo las especificaciones más reducidas, una mayor proporción de la variabilidad departamental no explicada por las covariables debió ser absorbida por el componente aleatorio adicional del modelo.
-
-De manera similar, la desviación estándar del efecto espacial municipal aumentó desde 0.2501 en el escenario Completo hasta 0.3391 en el Alternativo de vivienda. Estas diferencias reflejan variaciones en la magnitud del componente territorial requerido por cada especificación para representar la heterogeneidad espacial no capturada por el componente fijo.
-
-El efecto espacial estimado presentó una autocorrelación positiva elevada en los tres escenarios. El índice global de Moran varió entre 0.9883 y 0.9966, con valores $p=0.001$ en todos los casos. Este resultado indica que el componente espacial retenido por la representación CAR de rango reducido conserva una estructura geográfica fuertemente organizada y coherente con la matriz de vecindad utilizada en el modelo.
-
-No obstante, estos valores deben interpretarse con cautela. El índice de Moran fue calculado sobre el propio efecto espacial estimado y, por tanto, no constituye una prueba de ausencia de autocorrelación en los residuos finales. Su función en este contexto es caracterizar la organización espacial del componente territorial incorporado por el modelo, mientras que la evaluación de la autocorrelación residual corresponde a un diagnóstico diferente.
-
-La Figura~\ref{fig:diag-Moran} presenta gráficamente esta relación mediante el diagrama de Moran del efecto espacial municipal estimado.
+El índice de Moran del efecto espacial estimado fue positivo y significativo en los tres escenarios ($p=0.001$), como ilustra la Figura~\ref{fig:m3-moran} para E2. Esta elevada autocorrelación es consistente con la construcción de la base espacial, pero no demuestra por sí misma una reducción de la autocorrelación residual ni una mayor precisión municipal. La comparación residual entre M2 y M3 se presenta en la Sección~\ref{sec:res-comparacion}.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/figures/diagnostico_M3_Moran_efecto_espacial.png}
-\caption{Diagrama de Moran del efecto espacial municipal estimado por el modelo CAR.}
-\label{fig:diag-Moran}
+\includegraphics[width=0.55\textwidth]{fig/figures/m3_moran_efecto_espacial.png}
+\caption{Diagrama de Moran del efecto espacial municipal estimado por el Modelo 3 en el escenario E2.}
+\label{fig:m3-moran}
 \end{figure}
 
-En relación con los residuos departamentales previos al \textit{benchmarking}, no se identificaron valores estandarizados con valor absoluto superior a tres en ninguno de los escenarios. Este resultado indica que, bajo este criterio, no se observaron desviaciones extremas en los residuos utilizados para evaluar la consistencia interna del ajuste.
-
-Las principales advertencias asociadas a M3 estuvieron relacionadas con la estructura de la red espacial municipal. Bajo el criterio de contigüidad tipo Reina, dos unidades insulares no presentaron vecinos directos y la red espacial quedó conformada inicialmente por tres componentes conexos. Estas particularidades, descritas previamente en la sección de preprocesamiento espacial, fueron tratadas explícitamente durante la construcción de la matriz de vecindad y se conservaron como advertencias metodológicas. Su presencia no implicó la eliminación de municipios ni la modificación del universo de estimación.
-
-Con base en estos resultados, los tres escenarios cumplieron las condiciones mínimas de validez interna definidas para el modelo M3. La convergencia consistente entre múltiples puntos iniciales, la existencia de Hessianos definidos positivos, la validez de la matriz de precisión espacial y la ausencia de residuos departamentales extremos proporcionaron evidencia favorable sobre la estabilidad del procedimiento de estimación, aunque las particularidades de conectividad de la red espacial justificaron mantener la clasificación de ``apto con advertencias''.
-
-Finalmente, se evaluó la sensibilidad de los resultados frente al valor fijado de $\rho$. Al variar el parámetro entre 0.25 y 0.90, los cambios observados en $\tau$, en la desviación estándar del efecto espacial y en los valores extremos de las predicciones municipales fueron reducidos. Asimismo, las estimaciones municipales se mantuvieron dentro del intervalo teórico de 0 a 100 para todos los valores analizados.
-
-El procedimiento de \textit{benchmarking} también conservó su exactitud numérica en toda la grilla de sensibilidad. En consecuencia, los principales resultados de M3 mostraron estabilidad frente a variaciones moderadas y altas del parámetro $\rho$ dentro del rango evaluado. Esto respalda el uso de $\rho=0.50$ como especificación de referencia para la comparación principal, sin interpretar dicho valor como una estimación empírica única o identificada directamente a partir de los datos.
-
-\subsection{Desempeño predictivo departamental mediante LODO}
-
-La capacidad predictiva fuera de dominio se evaluó mediante la misma estrategia LODO utilizada para M1 y M2. En cada iteración, el departamento excluido no participó en la estimación de los parámetros ni recibió \textit{benchmarking}. La estandarización de las covariables se recalculó utilizando únicamente los municipios pertenecientes a los dominios de entrenamiento.
-
-La información geográfica y la estructura de vecindad del dominio excluido permanecieron disponibles durante la predicción, dado que constituyen información auxiliar externa y no forman parte de la respuesta directa utilizada para la evaluación.
-
-Los resultados de la validación se presentan en la Tabla~\ref{tab:m3-lodo}.
+La sensibilidad al rango espacial $K$ se presenta en la Tabla~\ref{tab:sensibilidad-K} y la Figura~\ref{fig:sensibilidad-K}. En E2, el menor RMSE LODO se obtuvo con $K=4$ (4.61), seguido de $K=6$ (4.72), y aumentó a 6.19 con $K=10$. E1 alcanzó su mejor desempeño con $K=6$ (6.04), mientras que E3 presentó errores mayores al incrementar la complejidad, desde 9.34 con $K=3$ hasta 13.60 con $K=10$. Por tanto, un mayor rango espacial no garantiza mejor predicción; $K=6$ se conserva como referencia común, aunque no minimiza el error en todos los escenarios.
 
 \begin{table}[!htbp]
 \centering
-\small
-\caption{Desempeño predictivo LODO 2024 del modelo espacial CAR de rango reducido con $\rho=0.50$.}
-\label{tab:m3-lodo}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l c c c c}
+\footnotesize
+\caption{Sensibilidad del desempeño LODO del Modelo 3 al rango espacial $K$, con $\rho=0.50$. Los parámetros corresponden al número de parámetros libres de cada ajuste.}
+\label{tab:sensibilidad-K}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{c c c c c}
 \hline
-\textbf{Escenario} &
-\textbf{RMSE} &
-\textbf{MAE} &
-\textbf{Correlación} &
-\textbf{$n$} \\
+$K$ & Escenario & Parámetros & RMSE & MAE \\
 \hline
-Completo          & 6.0406  & 4.4623 & 0.9001 & 33 \\
-Parsimonioso      & 4.7197  & 3.6731 & 0.9410 & 33 \\
-Alt. vivienda     & 10.4274 & 6.5350 & 0.7063 & 33 \\
+3 & E1 & 12 & 6.82 & 4.59 \\
+3 & E2 & 9 & 4.85 & 3.83 \\
+3 & E3 & 9 & 9.34 & 5.81 \\
+4 & E1 & 13 & 6.49 & 4.51 \\
+4 & E2 & 10 & 4.61 & 3.65 \\
+4 & E3 & 10 & 9.84 & 6.10 \\
+6 & E1 & 15 & 6.04 & 4.46 \\
+6 & E2 & 12 & 4.72 & 3.67 \\
+6 & E3 & 12 & 10.43 & 6.54 \\
+8 & E1 & 17 & 8.29 & 5.32 \\
+8 & E2 & 14 & 5.19 & 3.94 \\
+8 & E3 & 14 & 13.62 & 7.59 \\
+10 & E1 & 19 & 7.90 & 5.17 \\
+10 & E2 & 16 & 6.19 & 4.42 \\
+10 & E3 & 16 & 13.60 & 7.84 \\
 \hline
 \end{tabular}
 \end{table}
 
-Dentro de la familia M3, el escenario Parsimonioso presentó el menor error predictivo, con un RMSE de 4.7197 y un MAE de 3.6731, acompañado por la mayor correlación entre las estimaciones directas y las predicciones LODO, con un valor de 0.9410.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.62\textwidth]{fig/figures/sensibilidad_K.png}
+\caption{Sensibilidad del RMSE LODO del Modelo 3 al rango $K$ de la base espacial, por escenario, con $\rho=0.50$.}
+\label{fig:sensibilidad-K}
+\end{figure}
 
-El escenario Completo mostró un desempeño intermedio, con RMSE de 6.0406, MAE de 4.4623 y correlación de 0.9001. En contraste, el escenario Alternativo de vivienda presentó un deterioro importante del desempeño predictivo, alcanzando un RMSE de 10.4274, un MAE de 6.5350 y una correlación de 0.7063.
 
-La diferencia entre el mayor y el menor RMSE fue aproximadamente de 5.71 puntos, la mayor variación observada entre escenarios dentro de las tres familias de modelos. Este resultado indica que la formulación espacial es particularmente sensible al conjunto de covariables utilizado y que la incorporación de dependencia espacial no compensa automáticamente una especificación auxiliar menos favorable.
+\paragraph{Sensibilidad al parámetro espacial $\rho$.}
 
-La comparación directa de este desempeño con M1 y M2 se presenta posteriormente en la Sección~\ref{sec:res-comparacion}, con el propósito de mantener separada la evaluación interna de M3 de la comparación integrada entre formulaciones.
+La sensibilidad a $\rho$ se evaluó para cuatro valores
+(0.25, 0.50, 0.75 y 0.90), manteniendo $K=6$.
+Se realizaron 396 ajustes LODO, correspondientes a
+tres escenarios, cuatro valores de $\rho$ y 33 dominios
+por configuración, todos con convergencia confirmada.
 
-\subsection{Estimación municipal del IPM 2024}
+La Tabla~\ref{tab:sensibilidad-rho-lodo} integra los
+resultados de estabilidad paramétrica y desempeño
+predictivo. La desviación estándar adicional
+$\hat{\tau}$ presentó variaciones reducidas en los
+tres escenarios, mientras que las estimaciones
+municipales permanecieron dentro de 0--100 y
+las discrepancias de benchmarking fueron
+inferiores a $4\times10^{-12}$.
 
-Una vez completada la calibración con los 33 dominios departamentales, se obtuvieron estimaciones para los 1,121 municipios de la muestra analítica. Al igual que en M2, el predictor municipal se transformó mediante una función logística, por lo que las estimaciones permanecieron dentro del intervalo admisible del IPM.
 
-Para la estimación final se utilizó el escenario Parsimonioso con $\rho=0.50$, especificación adoptada como referencia común para la comparación municipal entre M1, M2 y M3. Posteriormente se aplicó el mismo procedimiento de \textit{benchmarking} utilizado en M2, mediante un desplazamiento departamental sobre la escala del predictor.
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Sensibilidad paramétrica y predictiva del Modelo 3 a $\rho$, con $K=6$. Las métricas predictivas corresponden a validación LODO sobre 33 departamentos por configuración.}
+\label{tab:sensibilidad-rho}
+\label{tab:sensibilidad-rho-lodo}
 
-Después de este ajuste, las estimaciones municipales bajo E2 se ubicaron aproximadamente entre 0.96 y 99.20 puntos del IPM. No se identificaron valores inferiores a cero ni superiores a 100 y el agregado ponderado de las estimaciones municipales reprodujo, dentro de la precisión numérica, el IPM directo correspondiente a cada departamento.
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
 
-Al igual que en M2, el \textit{benchmarking} se interpreta exclusivamente como una condición de coherencia estructural de la estimación final y no como evidencia de capacidad predictiva. La evaluación de generalización del modelo corresponde a los resultados LODO obtenidos sin utilizar la estimación directa del departamento excluido.
+\begin{tabular}{l c c c c c c c}
+\hline
+Esc. & $\rho$ & $\hat{\tau}$ & RMSE & MAE & Pearson & Spearman & Kendall \\
+\hline
+E1 & 0.25 & 2.109 & 5.9839 & 4.4380 & 0.9023 & 0.8475 & 0.6730 \\
+E1 & 0.50 & 2.099 & 6.0406 & 4.4623 & 0.9001 & 0.8494 & 0.6806 \\
+E1 & 0.75 & 2.088 & 6.1056 & 4.4766 & 0.8978 & 0.8572 & 0.6882 \\
+E1 & 0.90 & 2.081 & 6.1421 & 4.4665 & 0.8968 & 0.8541 & 0.6806 \\
+\hline
+E2 & 0.25 & 2.567 & 4.7051 & 3.6695 & 0.9414 & 0.8511 & 0.6654 \\
+E2 & 0.50 & 2.558 & 4.7197 & 3.6731 & 0.9410 & 0.8526 & 0.6692 \\
+E2 & 0.75 & 2.547 & 4.7458 & 3.6771 & 0.9403 & 0.8511 & 0.6692 \\
+E2 & 0.90 & 2.540 & 4.7724 & 3.6775 & 0.9396 & 0.8469 & 0.6616 \\
+\hline
+E3 & 0.25 & 3.904 & 10.3888 & 6.5076 & 0.7078 & 0.7690 & 0.6008 \\
+E3 & 0.50 & 3.904 & 10.4274 & 6.5350 & 0.7063 & 0.7671 & 0.5970 \\
+E3 & 0.75 & 3.903 & 10.4705 & 6.5664 & 0.7049 & 0.7703 & 0.6008 \\
+E3 & 0.90 & 3.901 & 10.5024 & 6.5916 & 0.7041 & 0.7650 & 0.5970 \\
+\hline
+\end{tabular}
 
-Bajo el escenario Parsimonioso, M3 presentó una elevada concordancia con las estimaciones municipales de M2. La correlación entre ambas formulaciones fue de 0.9901 y la diferencia absoluta media alcanzó 1.69 puntos porcentuales. La correlación entre M3 y la proyección sintética municipal de M1 fue de 0.9374. Estas medidas describen la similitud entre las distribuciones municipales producidas por los modelos, pero no constituyen medidas de precisión municipal.
+\vspace{2mm}
+\parbox{0.95\linewidth}{\footnotesize
+\textit{Nota:} RMSE y MAE se expresan en puntos porcentuales del IPM. Las correlaciones son adimensionales. La especificación de referencia corresponde a $\rho=0.50$.}
 
-En síntesis, M3 presentó estabilidad numérica en los tres escenarios, una estructura espacial claramente definida, cumplimiento del soporte 0--100 y coherencia departamental mediante \textit{benchmarking}. Su desempeño predictivo, sin embargo, mostró una sensibilidad considerable a la especificación de covariables: el escenario Parsimonioso presentó el menor error dentro de la familia, mientras que el Alternativo de vivienda mostró un deterioro sustancial. Estos resultados evidencian que el aporte del componente espacial depende de su interacción con la información auxiliar incorporada y deben interpretarse conjuntamente con las otras dos formulaciones en la comparación integrada.
+
+\vspace{2mm}
+\parbox{0.95\linewidth}{\footnotesize
+\textit{Nota:} RMSE y MAE se expresan en puntos
+porcentuales del IPM. Las correlaciones son
+adimensionales. La especificación principal
+corresponde a $\rho=0.50$.}
+\end{table}
+
+En los tres escenarios, el RMSE aumentó ligeramente
+con $\rho$, alcanzando su mínimo en 0.25. E2 presentó
+la mayor estabilidad predictiva, con RMSE entre
+4.7051 y 4.7724, MAE entre 3.6695 y 3.6775 y
+correlación de Pearson entre 0.9396 y 0.9414.
+Las correlaciones de rangos también variaron poco.
+
+Aunque $\rho=0.25$ registró errores ligeramente
+menores, las diferencias no justifican modificar
+retrospectivamente la especificación principal
+$\rho=0.50$. Estos resultados respaldan su
+estabilidad dentro de la grilla evaluada, sin
+establecer un valor óptimo general.
+
+\paragraph{Desempeño de la especificación principal.}
+
+El desempeño LODO de las especificaciones principales de M3 se encuentra consolidado en la Tabla~\ref{tab:comparacion-m123}, Sección~\ref{sec:res-comparacion}. M3--E2 obtuvo el menor RMSE entre las nueve combinaciones principales (4.72 puntos porcentuales), junto con un MAE de 3.67 y una correlación de Pearson de 0.94. En contraste, M3--E3 alcanzó un RMSE de 10.43, evidenciando sensibilidad a las covariables utilizadas. Todas las estimaciones municipales finales permanecieron dentro del intervalo 0--100, con discrepancias de benchmarking inferiores a $3\times10^{-12}$.
+
 %--------------------------------------------------------------------------------------
-\section{Comparación integrada y producción cartográfica}
+\section{Benchmarking y su efecto sobre las estimaciones municipales}
+\label{sec:res-benchmarking}
+
+El benchmarking permitió que las estimaciones municipales de los Modelos 2 y 3 reprodujeran los valores departamentales de referencia, con discrepancias numéricas máximas del orden de $10^{-12}$ en los seis ajustes. Sin embargo, esta calibración modificó las estimaciones municipales individuales. Como muestra la Tabla~\ref{tab:benchmarking}, la mediana del desplazamiento absoluto departamental en escala logit osciló entre 0.15 y 0.29, mientras que el cambio absoluto promedio de las estimaciones municipales se situó entre 2.33 y 3.67 puntos porcentuales. El mayor cambio individual se registró en M2--E3, con 28.41 puntos, lo que evidencia que el efecto de la calibración no fue uniforme entre municipios ni escenarios.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Magnitud del benchmarking por modelo y escenario. $|\hat{\delta}_d|$: desplazamiento absoluto departamental en escala logit; cambio municipal: diferencia absoluta entre las estimaciones posteriores y anteriores al benchmarking, en puntos porcentuales del IPM.}
+\label{tab:benchmarking}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{c c c c c c c}
+\hline
+ & & \multicolumn{3}{c}{$|\hat{\delta}_d|$} &
+\multicolumn{2}{c}{Cambio municipal} \\
+Escenario & Modelo & Mín. & Mediana & Máx. & Promedio & Máximo \\
+\hline
+E1 & M2 & 0.00 & 0.15 & 0.77 & 2.79 & 18.93 \\
+E1 & M3 & 0.02 & 0.18 & 0.94 & 2.33 & 18.92 \\
+E2 & M2 & 0.04 & 0.27 & 0.70 & 3.67 & 16.97 \\
+E2 & M3 & 0.02 & 0.20 & 0.99 & 2.72 & 18.96 \\
+E3 & M2 & 0.00 & 0.29 & 1.17 & 3.19 & 28.41 \\
+E3 & M3 & 0.01 & 0.24 & 0.76 & 3.34 & 18.67 \\
+\hline
+\end{tabular}
+\end{table}
+
+La Tabla~\ref{tab:benchmarking-espacial} presenta los cambios en la estructura espacial de las estimaciones municipales. Para ello, se analizaron 3{,}282 pares de municipios contiguos mediante la red tipo Reina, de los cuales 695 corresponden a vecinos de departamentos diferentes. En los seis ajustes, las diferencias absolutas medias entre municipios del mismo departamento disminuyeron después del benchmarking. En contraste, las diferencias entre municipios de distintos departamentos aumentaron en E2 y E3, especialmente en M2--E3, donde pasaron de 9.26 a 10.48 puntos. En E1, estas diferencias disminuyeron ligeramente. Esto indica que la calibración puede acentuar las discontinuidades en algunas fronteras departamentales, aunque dicho efecto depende de la especificación utilizada.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Efecto del benchmarking sobre la estructura espacial municipal. Diferencia absoluta media entre municipios contiguos del mismo o de distinto departamento, en puntos porcentuales del IPM; Moran: índice de Moran global de las estimaciones municipales.}
+\label{tab:benchmarking-espacial}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c c c c c}
+\hline
+ & & \multicolumn{2}{c}{Distinto departamento} &
+\multicolumn{2}{c}{Mismo departamento} &
+\multicolumn{2}{c}{Moran} \\
+Escenario & Modelo & Antes & Después & Antes & Después & Antes & Después \\
+\hline
+E1 & M2 & 11.76 & 11.65 & 9.89 & 9.55 & 0.32 & 0.38 \\
+E1 & M3 & 12.44 & 12.27 & 10.83 & 10.35 & 0.35 & 0.36 \\
+E2 & M2 & 10.95 & 11.93 & 8.81 & 8.54 & 0.33 & 0.41 \\
+E2 & M3 & 13.09 & 13.43 & 10.48 & 10.24 & 0.37 & 0.36 \\
+E3 & M2 & 9.26 & 10.48 & 6.95 & 6.75 & 0.42 & 0.49 \\
+E3 & M3 & 10.48 & 11.11 & 8.43 & 8.18 & 0.43 & 0.44 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+El índice de Moran global de las estimaciones municipales también presentó cambios después de la calibración (Tabla~\ref{tab:benchmarking-espacial}). En M2 aumentó en los tres escenarios, principalmente en E2, donde pasó de 0.33 a 0.41. En M3 las variaciones fueron menores: aumentó de 0.35 a 0.36 en E1 y de 0.43 a 0.44 en E3, mientras que en E2 disminuyó ligeramente de 0.37 a 0.36. Estos resultados muestran que el benchmarking modifica los patrones de autocorrelación espacial de las estimaciones, sin producir un efecto uniforme entre modelos. La Figura~\ref{fig:benchmarking-mapas} permite comparar visualmente la distribución municipal estimada por M3--E2 antes y después de la calibración.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{fig/figures/benchmarking_M3_E2.png}
+\caption{Distribución municipal estimada del IPM 2024 mediante el Modelo 3, escenario E2, antes y después del benchmarking departamental.}
+\label{fig:benchmarking-mapas}
+\end{figure}
+
+En conjunto, el benchmarking garantizó la consistencia de las estimaciones municipales con los valores departamentales de referencia, pero modificó tanto sus magnitudes como su organización espacial. En los seis ajustes disminuyeron las diferencias medias entre municipios vecinos del mismo departamento, mientras que las diferencias entre departamentos aumentaron en E2 y E3. El índice de Moran municipal aumentó en los tres escenarios de M2, pero mostró cambios menores en M3. Estos resultados evidencian que la calibración departamental puede modificar los patrones territoriales estimados, por lo que su cumplimiento numérico no debe confundirse con una mejora de la precisión predictiva municipal.
+
+%--------------------------------------------------------------------------------------
+
+\section{Comparación del desempeño predictivo y del aporte espacial}
 \label{sec:res-comparacion}
 
-Una vez caracterizadas por separado las propiedades internas y el desempeño predictivo de M1, M2 y M3, se realizó una comparación integrada bajo condiciones comunes. Las nueve combinaciones de modelo y escenario superaron las condiciones mínimas establecidas para participar en esta etapa: completaron los 33 dominios de la validación \textit{Leave-One-Domain-Out} (LODO) y produjeron métricas de evaluación finitas.
+\paragraph{Desempeño comparativo de los modelos.}
 
-Para garantizar la comparabilidad entre formulaciones, el RMSE, el MAE y la correlación LODO se calcularon sobre exactamente los mismos 33 dominios departamentales y mediante la misma estrategia de exclusión sucesiva en las nueve combinaciones evaluadas. En cada iteración, la estimación directa del departamento excluido permaneció fuera del proceso de ajuste y no se utilizó para construir su predicción.
-
-La comparación entre familias se realizó exclusivamente con las métricas obtenidas mediante el mismo esquema LODO 2024. Los criterios de ajuste interno, como AIC, BIC o la función objetivo penalizada, no se utilizaron para ordenar modelos pertenecientes a familias probabilísticas diferentes, sino únicamente como diagnósticos internos de las especificaciones correspondientes.
-
-\subsection{Comparación del desempeño predictivo}
-
-La Tabla~\ref{tab:comparacion-m123} consolida el RMSE, MAE y la correlación entre las estimaciones directas departamentales y las predicciones LODO obtenidas para las nueve combinaciones evaluadas.
+La Tabla~\ref{tab:comparacion-m123} y la Figura~\ref{fig:comparacion-lodo} presentan las métricas LODO de las nueve combinaciones evaluadas. Los menores RMSE por escenario correspondieron a M2--E1 (5.10), M3--E2 (4.72) y M1--E3 (7.88), por lo que ninguna formulación dominó en todos los casos. M3--E2 obtuvo el mejor desempeño global, con RMSE de 4.72, MAE de 3.67, correlación de Pearson de 0.94 y RMSE estandarizado de 3.79. También alcanzó una correlación de Spearman de 0.85, compartida con M3--E1. Las diferencias entre las métricas muestran que la precisión predictiva y la conservación del ordenamiento departamental no necesariamente coinciden.
 
 \begin{table}[!htbp]
 \centering
-\small
-\caption{Comparación controlada del desempeño predictivo de M1, M2 y M3 mediante LODO 2024.}
+\footnotesize
+\caption{Métricas LODO de los tres modelos en los escenarios E1, E2 y E3 ($D=33$). RMSE est.: error cuadrático medio estandarizado definido en la Ecuación~\ref{eq:rmse-std}.}
 \label{tab:comparacion-m123}
-\renewcommand{\arraystretch}{1.20}
-\begin{tabular}{l l c c c}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c c c c c}
 \hline
-\textbf{Escenario} &
-\textbf{Modelo} &
-\textbf{RMSE} &
-\textbf{MAE} &
-\textbf{Correlación} \\
+Escenario & Modelo & RMSE & MAE & Pearson & Spearman & Kendall & RMSE est. \\
 \hline
-Completo
-& M1 Fay--Herriot
-& 7.7047 & 5.2993 & 0.8316 \\
-
-Completo
-& M2 no lineal
-& 5.0971 & 3.7048 & 0.9301 \\
-
-Completo
-& M3 CAR
-& 6.0406 & 4.4623 & 0.9001 \\
+E1 & M1 & 7.70 & 5.30 & 0.83 & 0.74 & 0.59 & 5.98 \\
+E1 & M2 & 5.10 & 3.70 & 0.93 & 0.80 & 0.64 & 4.08 \\
+E1 & M3 & 6.04 & 4.46 & 0.90 & 0.85 & 0.68 & 4.27 \\
+E2 & M1 & 7.76 & 6.00 & 0.83 & 0.72 & 0.57 & 6.10 \\
+E2 & M2 & 6.45 & 4.84 & 0.89 & 0.79 & 0.63 & 4.93 \\
+E2 & M3 & 4.72 & 3.67 & 0.94 & 0.85 & 0.67 & 3.79 \\
+E3 & M1 & 7.88 & 5.76 & 0.82 & 0.81 & 0.62 & 5.50 \\
+E3 & M2 & 8.41 & 5.65 & 0.80 & 0.82 & 0.64 & 5.36 \\
+E3 & M3 & 10.43 & 6.54 & 0.71 & 0.77 & 0.60 & 6.41 \\
 \hline
-Parsimonioso
-& M1 Fay--Herriot
-& 7.7563 & 5.9992 & 0.8303 \\
+\end{tabular}%
+}
+\end{table}
 
-Parsimonioso
-& M2 no lineal
-& 6.4540 & 4.8405 & 0.8855 \\
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{fig/figures/comparacion_lodo_modelos.png}
+\caption{Comparación del RMSE, MAE y correlación de Pearson obtenidos mediante validación LODO para los tres modelos y escenarios.}
+\label{fig:comparacion-lodo}
+\end{figure}
 
-Parsimonioso
-& M3 CAR
-& 4.7197 & 3.6731 & 0.9410 \\
+La amplitud del RMSE entre escenarios fue de 0.18 puntos en M1, 3.31 en M2 y 5.71 en M3. Aunque M1 resultó más estable frente a la selección de covariables, presentó errores superiores a las mejores especificaciones de M2 y M3. El desempeño de M3 fue especialmente sensible al escenario, con resultados favorables en E2 y un deterioro considerable en E3.
+
+\paragraph{Aporte predictivo y espacial de M3.}
+
+La comparación pareada de M2 y M3 (Tabla~\ref{tab:pareado}) mostró que, en E2, el componente espacial redujo el RMSE en 1.73 puntos porcentuales, con un intervalo bootstrap del 95\,\% entre $-3.11$ y $-0.15$. Sin embargo, el intervalo correspondiente al MAE incluyó el cero y la prueba de Wilcoxon no fue significativa al 5\,\% ($p=0.09$). M3 presentó menor error absoluto en 19 de los 33 departamentos. En E1 y E3, el RMSE aumentó con M3, sin diferencias concluyentes según los intervalos estimados. Por tanto, la evidencia favorable al componente espacial se concentra en E2 y no demuestra superioridad generalizada.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Comparación pareada de M2 y M3 mediante LODO. Las diferencias corresponden a M3 menos M2; los intervalos de confianza del 95\,\% se obtuvieron mediante bootstrap pareado departamental (10{,}000 remuestreos). M3 mejor: número de departamentos con menor error absoluto en M3.}
+\label{tab:pareado}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
 \hline
-Alt. vivienda
-& M1 Fay--Herriot
-& 7.8849 & 5.7569 & 0.8233 \\
+Esc. & RMSE M2 & RMSE M3 & Dif. RMSE (IC95) & Dif. MAE (IC95) & M3 mejor & Wilcoxon $p$ \\
+\hline
+E1 & 5.10 & 6.04 & 0.94 ($-0.75$; 2.75) & 0.76 ($-0.42$; 2.00) & 14 & 0.51 \\
+E2 & 6.45 & 4.72 & $-1.73$ ($-3.11$; $-0.15$) & $-1.17$ ($-2.50$; 0.20) & 19 & 0.09 \\
+E3 & 8.41 & 10.43 & 2.02 ($-0.89$; 4.53) & 0.89 ($-0.64$; 2.56) & 15 & 0.55 \\
+\hline
+\end{tabular}%
+}
+\end{table}
 
-Alt. vivienda
-& M2 no lineal
-& 8.4065 & 5.6452 & 0.7964 \\
+Los diagnósticos de Moran (Tabla~\ref{tab:moran-residual}) también favorecieron M3 en términos de autocorrelación residual. En E2, M2 presentó dependencia espacial significativa tanto en los residuos del ajuste completo ($I=0.25$; $p<0.01$) como en los errores LODO ($I=0.20$; $p=0.01$), mientras que en M3 ambos índices fueron cercanos a cero y no significativos. En E3 se observó una reducción similar de la autocorrelación, pese a un mayor RMSE. Por consiguiente, la reducción de dependencia espacial detectable no implica necesariamente una mejora predictiva.
 
-Alt. vivienda
-& M3 CAR
-& 10.4274 & 6.5350 & 0.7063 \\
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Índice de Moran departamental de los residuos del ajuste completo y de los errores LODO, con cuatro vecinos más cercanos y 9{,}999 permutaciones. Valores $p$ entre paréntesis.}
+\label{tab:moran-residual}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{l c c c}
+\hline
+Serie & E1 & E2 & E3 \\
+\hline
+Residuos OLS & 0.07 (0.16) & 0.19 (0.02) & 0.18 (0.02) \\
+Residuos M2 & 0.11 (0.08) & 0.25 ($<0.01$) & 0.15 (0.03) \\
+Residuos M3 & 0.01 (0.29) & 0.00 (0.37) & 0.04 (0.21) \\
+Errores LODO M1 & 0.08 (0.12) & 0.14 (0.05) & 0.20 (0.02) \\
+Errores LODO M2 & 0.06 (0.18) & 0.20 (0.01) & 0.18 (0.02) \\
+Errores LODO M3 & 0.06 (0.16) & $-0.02$ (0.41) & 0.07 (0.12) \\
 \hline
 \end{tabular}
 \end{table}
 
-La comparación por escenario muestra que ninguna familia presentó sistemáticamente el menor error bajo todas las especificaciones de covariables. En el escenario Completo, M2 alcanzó el menor RMSE (5.0971), seguido por M3 (6.0406) y M1 (7.7047). Bajo el escenario Parsimonioso, M3 presentó el menor RMSE de las nueve combinaciones evaluadas (4.7197), acompañado por el menor MAE (3.6731) y la mayor correlación LODO (0.9410). En el escenario Alternativo de vivienda, M1 presentó el menor RMSE (7.8849), aunque las diferencias con M2 fueron más reducidas que las observadas frente a M3.
-
-Por tanto, la incorporación de un componente espacial no produjo una mejora automática del desempeño predictivo. Su aporte dependió de la interacción entre la estructura espacial y el conjunto de covariables utilizado. En particular, M3 mostró un comportamiento favorable bajo el escenario Parsimonioso, pero un deterioro considerable bajo el Alternativo de vivienda.
-
-La combinación M3--Parsimonioso redujo el RMSE aproximadamente en un 7.4\,\% respecto a M2--Completo, que presentó el segundo menor RMSE entre las nueve combinaciones. Esta diferencia se interpreta como una comparación descriptiva del desempeño predictivo observado y no como evidencia suficiente, por sí sola, para seleccionar una formulación únicamente a partir de una métrica.
-
-Las diferencias en el desempeño predictivo entre modelos y escenarios se presentan visualmente en los gráficos de la figura~\ref{fig:comparacion-desmp-predict}. Cada figura muestra, respectivamente, el RMSE, el MAE y la correlación obtenidos mediante la validación LODO para las nueve combinaciones evaluadas, facilitando la comparación tanto entre formulaciones como entre escenarios de covariables.
+La distribución territorial de los errores (Figura~\ref{fig:errores-departamento}) confirma que la ventaja de M3--E2 no fue uniforme. Sus mayores errores LODO se registraron en La Guajira ($-13.33$), Magdalena (12.15) y Chocó ($-7.46$). M3 mejoró las predicciones de M2 en Amazonas, San Andrés, Vaupés, Vichada, Putumayo y Córdoba, pero las empeoró en Magdalena y Nariño.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/figures/Comparacion_Desemp_predict.png}
-\caption{Comparación del desempeño predictivo de los modelos M1, M2 y M3.}
-\label{fig:comparacion-desmp-predict}
+\includegraphics[width=0.72\textwidth]{fig/figures/errores_lodo_E2.png}
+\caption{Errores LODO departamentales de M2 y M3 en el escenario E2. Los valores positivos indican sobreestimación respecto al IPM directo departamental.}
+\label{fig:errores-departamento}
 \end{figure}
 
-\subsection{Estabilidad frente a los escenarios de covariables}
+\paragraph{Robustez frente a departamentos influyentes.}
 
-Además del nivel de error, se examinó la estabilidad de cada familia frente a los cambios en la especificación auxiliar. M1 presentó la menor amplitud de RMSE entre escenarios, con una diferencia de 0.18 puntos entre su valor mínimo y máximo. En M2, esta amplitud aumentó a 3.31 puntos, mientras que M3 alcanzó 5.71 puntos.
+A partir de los diagnósticos OLS de la Sección~\ref{sec:res-ols}, se reestimaron los tres modelos del escenario E2 excluyendo individualmente San Andrés y Providencia, Vichada y Vaupés. La Tabla~\ref{tab:robustez-influencia-lodo} compara el RMSE basal y el obtenido tras la reestimación, ambos evaluados sobre los mismos 32 departamentos restantes. En la validación complementaria, cada pliegue utilizó 31 departamentos para el entrenamiento.
 
-Estos resultados muestran que M1 fue relativamente estable frente a las modificaciones del conjunto de covariables, aunque presentó un nivel de error LODO comparativamente similar en los tres escenarios. M2 mostró una sensibilidad intermedia, mientras que M3 presentó la mayor dependencia respecto a la especificación auxiliar.
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Robustez predictiva de M1, M2 y M3 en E2 ante la exclusión de departamentos influyentes. RMSE en puntos porcentuales.}
+\label{tab:robustez-influencia-lodo}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c}
+\hline
+Departamento excluido & Modelo & RMSE basal & RMSE reajustado & Cambio \\
+\hline
+San Andrés y Prov. & M1 & 7.10 & 6.53 & $-0.57$ \\
+                   & M2 & 6.10 & 5.95 & $-0.15$ \\
+                   & M3 & 4.67 & 4.75 & 0.08 \\
+\hline
+Vichada            & M1 & 7.36 & 7.24 & $-0.12$ \\
+                   & M2 & 6.32 & 6.32 & 0.00 \\
+                   & M3 & 4.77 & 4.97 & 0.20 \\
+\hline
+Vaupés             & M1 & 7.49 & 7.17 & $-0.32$ \\
+                   & M2 & 6.32 & 7.03 & 0.71 \\
+                   & M3 & 4.74 & 5.15 & 0.42 \\
+\hline
+\end{tabular}
 
-Tomando únicamente el menor RMSE dentro de cada familia como resumen descriptivo, las formulaciones de referencia fueron el escenario Completo para M1 (RMSE = 7.7047), el escenario Completo para M2 (RMSE = 5.0971) y el escenario Parsimonioso para M3 (RMSE = 4.7197). Esta identificación se utiliza para describir el comportamiento interno de cada familia y no implica que un único escenario deba adoptarse como referencia para todas las comparaciones posteriores.
+\vspace{2mm}
+\parbox{0.95\linewidth}{\footnotesize
+\textit{Nota:} Las métricas basales utilizan las predicciones LODO originales, restringidas a los mismos 32 dominios evaluados después de cada exclusión. Los modelos reajustados se entrenan con un dominio menos por pliegue. Los cambios corresponden a RMSE reajustado menos RMSE basal.}
+\end{table}
 
-La comparación integrada también mostró diferencias en las propiedades garantizadas por cada formulación. M1 se estimó como un modelo Fay--Herriot a escala departamental y posteriormente produjo una proyección sintética municipal. Debido a su estructura lineal, esta proyección no garantiza el soporte 0--100 del IPM: en el ajuste final se identificaron 199, 92 y 116 proyecciones municipales fuera de rango bajo los escenarios Completo, Parsimonioso y Alternativo de vivienda, respectivamente.
+M3--E2 conservó el menor RMSE en los tres ejercicios, aunque su error aumentó en 0.08, 0.20 y 0.42 puntos porcentuales al excluir San Andrés y Providencia, Vichada y Vaupés, respectivamente. En M2, la exclusión de Vaupés produjo el mayor deterioro (0.71 puntos), mientras que M1 redujo su RMSE en las tres exclusiones. La ventaja relativa de M3 se mantuvo, pero con sensibilidad a determinados dominios.
 
-M2 y M3, en cambio, incorporaron una transformación logística en la propia formulación municipal. En consecuencia, no produjeron estimaciones municipales fuera del intervalo admisible en ninguno de los tres escenarios. Adicionalmente, ambas formulaciones aplicaron un procedimiento de \textit{benchmarking} que garantizó que el promedio ponderado de las estimaciones municipales reprodujera la estimación directa departamental dentro de la precisión numérica.
+La Tabla~\ref{tab:robustez-coeficientes-m3} resume los principales cambios paramétricos de M3--E2. Las covariables fijas conservaron sus signos en los tres ejercicios, aunque algunas magnitudes variaron. La exclusión de Vichada modificó el coeficiente de aseguramiento en salud de $-0.946$ a $-0.619$, y la de San Andrés y Providencia redujo el primer coeficiente espacial de 0.880 a un valor prácticamente nulo. Estos resultados muestran que estabilidad predictiva y estabilidad paramétrica no son equivalentes.
 
-Estas diferencias deben interpretarse separadamente de las métricas LODO. El cumplimiento del rango y del \textit{benchmarking} constituye evidencia de coherencia estructural de las estimaciones finales, mientras que RMSE, MAE y correlación LODO evalúan la capacidad predictiva fuera de dominio.
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Sensibilidad de coeficientes seleccionados de M3--E2 ante la exclusión individual de departamentos influyentes.}
+\label{tab:robustez-coeficientes-m3}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l l r r}
+\hline
+Departamento excluido & Parámetro & Original & Reestimado \\
+\hline
+San Andrés y Prov. & Luminosidad nocturna & $-0.4015$ & $-0.3117$ \\
+                   & Primer coef. espacial & 0.8800 & 0.00005 \\
+Vichada            & Aseguramiento en salud & $-0.9457$ & $-0.6193$ \\
+                   & Tercer coef. espacial & 0.0632 & 0.0440 \\
+Vaupés             & Infraestructura básica & $-1.4022$ & $-1.2756$ \\
+                   & Primer coef. espacial & 0.8800 & 0.7913 \\
+\hline
+\end{tabular}
 
-\subsection{Concordancia de las estimaciones municipales}
+\vspace{2mm}
+\parbox{0.95\linewidth}{\footnotesize
+\textit{Nota:} Los coeficientes de las covariables se comparan en una escala común. Los coeficientes espaciales corresponden a la base de rango reducido utilizada en M3 y no deben interpretarse individualmente como efectos causales.}
+\end{table}
 
-Para comparar las distribuciones municipales producidas por las tres formulaciones se utilizó el escenario Parsimonioso como especificación común. Su utilización en esta etapa responde a la necesidad de comparar los modelos bajo el mismo conjunto de covariables y no a una selección automática de este escenario como superior para todas las familias.
+La matriz completa de cambios paramétricos de M1, M2 y M3 para las tres exclusiones, con valores originales, reestimados y diferencias absolutas y relativas, se presenta en el Apéndice~\ref{sec:apendice-influencia-parametros} (Tabla~\ref{tab:robustez-parametros-completa}). Además de las variaciones resumidas para M3, se observaron cambios de signo en el coeficiente de luminosidad nocturna de M1 al excluir San Andrés y Providencia ($-1.678$ a $1.454$) y en el de aseguramiento en salud de M2 al excluir Vichada ($-0.929$ a $0.037$). Así, la estabilidad de signos de las covariables fijas de M3 no se extendió a todas las formulaciones.
 
-La Tabla~\ref{tab:concordancia-e2} presenta la correlación entre estimaciones municipales y la diferencia absoluta media para cada par de modelos.
+En conjunto, las reestimaciones respaldan la estabilidad de la ventaja predictiva de M3--E2 frente a M1--E2 y M2--E2 en las tres exclusiones examinadas, pero revelan sensibilidad paramétrica. Los resultados no constituyen una prueba exhaustiva para todos los departamentos o escenarios y deben interpretarse considerando que las validaciones utilizan un dominio menos de entrenamiento.
+
+\paragraph{Balance de la comparación.}
+
+M3--E2 presentó el menor error LODO entre las nueve configuraciones principales, acompañado de menor autocorrelación espacial residual detectable a escala departamental. Su ventaja predictiva también se mantuvo en las pruebas complementarias de exclusión de departamentos influyentes. No obstante, las diferencias territoriales de los errores, la sensibilidad de algunos parámetros y los resultados no concluyentes de parte de las comparaciones pareadas impiden atribuir una superioridad general al componente espacial. Asimismo, estas validaciones departamentales no demuestran directamente la precisión de las estimaciones municipales.
+%--------------------------------------------------------------------------------------
+
+\section{Aporte de las covariables mediante ablación}
+\label{sec:res-ablacion}
+
+La Figura~\ref{fig:ablacion} y la Tabla~\ref{tab:ablacion} presentan los cambios en el desempeño LODO al retirar individualmente las siete covariables del escenario E1. La repitencia escolar mostró la mayor contribución predictiva en los tres modelos: su exclusión incrementó el RMSE en 3.55 puntos en M1, 6.72 en M2 y 10.26 en M3. La tasa de matriculación también contribuyó a reducir el error en las tres formulaciones, mientras que la infraestructura básica presentó un aporte importante en M2 y M3, pero no en M1.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{fig/figures/ablacion_E1.png}
+\caption{Cambio en el RMSE LODO al retirar individualmente cada covariable del escenario E1. Los valores positivos indican un aumento del error al excluir la variable.}
+\label{fig:ablacion}
+\end{figure}
+
+La Tabla~\ref{tab:ablacion} muestra que la luminosidad nocturna contribuyó a reducir el RMSE en M2 y, en menor magnitud, en M3. El aseguramiento en salud presentó resultados diferentes entre formulaciones, con un aporte positivo en M1 y M2, pero negativo en M3. Por su parte, la exclusión de la mortalidad infantil y de la cobertura de energía rural redujo el RMSE en M1 y M3. Esto indica que, dentro de la especificación E1 y bajo la validación utilizada, estas variables no mejoraron el desempeño predictivo de dichas formulaciones, sin que ello implique ausencia de relación con la pobreza multidimensional ni redundancia estadística demostrada.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Cambio en RMSE y MAE LODO al retirar cada covariable del escenario E1. Las diferencias se calculan como el error del modelo reducido menos el error del modelo completo; valores positivos indican deterioro predictivo. RMSE de referencia: 7.70 (M1), 5.10 (M2) y 6.04 (M3).}
+\label{tab:ablacion}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+\hline
+ & \multicolumn{3}{c}{Cambio en RMSE} &
+\multicolumn{3}{c}{Cambio en MAE} \\
+Covariable retirada & M1 & M2 & M3 & M1 & M2 & M3 \\
+\hline
+Repitencia escolar & 3.55 & 6.72 & 10.26 & 2.65 & 3.64 & 6.23 \\
+Tasa de matriculación & 0.96 & 2.75 & 1.77 & 0.77 & 1.49 & 0.69 \\
+Infraestructura básica & $-0.15$ & 2.30 & 6.58 & $-0.38$ & 0.95 & 2.22 \\
+Cobertura de energía rural & $-0.32$ & $-0.18$ & $-1.18$ & $-0.20$ & $-0.10$ & $-0.77$ \\
+Mortalidad infantil & $-0.71$ & $-0.03$ & $-1.43$ & $-0.07$ & 0.12 & $-1.02$ \\
+Aseguramiento en salud & 0.06 & 0.48 & $-0.68$ & $-0.22$ & 0.10 & $-0.61$ \\
+Luminosidad nocturna & $-0.55$ & 0.96 & 0.16 & $-0.12$ & 0.43 & $-0.16$ \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+Los coeficientes estimados de M2 y M3 se presentan en la Tabla~\ref{tab:coeficientes-m2m3}. Al estar expresadas las covariables en una escala estandarizada, los coeficientes representan cambios en el predictor logit asociados con una desviación estándar de cada variable, manteniendo constantes las demás. La repitencia escolar presentó coeficientes positivos de elevada magnitud en los seis ajustes, mientras que la infraestructura básica, el aseguramiento en salud y la luminosidad nocturna mantuvieron signos negativos. La tasa de matriculación mostró una asociación condicional positiva en E1 y la cobertura de energía rural cambió de signo entre escenarios. Las diferencias en magnitud y precisión de los coeficientes reflejan la sensibilidad de las asociaciones a la especificación del modelo y no deben interpretarse como efectos causales.
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Coeficientes estimados de M2 y M3 sobre covariables estandarizadas. Errores estándar aproximados entre paréntesis, obtenidos de la inversa de la matriz Hessiana. M3 utiliza $K=6$ y $\rho=0.50$.}
+\label{tab:coeficientes-m2m3}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l c c c c c c}
+\hline
+ & \multicolumn{2}{c}{E1} &
+\multicolumn{2}{c}{E2} &
+\multicolumn{2}{c}{E3} \\
+Covariable & M2 & M3 & M2 & M3 & M2 & M3 \\
+\hline
+Intercepto
+& $-2.00$ (0.13) & $-2.45$ (0.44)
+& $-1.78$ (0.13) & $-2.17$ (0.45)
+& $-1.90$ (0.17) & $-1.75$ (0.55) \\
+Repitencia
+& 0.83 (0.13) & 1.01 (0.12)
+& 0.72 (0.11) & 0.87 (0.09)
+& 0.67 (0.14) & 0.80 (0.14) \\
+Matriculación
+& 0.50 (0.14) & 0.40 (0.13)
+& -- & -- & -- & -- \\
+Infraestructura
+& $-0.26$ (0.06) & $-0.29$ (0.06)
+& $-0.30$ (0.08) & $-0.35$ (0.06)
+& -- & -- \\
+Energía rural
+& 0.06 (0.09) & 0.13 (0.09)
+& -- & --
+& $-0.14$ (0.09) & $-0.01$ (0.11) \\
+Mortalidad
+& 0.23 (0.12) & 0.07 (0.13)
+& -- & -- & -- & -- \\
+Aseguramiento
+& $-0.21$ (0.11) & $-0.19$ (0.10)
+& $-0.13$ (0.14) & $-0.13$ (0.11)
+& $-0.11$ (0.18) & $-0.07$ (0.20) \\
+Luminosidad
+& $-0.22$ (0.07) & $-0.20$ (0.09)
+& $-0.14$ (0.08) & $-0.18$ (0.08)
+& $-0.10$ (0.09) & $-0.26$ (0.11) \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+%--------------------------------------------------------------------------------------
+
+\section{Incertidumbre de las estimaciones municipales}
+\label{sec:res-incertidumbre}
+
+Las matrices Hessianas de M2 y M3 fueron definidas positivas en los seis ajustes, lo que permitió obtener aproximaciones locales de la incertidumbre mediante el método delta. La Tabla~\ref{tab:incertidumbre} presenta los errores estándar y los intervalos de confianza aproximados de las estimaciones municipales. La mediana del error estándar osciló entre 2.01 y 2.67 puntos porcentuales, mientras que la mediana del ancho del intervalo del 95\,\% se situó entre 7.96 y 10.59 puntos. M3--E2 presentó los valores más bajos de ambas medidas, así como el menor percentil 90 del error estándar (4.67 puntos).
+
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{Incertidumbre aproximada de las estimaciones municipales de M2 y M3 mediante el método delta ($n=1{,}121$). EE: error estándar en puntos porcentuales del IPM; P90: percentil 90; CV: coeficiente de variación; IC95: intervalo aproximado del 95\,\% construido en escala logit.}
+\label{tab:incertidumbre}
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{l l c c c c c c}
+\hline
+ & & \multicolumn{3}{c}{EE} &
+CV & \multicolumn{2}{c}{Ancho IC95} \\
+Escenario & Modelo & Mediana & P90 & Máximo &
+Mediana & Mediana & Máximo \\
+\hline
+E1 & M2 & 2.21 & 5.51 & 25.07 & 0.21 & 8.88 & 81.12 \\
+E1 & M3 & 2.17 & 5.56 & 34.02 & 0.21 & 8.65 & 88.79 \\
+E2 & M2 & 2.16 & 5.15 & 17.39 & 0.17 & 8.60 & 59.26 \\
+E2 & M3 & 2.01 & 4.67 & 13.52 & 0.16 & 7.96 & 48.55 \\
+E3 & M2 & 2.26 & 5.65 & 22.87 & 0.20 & 9.07 & 71.54 \\
+E3 & M3 & 2.67 & 6.46 & 22.09 & 0.22 & 10.59 & 70.09 \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+La incertidumbre presentó diferencias importantes entre municipios y niveles estimados de pobreza. La correlación entre el ancho del intervalo y la expresión $\hat{\mu}_{i,d}(100-\hat{\mu}_{i,d})$ osciló entre 0.69 y 0.81, lo que resulta consistente con la mayor sensibilidad de la transformación logística en valores intermedios. En M3--E2, el ancho mediano fue de 4.70 puntos para municipios con IPM estimado inferior a 10 y de 17.23 puntos para aquellos con valores entre 30 y 70. El intervalo más amplio se observó en Bojayá (Chocó), con 88.79 puntos bajo M3--E1.
+
+Estos resultados describen una aproximación a la incertidumbre condicionada a cada especificación y a los parámetros espaciales fijados. Su interpretación depende de los componentes de variabilidad incorporados en el cálculo y no contempla necesariamente toda la incertidumbre asociada al benchmarking, la selección de covariables o la especificación del modelo. Por tanto, los intervalos reportados no deben interpretarse como una validación directa de la precisión municipal ni como evidencia de cobertura frecuentista comprobada.
+
+
+%--------------------------------------------------------------------------------------
+\section{Concordancia municipal y producción cartográfica}
+\label{sec:res-cartografia}
+
+La Tabla~\ref{tab:concordancia-e2} resume la concordancia entre las estimaciones municipales de las tres formulaciones en el escenario E2. La mayor concordancia se observó entre M2 y M3, con una correlación de 0.99 y una diferencia absoluta media de 1.69 puntos del IPM. Este resultado indica que la incorporación del componente espacial en M3 produjo ajustes locales sobre una estructura municipal muy similar a la generada por M2. En contraste, las comparaciones con M1 presentaron diferencias mayores, coherentes con el hecho de que sus estimaciones municipales provienen de una proyección sintética derivada de un modelo ajustado a escala departamental. Estas medidas describen concordancia entre formulaciones y no constituyen evidencia de precisión municipal.
 
 \begin{table}[!htbp]
 \centering
 \small
-\caption{Concordancia entre las estimaciones municipales de M1, M2 y M3 bajo el escenario Parsimonioso.}
+\caption{Concordancia entre las estimaciones municipales del escenario E2 ($n=1{,}121$). DAM: diferencia absoluta media, en puntos del IPM.}
 \label{tab:concordancia-e2}
-\renewcommand{\arraystretch}{1.20}
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l c c}
 \hline
-\textbf{Comparación} &
-\textbf{Correlación} &
-\textbf{Diferencia absoluta media} \\
+Comparación & Correlación & DAM \\
 \hline
-M1--M2 & 0.9511 & 3.22 p.p. \\
-M1--M3 & 0.9374 & 3.73 p.p. \\
-M2--M3 & 0.9901 & 1.69 p.p. \\
+M1 frente a M2 & 0.95 & 3.22 \\
+M1 frente a M3 & 0.94 & 3.73 \\
+M2 frente a M3 & 0.99 & 1.69 \\
 \hline
 \end{tabular}
-
-\vspace{0.15cm}
-\begin{minipage}{0.94\textwidth}
-\footnotesize
-\textit{Nota:} p.p. = puntos porcentuales. Estas medidas expresan concordancia entre formulaciones y no precisión municipal, dado que no se dispone de una estimación directa municipal del IPM 2024 que pueda utilizarse como referencia observada.
-\end{minipage}
 \end{table}
 
-La mayor concordancia se observó entre M2 y M3, con una correlación de 0.9901 y una diferencia absoluta media de 1.69 puntos porcentuales. Esto indica que la incorporación del componente CAR produjo ajustes territoriales sobre una estructura municipal ampliamente similar a la obtenida mediante M2.
+La Figura~\ref{fig:mapas-municipales} presenta las estimaciones municipales de las tres formulaciones en el escenario E2, utilizando la misma escala de color y las mismas clases, con el fin de facilitar la comparación visual. En las tres formulaciones se observa un patrón territorial general consistente: las mayores incidencias estimadas se concentran en la Orinoquía y la Amazonía orientales, el Pacífico y La Guajira, mientras que las menores se ubican principalmente en la región andina central. 
 
-Las comparaciones que involucraron a M1 presentaron diferencias mayores. La correlación M1--M2 fue de 0.9511, con una diferencia absoluta media de 3.22 puntos porcentuales, mientras que M1--M3 alcanzó una correlación de 0.9374 y una diferencia absoluta media de 3.73 puntos. Este comportamiento es coherente con las diferencias en la arquitectura de los modelos: M1 se calibra a escala departamental y posteriormente genera una proyección sintética utilizando las covariables municipales y el efecto aleatorio del departamento, mientras que M2 y M3 incorporan la estructura municipal directamente dentro de sus respectivas formulaciones de desagregación.
-
-\subsection{Producción cartográfica}
-
-Con fines de comparación territorial, se produjo cartografía municipal de las tres formulaciones bajo el escenario Parsimonioso. Se utilizó una clasificación común para facilitar la comparación visual entre modelos.
-
-En el caso de M1, la representación corresponde a la proyección sintética municipal derivada del modelo Fay--Herriot departamental. En M2 y M3, los mapas representan las estimaciones municipales finales posteriores al procedimiento de \textit{benchmarking}. Para M3 se utilizó la especificación espacial de referencia con $\rho=0.50$.
+Las diferencias más visibles se presentan entre M1 y los modelos municipales directos. En M1, la clase más baja reúne 412 municipios, incluidos los 91 municipios cuya proyección original fue negativa y debió acotarse en cero. En M2 y M3, el número de municipios en esa clase fue de 401 y 431, respectivamente. A su vez, M2 y M3 muestran una distribución espacial muy similar, con diferencias locales atribuibles al componente espacial incorporado en M3. En todo caso, la semejanza visual entre mapas no se interpreta como criterio de validación, sino como un recurso descriptivo para comparar patrones territoriales.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/figures/Panel_Horizontal_Mapas_M1_M2_M3.png}
-\caption{Estimación municipal del IPM 2024 bajo el modelo de Fay-Herriot, escenario Parsimonioso.}
-\label{fig:Comparacion_Mapas}
+\includegraphics[width=\textwidth]{fig/figures/mapas_municipales_E2.png}
+\caption{Estimación municipal del IPM 2024 en el escenario E2 según la proyección sintética del Modelo 1 y las estimaciones finales de los Modelos 2 y 3.}
+\label{fig:mapas-municipales}
 \end{figure}
 
-La cartografía permite examinar la distribución territorial generada por cada formulación y complementar las medidas numéricas de concordancia. La proximidad observada entre M2 y M3 en la Tabla~\ref{tab:concordancia-e2} es consistente con la similitud general de sus patrones territoriales, aunque el componente espacial de M3 introduce modificaciones locales asociadas a la estructura de vecindad.
+Dado que no se dispone de una estimación directa municipal del IPM para 2024 y que en esta versión no se realizó una validación retrospectiva con 2018, la evaluación municipal se limita a la concordancia entre formulaciones y a la comparación cartográfica de sus patrones territoriales.
 
-En todos los casos, los mapas tienen una función descriptiva y comparativa. No constituyen una validación independiente de las estimaciones municipales, dado que no se dispone de un IPM municipal directo para 2024 contra el cual contrastarlas.
+%--------------------------------------------------------------------------------------
 
-La comparación visual permitió identificar que las tres formulaciones conservan patrones territoriales generales similares, aunque difieren en la magnitud y en la variación local de las estimaciones. Las diferencias son más evidentes al contrastar la proyección sintética de M1 con las formulaciones M2
-y M3, mientras que estas dos últimas presentan una distribución espacial considerablemente más próxima, resultado consistente con las medidas de concordancia municipal.
 
-La incorporación del componente CAR en M3 no produjo una reorganización completa del patrón territorial generado por M2, sino ajustes locales sobre una estructura municipal previamente similar. Estas diferencias cartográficas deben interpretarse conjuntamente con las métricas LODO y las medidas de
-concordancia, y no como evidencia independiente de mayor precisión.
+\section{Síntesis de resultados según los objetivos específicos}
+\label{sec:res-objetivos}
 
-En conjunto, la comparación evidencia que los modelos presentan compromisos diferentes entre estabilidad, capacidad predictiva y propiedades estructurales. M1 mostró la mayor estabilidad frente a los escenarios, pero su proyección municipal no garantiza el soporte del indicador. M2 garantizó acotamiento y coherencia departamental y presentó su menor error bajo el escenario Completo. M3 incorporó explícitamente dependencia espacial y alcanzó su menor error bajo el escenario Parsimonioso, aunque fue también la formulación más sensible a los cambios en las covariables. La valoración conjunta de estas dimensiones proporciona la base para la síntesis integrada de validación presentada en la sección siguiente.
+En correspondencia con las etapas metodológicas de la Sección~\ref{sec:met-objetivos}, los resultados permiten abordar los tres objetivos específicos. El primero se desarrolló mediante la estimación y validación de M1, M2 y M3, la comparación de su desempeño predictivo departamental y la evaluación de la incertidumbre de las estimaciones. El segundo se abordó mediante los análisis de asociación, los diagnósticos exploratorios y la ablación de covariables, que permitieron examinar su contribución predictiva. El tercero se desarrolló mediante la caracterización cartográfica de las estimaciones municipales, los análisis de concordancia y dependencia espacial y la evaluación de los efectos del benchmarking.
+
+Los alcances, las implicaciones y las limitaciones de estos resultados se examinan en el capítulo de discusión.
+
